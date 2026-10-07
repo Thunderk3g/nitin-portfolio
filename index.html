@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Nitin Wagh — Video Editor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#15171c}
+a{color:#f4efe6}a:hover{color:#ffffff}
+.nw-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.nw-nav a{position:relative;display:inline-flex;align-items:center;min-height:44px;color:#f4efe6;text-decoration:none;font-size:16px}
+.nw-nav a[aria-current="page"]::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:2px;background:#2f6bff}
+.nw-nav a:hover{color:#ffffff}
+a:focus-visible,button:focus-visible{outline:2px solid #6f9bff;outline-offset:3px}
+.nw-hero{position:relative;min-height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.nw-portrait{position:absolute;left:0;top:0;bottom:0;width:60%;overflow:hidden}
+.nw-portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:left center;display:block}
+.nw-real{filter:grayscale(1) contrast(1.06) brightness(.82);-webkit-mask-image:radial-gradient(circle var(--r,0px) at var(--x,-600px) var(--y,-600px),transparent 0,transparent 62%,#000 100%);mask-image:radial-gradient(circle var(--r,0px) at var(--x,-600px) var(--y,-600px),transparent 0,transparent 62%,#000 100%);transition:opacity .5s ease}
+.nw-top{position:relative;z-index:2;padding:36px 64px 0;pointer-events:none}
+.nw-bottom{position:relative;z-index:2;padding:0 64px 72px;pointer-events:none;display:flex;justify-content:flex-end}
+.nw-top a,.nw-top button,.nw-bottom a,.nw-bottom button{pointer-events:auto}
+.nw-slot{margin:28px 0 0 15%;width:79%;height:clamp(120px,17vw,260px)}
+.nw-about{width:min(560px,42%);margin-top:56px}
+.nw-hint{position:absolute;left:28px;bottom:28px;z-index:3}
+.nw-tap{display:none}
+.nw-btn{display:inline-flex;align-items:center;gap:14px;min-height:52px;padding:0 30px;border-radius:999px;background:#1f5cff;color:#ffffff;font-weight:600;font-size:17px;text-decoration:none;transition:background .2s}
+.nw-btn:hover{background:#3a72ff;color:#ffffff}
+.nw-link{display:inline-flex;align-items:center;min-height:44px;color:#f4efe6;font-weight:500;font-size:17px;text-decoration:none;border-bottom:2px solid #2f6bff}
+.nw-chip{display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border-radius:999px;border:1px solid rgba(244,239,230,.22);color:rgba(244,239,230,.86);font-size:13px}
+.nw-card{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;background:#1c1f26;border:1px solid rgba(244,239,230,.08);text-decoration:none;color:#f4efe6;transition:transform .3s ease,border-color .3s}
+.nw-card:hover{transform:translateY(-4px);border-color:rgba(47,107,255,.6);color:#f4efe6}
+.nw-thumb{position:relative;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;color:rgba(244,239,230,.55);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.nw-display{font-family:'Archivo',sans-serif;font-weight:800;font-stretch:75%;text-transform:uppercase;line-height:.95;letter-spacing:-.005em}
+@media (max-width:860px){
+.nw-portrait{position:relative;width:100%;height:520px;order:2}
+.nw-top{order:1;padding:20px 20px 0}
+.nw-bottom{order:3;padding:0 20px 56px}
+.nw-slot{margin:20px 0 0;width:100%;height:26vw}
+.nw-about{width:100%;margin-top:32px}
+.nw-hint{display:none !important}
+.nw-tap{display:inline-flex}
+.nw-rail{display:none}
+.nw-role{justify-content:flex-start !important}
+.nw-grid{grid-template-columns:minmax(0,1fr) !important}
+.nw-navlinks{gap:20px !important}
+.nw-brand{display:none !important}
+}
+@media (hover:none){.nw-hint{display:none !important}.nw-tap{display:inline-flex}}
+.nt-display{font-weight:800;font-stretch:62.5%;text-transform:uppercase;line-height:.92;letter-spacing:-.01em}
+.nt-chip{display:inline-flex;align-items:center;min-height:22px;padding:0 8px;border-radius:4px;background:rgba(255,255,255,.14);color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;backdrop-filter:blur(6px)}
+.nt-track{animation:nt-scroll 70s linear infinite}
+.nt-track-fast{animation-duration:40s}
+.nt-marquee:hover .nt-track{animation-play-state:paused}
+@keyframes nt-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.nt-card{position:relative;flex:0 0 auto;width:340px;height:480px;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:12px;padding:28px 20px;box-sizing:border-box;color:#fff;text-decoration:none;text-align:center;transition:transform .35s ease}
+.nt-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.65) 100%);z-index:0}
+.nt-card>*{position:relative;z-index:1}
+.nt-card:hover{transform:translateY(-6px);text-decoration:none}
+.nt-card-title{font-size:30px;font-weight:800;font-stretch:62.5%;text-transform:uppercase;line-height:.95}
+.nt-feature{position:sticky;top:0;display:flex;align-items:flex-end;justify-content:center;height:640px;color:#fff;text-decoration:none;overflow:hidden}
+.nt-feature:hover{text-decoration:none}
+.nt-feature-inner{display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 24px 72px;text-align:center}
+.nt-feature-title{font-size:clamp(40px,6vw,88px)}
+.nt-logo{flex:0 0 auto;font-size:22px;font-weight:800;letter-spacing:.02em;color:rgba(255,255,255,.72);white-space:nowrap;transition:color .2s}
+.nt-logo:hover{color:#fff}
+@media (max-width:640px){.nt-card{width:260px;height:380px}.nt-feature{height:480px}}
+@media (prefers-reduced-motion:reduce){.nt-track{animation:none}}
+</style>
+
+</head>
+<body>
+<main style="background: #15171c; color: #f4efe6; font-family: 'Manrope', 'Helvetica Neue', sans-serif">
+<section class="nw-hero" id="hero" aria-label="Introduction">
+<div class="nw-portrait" id="portrait">
+<img src="assets/hero-left.jpg" alt="Anime-style illustration of Nitin Wagh editing video at his desk">
+<img class="nw-real" id="real" src="assets/hero-left.jpg" alt="Portrait of Nitin Wagh">
+<div aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(21,23,28,0) 42%, rgba(21,23,28,0.85) 82%, #15171c 100%), linear-gradient(0deg, rgba(21,23,28,0.7) 0%, rgba(21,23,28,0) 22%); pointer-events: none"></div>
+<p class="nw-hint" style="margin: 0; display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; background: rgba(21,23,28,0.72); font-size: 14px; color: #f4efe6; pointer-events: none"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 2l9.5 5-4.2 1.2L6.8 12.5z"></path></svg>Move your cursor to reveal my creative side.</p>
+<button class="nw-tap" type="button" id="tap" aria-pressed="false" style="position: absolute; left: 20px; bottom: 20px; z-index: 3; align-items: center; gap: 10px; min-height: 48px; padding: 0 20px; border-radius: 999px; border: 0; background: #1f5cff; color: #ffffff; font: inherit; font-weight: 600; font-size: 15px; cursor: pointer">See my anime side</button>
+</div>
+<canvas id="ink" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none"></canvas>
+<div class="nw-top">
+<header style="display: flex; align-items: center; gap: 28px">
+<a class="nw-brand" href="index.html" style="flex: 0 0 auto; color: #f4efe6; text-decoration: none; font-size: 16px; font-weight: 500; letter-spacing: 0.32em; text-transform: uppercase">Nitin Wagh</a>
+<span class="nw-brand" aria-hidden="true" style="flex: 1 1 auto; height: 1px; background: #2f6bff; opacity: 0.8"></span>
+<nav class="nw-nav nw-navlinks" aria-label="Main" style="display: flex; gap: 52px; margin-left: auto">
+<a href="index.html" aria-current="page">Home</a>
+<a href="projects.html">Projects</a>
+<a href="contact.html">Contact</a>
+</nav>
+</header>
+<div class="nw-slot" id="slot"><h1 class="nw-sr">Nitin Wagh</h1></div>
+<div class="nw-role" style="display: flex; justify-content: flex-end; align-items: center; gap: 28px; margin-top: 18px; flex-wrap: wrap">
+<p style="margin: 0; font-size: clamp(14px, 1.6vw, 24px); font-weight: 300; letter-spacing: 0.38em; text-transform: uppercase">Video Editor | 3+ Years of Experience</p>
+<span aria-hidden="true" style="width: 120px; height: 1px; background: #2f6bff"></span>
+</div>
+<p class="nw-role" style="margin: 14px 0 0; display: flex; justify-content: flex-end; font-size: clamp(16px, 1.4vw, 20px); color: rgba(244,239,230,0.72)">Thoughtful edits. Stories that connect.</p>
+</div>
+<div class="nw-bottom">
+<div class="nw-about">
+<div style="display: flex; align-items: center; gap: 16px">
+<span aria-hidden="true" style="width: 56px; height: 1px; background: #2f6bff"></span>
+<span style="font-size: 14px; font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; color: #5b8cff">About me</span>
+</div>
+<h2 style="margin: 20px 0 0; font-size: clamp(28px, 2.6vw, 40px); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em">Need an editor who can adapt to your next idea?</h2>
+<p style="margin: 20px 0 0; font-size: 17px; font-weight: 300; line-height: 1.7; color: rgba(244,239,230,0.86)">I’m Nitin Wagh, a video editor with 3+ years of experience across reels, long-form videos, SaaS demos and cinematic content. Working in different creative environments has taught me versatility. I’m happy to learn what your project needs and use AI to work faster, while making the creative calls myself.</p>
+<ul aria-label="Editing keywords" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 0; padding: 0; list-style: none">
+<li class="nw-chip">Video editing</li>
+<li class="nw-chip">Short-form content</li>
+<li class="nw-chip">Long-form content</li>
+<li class="nw-chip">Visual storytelling</li>
+<li class="nw-chip">Pacing</li>
+<li class="nw-chip">AI-assisted workflows</li>
+</ul>
+<div style="display: flex; align-items: center; gap: 36px; margin-top: 36px; flex-wrap: wrap">
+<a class="nw-btn" href="projects.html">View My Work<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></a>
+<a class="nw-link" href="contact.html">Let’s Talk</a>
+</div>
+</div>
+</div>
+<div class="nw-rail" aria-hidden="true" style="position: absolute; right: 40px; top: 45%; bottom: 0; width: 1px; background: rgba(244,239,230,0.25); z-index: 2"><span style="position: absolute; left: -1px; top: 64px; width: 3px; height: 56px; background: #2f6bff; border-radius: 2px"></span></div>
+</section>
+
+<section aria-labelledby="work-title" style="padding: 120px 64px 40px; max-width: 1312px; margin: 0 auto">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap">
+<div>
+<div style="display: flex; align-items: center; gap: 16px">
+<span aria-hidden="true" style="width: 56px; height: 1px; background: #2f6bff"></span>
+<span style="font-size: 14px; font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; color: #5b8cff">Projects</span>
+</div>
+<h2 id="work-title" class="nw-display" style="margin: 18px 0 0; font-size: clamp(48px, 7vw, 104px)">Selected work</h2>
+</div>
+<a class="nw-link" href="projects.html">See all projects</a>
+</div>
+<div class="nw-grid" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 48px">
+<a class="nw-card" href="projects.html#short-form"><span class="nw-thumb" style="background: linear-gradient(150deg, #24324f 0%, #12161f 100%)">[Category thumbnail]</span><span style="display: flex; flex-direction: column; gap: 10px; padding: 24px 26px 28px"><span style="font-size: 24px; font-weight: 600">Short-form &amp; Reels</span><span style="font-size: 16px; font-weight: 300; line-height: 1.6; color: rgba(244,239,230,0.78)">Vertical edits for Reels, Shorts and social feeds.</span><span style="margin-top: 6px; color: #5b8cff; font-weight: 600">View Projects →</span></span></a>
+<a class="nw-card" href="projects.html#long-form"><span class="nw-thumb" style="background: linear-gradient(150deg, #3a2a44 0%, #15121b 100%)">[Category thumbnail]</span><span style="display: flex; flex-direction: column; gap: 10px; padding: 24px 26px 28px"><span style="font-size: 24px; font-weight: 600">Long-form Videos</span><span style="font-size: 16px; font-weight: 300; line-height: 1.6; color: rgba(244,239,230,0.78)">Longer edits paced to hold attention from start to finish.</span><span style="margin-top: 6px; color: #5b8cff; font-weight: 600">View Projects →</span></span></a>
+<a class="nw-card" href="projects.html#saas"><span class="nw-thumb" style="background: linear-gradient(150deg, #1e3a3d 0%, #10171a 100%)">[Category thumbnail]</span><span style="display: flex; flex-direction: column; gap: 10px; padding: 24px 26px 28px"><span style="font-size: 24px; font-weight: 600">SaaS Demos</span><span style="font-size: 16px; font-weight: 300; line-height: 1.6; color: rgba(244,239,230,0.78)">Product walkthroughs that make software easy to follow.</span><span style="margin-top: 6px; color: #5b8cff; font-weight: 600">View Projects →</span></span></a>
+<a class="nw-card" href="projects.html#cinematic"><span class="nw-thumb" style="background: linear-gradient(150deg, #43341f 0%, #18140e 100%)">[Category thumbnail]</span><span style="display: flex; flex-direction: column; gap: 10px; padding: 24px 26px 28px"><span style="font-size: 24px; font-weight: 600">Cinematic Content</span><span style="font-size: 16px; font-weight: 300; line-height: 1.6; color: rgba(244,239,230,0.78)">Mood-led edits built on rhythm, sound and colour.</span><span style="margin-top: 6px; color: #5b8cff; font-weight: 600">View Projects →</span></span></a>
+</div>
+</section>
+
+<section id="all-work" aria-labelledby="allwork-title" style="background: #15171c; color: #f4efe6; padding: 72px 0 0; font-family: 'Archivo', 'Helvetica Neue', sans-serif">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; padding: 0 28px; margin-bottom: 40px">
+<div style="display: flex; flex-direction: column; gap: 18px; align-items: flex-start">
+<span class="nt-chip">All work</span>
+<h2 id="allwork-title" class="nt-display" style="margin: 0; font-size: clamp(44px, 7vw, 104px)">Work that moves<br>people.</h2>
+</div>
+<a href="projects.html" style="display: inline-flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 22px; border-radius: 999px; border: 1.5px solid #ffffff; color: #ffffff; font-size: 13px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">View all projects</a>
+</div>
+<div class="nt-marquee" style="overflow: hidden; padding: 0 0 12px">
+<div class="nt-track nt-track-slow" style="display: flex; gap: 12px; width: max-content">
+<a class="nt-card" href="#" style="background: linear-gradient(165deg, #2c3a6b 0%, #10142a 70%)"><span class="nt-chip">Brand film</span><span class="nt-card-title">[Project title one]</span></a>
+<a class="nt-card" href="#" style="background: linear-gradient(165deg, #5a2f45 0%, #160b14 70%)"><span class="nt-chip">Campaign</span><span class="nt-card-title">[Project title two]</span></a>
+<a class="nt-card" href="#" style="background: linear-gradient(165deg, #3d4d3a 0%, #0e130d 70%)"><span class="nt-chip">Documentary</span><span class="nt-card-title">[Project title three]</span></a>
+<a class="nt-card" href="#" style="background: linear-gradient(165deg, #6b5a2c 0%, #1a150a 70%)"><span class="nt-chip">Live event</span><span class="nt-card-title">[Project title four]</span></a>
+<a class="nt-card" href="#" style="background: linear-gradient(165deg, #2c5a66 0%, #0a1518 70%)"><span class="nt-chip">Series</span><span class="nt-card-title">[Project title five]</span></a>
+<a class="nt-card" href="#" style="background: linear-gradient(165deg, #4b3b6e 0%, #110c1c 70%)"><span class="nt-chip">Digital</span><span class="nt-card-title">[Project title six]</span></a>
+<a class="nt-card" href="#" aria-hidden="true" tabindex="-1" style="background: linear-gradient(165deg, #2c3a6b 0%, #10142a 70%)"><span class="nt-chip">Brand film</span><span class="nt-card-title">[Project title one]</span></a>
+<a class="nt-card" href="#" aria-hidden="true" tabindex="-1" style="background: linear-gradient(165deg, #5a2f45 0%, #160b14 70%)"><span class="nt-chip">Campaign</span><span class="nt-card-title">[Project title two]</span></a>
+<a class="nt-card" href="#" aria-hidden="true" tabindex="-1" style="background: linear-gradient(165deg, #3d4d3a 0%, #0e130d 70%)"><span class="nt-chip">Documentary</span><span class="nt-card-title">[Project title three]</span></a>
+<a class="nt-card" href="#" aria-hidden="true" tabindex="-1" style="background: linear-gradient(165deg, #6b5a2c 0%, #1a150a 70%)"><span class="nt-chip">Live event</span><span class="nt-card-title">[Project title four]</span></a>
+<a class="nt-card" href="#" aria-hidden="true" tabindex="-1" style="background: linear-gradient(165deg, #2c5a66 0%, #0a1518 70%)"><span class="nt-chip">Series</span><span class="nt-card-title">[Project title five]</span></a>
+<a class="nt-card" href="#" aria-hidden="true" tabindex="-1" style="background: linear-gradient(165deg, #4b3b6e 0%, #110c1c 70%)"><span class="nt-chip">Digital</span><span class="nt-card-title">[Project title six]</span></a>
+</div>
+</div>
+<div style="margin-top: 96px">
+<a class="nt-feature" href="#" style="background: linear-gradient(180deg, #1b2a4a 0%, #0b1220 100%)"><span class="nt-feature-inner"><span class="nt-chip">Featured · Brand film</span><span class="nt-display nt-feature-title">[Featured project one]</span></span></a>
+<a class="nt-feature" href="#" style="background: linear-gradient(180deg, #3a1630 0%, #12060f 100%)"><span class="nt-feature-inner"><span class="nt-chip">Featured · Live event</span><span class="nt-display nt-feature-title">[Featured project two]</span></span></a>
+<a class="nt-feature" href="#" style="background: linear-gradient(180deg, #17352f 0%, #07120f 100%)"><span class="nt-feature-inner"><span class="nt-chip">Featured · Documentary</span><span class="nt-display nt-feature-title">[Featured project three]</span></span></a>
+</div>
+</section>
+<section id="partners" aria-labelledby="partners-title" style="position: relative; overflow: hidden; background: linear-gradient(180deg, #15171c 0%, #0d0a2a 45%, #1a1f6e 78%, #2f47d6 100%); color: #ffffff; padding: 128px 0 72px; font-family: 'Archivo', 'Helvetica Neue', sans-serif">
+<div style="max-width: 1100px; margin: 0 auto; padding: 0 28px">
+<h2 id="partners-title" class="nt-display" style="margin: 0; font-size: clamp(36px, 5.4vw, 80px); text-align: justify; text-align-last: left">We team up with people who make the work braver and push every idea further.</h2>
+</div>
+<div style="display: flex; justify-content: center; margin: 96px 0 36px">
+<span class="nt-chip">Our partners</span>
+</div>
+<div class="nt-marquee" style="overflow: hidden">
+<ul class="nt-track nt-track-fast" style="display: flex; align-items: center; gap: 96px; width: max-content; margin: 0; padding: 8px 0; list-style: none">
+<li class="nt-logo">[Partner 01]</li>
+<li class="nt-logo">[Partner 02]</li>
+<li class="nt-logo">[Partner 03]</li>
+<li class="nt-logo">[Partner 04]</li>
+<li class="nt-logo">[Partner 05]</li>
+<li class="nt-logo">[Partner 06]</li>
+<li class="nt-logo">[Partner 07]</li>
+<li class="nt-logo">[Partner 08]</li>
+<li class="nt-logo">[Partner 09]</li>
+<li class="nt-logo">[Partner 10]</li>
+<li class="nt-logo" aria-hidden="true">[Partner 01]</li>
+<li class="nt-logo" aria-hidden="true">[Partner 02]</li>
+<li class="nt-logo" aria-hidden="true">[Partner 03]</li>
+<li class="nt-logo" aria-hidden="true">[Partner 04]</li>
+<li class="nt-logo" aria-hidden="true">[Partner 05]</li>
+<li class="nt-logo" aria-hidden="true">[Partner 06]</li>
+<li class="nt-logo" aria-hidden="true">[Partner 07]</li>
+<li class="nt-logo" aria-hidden="true">[Partner 08]</li>
+<li class="nt-logo" aria-hidden="true">[Partner 09]</li>
+<li class="nt-logo" aria-hidden="true">[Partner 10]</li>
+</ul>
+</div>
+</section>
+
+<section aria-labelledby="cta-title" style="padding: 96px 64px 120px; max-width: 1312px; margin: 0 auto">
+<div style="border-top: 1px solid rgba(244,239,230,0.14); padding-top: 72px; display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap">
+<h2 id="cta-title" class="nw-display" style="margin: 0; max-width: 900px; font-size: clamp(40px, 5.6vw, 84px)">Have a story to tell? Let’s make it worth watching.</h2>
+<a class="nw-btn" href="contact.html">Get in touch<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></a>
+</div>
+</section>
+
+<footer style="border-top: 1px solid rgba(244,239,230,0.1); padding: 32px 64px; display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; font-size: 15px">
+<span style="letter-spacing: 0.32em; text-transform: uppercase">Nitin Wagh</span>
+<nav class="nw-nav" aria-label="Footer" style="display: flex; gap: 28px; flex-wrap: wrap">
+<a href="mailto:[Your Email Address]">Email Me</a>
+<a href="[Your LinkedIn Profile URL]">LinkedIn</a>
+<a href="projects.html">Projects</a>
+<a href="contact.html">Contact</a>
+</nav>
+</footer>
+</main>
+<script>
+/* Minimal stand-in for the design tool's runtime so the component class runs as-is. */
+class DCLogic { constructor(props) { this.props = props; this.state = {}; } setState(s) { Object.assign(this.state, s); this.update && this.update(); } }
+
+class Component extends DCLogic {
+  themes() {
+    return [
+      { rim: '#241d18', stops: [[0, '#fbfbfb'], [0.3, '#b9b9be'], [0.48, '#ffffff'], [0.62, '#8c8c93'], [0.85, '#e4e4e8'], [1, '#a7a2a0']], deco: 'sheen' },
+      { rim: '#3a2704', stops: [[0, '#fff3c2'], [0.35, '#dcaa2a'], [0.5, '#fff6d1'], [0.72, '#9b6a0c'], [1, '#e9c65e']], deco: 'sheen' },
+      { rim: '#6d1f33', stops: [[0, '#f9c3d0'], [0.5, '#f0a0b5'], [1, '#e07f99']], deco: 'sprinkles' },
+      { rim: '#8f98a8', stops: [[0, '#ffffff'], [1, '#d9dee6']], deco: 'puffs' }
+    ];
+  }
+
+  componentDidMount() {
+    this.blobs = []; this.last = {}; this.lastPtr = 0; this.autoT = 0; this.theme = 0;
+    this.rv = { x: -600, y: -600, r: 0, tr: 0 };
+    this.reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.m = document.createElement('canvas');
+    this.mb = document.createElement('canvas');
+    this.layer = document.createElement('canvas');
+    this.tex = document.createElement('canvas');
+    this.onResize = () => this.resize();
+    window.addEventListener('resize', this.onResize);
+    if (window.ResizeObserver && this.hero) { this.ro = new ResizeObserver(() => this.resize()); this.ro.observe(this.hero); }
+    const go = () => { this.resize(); this.loop(); };
+    if (document.fonts && document.fonts.load) document.fonts.load('900 200px Archivo').then(go, go); else go();
+  }
+
+  componentWillUnmount() {
+    cancelAnimationFrame(this.raf);
+    window.removeEventListener('resize', this.onResize);
+    if (this.ro) this.ro.disconnect();
+  }
+
+  componentDidUpdate(prev) { if (prev.name !== this.props.name) this.resize(); }
+
+  word() { return (this.props.name ?? 'NITIN WAGH') || ' '; }
+
+  setFont(ctx, size) {
+    ctx.font = '900 ' + size + 'px Archivo, "Arial Black", sans-serif';
+    if ('fontStretch' in ctx) ctx.fontStretch = 'condensed';
+  }
+
+  resize() {
+    const c = this.canvas, slot = this.slot;
+    if (!c || !slot) return;
+    const r = c.getBoundingClientRect(), sr = slot.getBoundingClientRect();
+    const W = Math.max(1, Math.round(r.width)), H = Math.max(1, Math.round(r.height));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    Object.assign(this, { W, H, dpr });
+    this.box = { x: sr.left - r.left, y: sr.top - r.top, w: sr.width, h: sr.height };
+    c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+    this.ctx = c.getContext('2d');
+    this.layer.width = this.tex.width = c.width;
+    this.layer.height = this.tex.height = c.height;
+    this.ms = 0.5;
+    this.m.width = this.mb.width = Math.ceil(W * this.ms);
+    this.m.height = this.mb.height = Math.ceil(H * this.ms);
+    this.mctx = this.m.getContext('2d');
+    this.mbctx = this.mb.getContext('2d', { willReadFrequently: true });
+    const t = this.ctx; this.setFont(t, 100); t.textAlign = 'center';
+    const mt = t.measureText(this.word());
+    const L = mt.actualBoundingBoxLeft || 0, R = mt.actualBoundingBoxRight || mt.width;
+    const asc100 = mt.actualBoundingBoxAscent || 72;
+    const b = this.box;
+    let fs = (b.w / (L + R)) * 100;
+    fs = Math.min(fs, (b.h / asc100) * 100);
+    this.fs = fs; this.asc = asc100 * fs / 100;
+    this.cx = b.x + b.w / 2 + (L - R) * fs / 200;
+    this.ty = b.y + b.h / 2 + this.asc / 2;
+    this.buildTexture();
+  }
+
+  rng(seed) {
+    let a = seed >>> 0;
+    return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+
+  buildTexture() {
+    if (!this.W) return;
+    const th = this.themes()[this.theme], t = this.tex.getContext('2d');
+    const { fs, cx, ty, asc, dpr, box } = this, word = this.word();
+    t.setTransform(1, 0, 0, 1, 0, 0); t.clearRect(0, 0, this.tex.width, this.tex.height);
+    t.setTransform(dpr, 0, 0, dpr, 0, 0);
+    t.globalCompositeOperation = 'source-over'; t.filter = 'none';
+    this.setFont(t, fs); t.textAlign = 'center'; t.lineJoin = 'round';
+    const top = ty - asc, bot = ty, x0 = box.x, bw = box.w;
+    const g = t.createLinearGradient(0, top, 0, bot);
+    th.stops.forEach((s) => g.addColorStop(s[0], s[1]));
+    t.fillStyle = g; t.strokeStyle = g; t.lineWidth = fs * 0.06;
+    t.strokeText(word, cx, ty); t.fillText(word, cx, ty);
+    t.globalCompositeOperation = 'source-atop';
+    const rnd = this.rng(77 + this.theme * 31);
+    if (th.deco === 'sheen') {
+      t.filter = 'blur(' + Math.round(fs * 0.015) + 'px)';
+      for (let i = 0; i < 16; i++) {
+        t.fillStyle = 'rgba(255,255,255,' + (0.35 + rnd() * 0.45) + ')';
+        t.save(); t.translate(x0 + rnd() * bw, (top + bot) / 2); t.rotate(-0.35);
+        t.fillRect(-fs * 0.02, -fs, fs * (0.015 + rnd() * 0.05), fs * 2); t.restore();
+      }
+    } else if (th.deco === 'sprinkles') {
+      const cols = ['#d11d4b', '#ffffff', '#a70f35', '#ff6a8e', '#f6e7ea'];
+      for (let i = 0, n = Math.round(bw * 1.6); i < n; i++) {
+        t.fillStyle = cols[Math.floor(rnd() * cols.length)];
+        t.save(); t.translate(x0 + rnd() * bw, top + rnd() * asc); t.rotate(rnd() * Math.PI);
+        const l = fs * (0.025 + rnd() * 0.025), wd = fs * 0.012; t.fillRect(-l / 2, -wd / 2, l, wd); t.restore();
+      }
+    } else {
+      for (let i = 0, n = Math.round(bw * 0.6); i < n; i++) {
+        const x = x0 + rnd() * bw, y = top + rnd() * asc, r = fs * (0.04 + rnd() * 0.07);
+        const rg = t.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+        rg.addColorStop(0, '#ffffff'); rg.addColorStop(0.7, '#f1f3f7'); rg.addColorStop(1, 'rgba(160,170,186,0.9)');
+        t.fillStyle = rg; t.beginPath(); t.arc(x, y, r, 0, Math.PI * 2); t.fill();
+      }
+    }
+    t.filter = 'blur(' + Math.max(1, Math.round(fs * 0.02)) + 'px)';
+    t.strokeStyle = 'rgba(0,0,0,0.38)'; t.lineWidth = fs * 0.05;
+    t.strokeText(word, cx + fs * 0.01, ty + fs * 0.015);
+    t.filter = 'blur(' + Math.max(1, Math.round(fs * 0.01)) + 'px)';
+    t.strokeStyle = 'rgba(255,255,255,0.75)'; t.lineWidth = fs * 0.018;
+    t.strokeText(word, cx - fs * 0.01, ty - fs * 0.016);
+    t.filter = 'none';
+    t.globalCompositeOperation = 'destination-over';
+    t.strokeStyle = th.rim; t.lineWidth = fs * 0.085; t.strokeText(word, cx, ty);
+    t.globalCompositeOperation = 'source-over';
+  }
+
+  nextTheme() { this.theme = (this.theme + 1) % this.themes().length; this.buildTexture(); }
+
+  feed(x, y, k, key) {
+    const size = Math.max(0.6, Math.min(1.3, this.W / 1440));
+    const lf = this.last[key];
+    let steps = 1, lx = x, ly = y;
+    if (lf) {
+      const d = Math.hypot(x - lf.x, y - lf.y);
+      if (d < 6) return;
+      if (d < 240) { steps = Math.min(6, 1 + Math.floor(d / 26)); lx = lf.x; ly = lf.y; }
+    }
+    for (let s = 1; s <= steps; s++) {
+      const px = lx + (x - lx) * (s / steps), py = ly + (y - ly) * (s / steps);
+      const r = (26 + Math.random() * 48) * size * k;
+      this.blobs.push({ x: px, y: py, r, vx: (x - lx) * 0.02 + (Math.random() - 0.5), vy: (y - ly) * 0.02 + (Math.random() - 0.5), age: 0, hold: 40 + Math.random() * 70, decay: 0.965 + Math.random() * 0.02 });
+      if (Math.random() < 0.5) {
+        const a = Math.random() * Math.PI * 2, dd = r * (0.9 + Math.random() * 0.8), sp = 0.8 + Math.random() * 2;
+        this.blobs.push({ x: px + Math.cos(a) * dd, y: py + Math.sin(a) * dd, r: r * (0.18 + Math.random() * 0.3), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, age: 0, hold: 20 + Math.random() * 50, decay: 0.95 + Math.random() * 0.03 });
+      }
+    }
+    if (this.blobs.length > 480) this.blobs.splice(0, this.blobs.length - 480);
+    this.last[key] = { x, y };
+  }
+
+  inBand(x, y) {
+    const b = this.box; if (!b) return false;
+    return x > b.x - 40 && x < b.x + b.w + 40 && y > b.y - 30 && y < b.y + b.h + 30;
+  }
+
+  loop() {
+    this.raf = requestAnimationFrame(() => this.loop());
+    if (!this.ctx) return;
+    const now = performance.now();
+    const ink = (this.props.inkReveal ?? true) && !this.reduced;
+    if (ink) {
+      const idle = now - this.lastPtr > 2600, b = this.box;
+      this.autoT += 0.01;
+      this.feed(b.x + b.w * (0.5 + 0.46 * Math.sin(this.autoT * 1.2)), b.y + b.h * (0.5 + 0.32 * Math.sin(this.autoT * 2.4 + 1)), idle ? 1 : 0.75, 'amb');
+      if (idle && Math.floor(this.autoT / 6) !== Math.floor((this.autoT - 0.01) / 6)) this.nextTheme();
+    }
+    const bl = this.blobs;
+    for (let i = bl.length - 1; i >= 0; i--) {
+      const q = bl[i]; q.age++; q.x += q.vx; q.y += q.vy; q.vx *= 0.94; q.vy *= 0.94;
+      if (q.age > q.hold) q.r *= q.decay;
+      if (q.r < 1.5) bl.splice(i, 1);
+    }
+    // portrait reveal easing
+    const rv = this.rv;
+    if (rv.tx != null) { rv.x += (rv.tx - rv.x) * 0.18; rv.y += (rv.ty - rv.y) * 0.18; }
+    rv.r += (rv.tr - rv.r) * 0.12;
+    if (this.real) {
+      this.real.style.setProperty('--x', rv.x.toFixed(1) + 'px');
+      this.real.style.setProperty('--y', rv.y.toFixed(1) + 'px');
+      this.real.style.setProperty('--r', Math.max(0, rv.r).toFixed(1) + 'px');
+    }
+    this.draw();
+  }
+
+  draw() {
+    const c = this.ctx, { W, H, dpr, fs, cx, ty } = this;
+    c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.setFont(c, fs); c.textAlign = 'center'; c.fillStyle = '#f4efe6';
+    c.fillText(this.word(), cx, ty);
+    if (!this.blobs.length) return;
+    const s = this.ms, m = this.mctx, mb = this.mbctx, mw = this.m.width, mh = this.m.height;
+    m.setTransform(1, 0, 0, 1, 0, 0); m.fillStyle = '#ffffff'; m.fillRect(0, 0, mw, mh);
+    m.fillStyle = '#000000'; m.beginPath();
+    for (const q of this.blobs) { m.moveTo(q.x * s + q.r * s, q.y * s); m.arc(q.x * s, q.y * s, q.r * s, 0, Math.PI * 2); }
+    m.fill();
+    mb.setTransform(1, 0, 0, 1, 0, 0); mb.globalCompositeOperation = 'copy';
+    mb.filter = 'blur(10px)'; mb.drawImage(this.m, 0, 0); mb.filter = 'none';
+    mb.globalCompositeOperation = 'source-over';
+    const img = mb.getImageData(0, 0, mw, mh), d = img.data;
+    for (let i = 0; i < d.length; i += 4) { let a = (170 - d[i]) * 22; a = a < 0 ? 0 : a > 255 ? 255 : a; d[i] = d[i + 1] = d[i + 2] = 0; d[i + 3] = a; }
+    mb.putImageData(img, 0, 0);
+    const L = this.layer.getContext('2d');
+    L.setTransform(1, 0, 0, 1, 0, 0); L.globalCompositeOperation = 'source-over';
+    L.clearRect(0, 0, this.layer.width, this.layer.height);
+    L.fillStyle = '#1f5cff'; L.fillRect(0, 0, this.layer.width, this.layer.height);
+    L.drawImage(this.tex, 0, 0);
+    L.globalCompositeOperation = 'destination-in'; L.imageSmoothingEnabled = true;
+    L.drawImage(this.mb, 0, 0, this.layer.width, this.layer.height);
+    L.globalCompositeOperation = 'source-over';
+    c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(this.layer, 0, 0);
+  }
+
+  renderVals() {
+    const anime = !!(this.state && this.state.anime);
+    return {
+      realOpacity: anime ? 0 : 1,
+      animePressed: anime ? 'true' : 'false',
+      tapLabel: anime ? 'Show my real side' : 'See my anime side',
+      toggleAnime: () => this.setState({ anime: !anime }),
+      setHero: (el) => { this.hero = el; },
+      setCanvas: (el) => { this.canvas = el; },
+      setSlot: (el) => { this.slot = el; },
+      setPortrait: (el) => { this.portrait = el; },
+      setReal: (el) => { this.real = el; },
+      onMove: (e) => {
+        if (!this.canvas || !this.W) return;
+        const r = this.canvas.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top, now = performance.now();
+        if (e.pointerType === 'mouse' && this.portrait && !this.reduced) {
+          const pr = this.portrait.getBoundingClientRect();
+          const inside = e.clientX >= pr.left && e.clientX <= pr.right && e.clientY >= pr.top && e.clientY <= pr.bottom;
+          const px = e.clientX - pr.left, py = e.clientY - pr.top;
+          if (inside) {
+            if (this.rv.r < 4) { this.rv.x = px; this.rv.y = py; }
+            this.rv.tx = px; this.rv.ty = py; this.rv.tr = this.props.revealSize ?? 170;
+          } else { this.rv.tr = 0; }
+        }
+        if (this.inBand(x, y) && (this.props.inkReveal ?? true) && !this.reduced) {
+          if (now - this.lastPtr > 2600) this.last.ptr = null;
+          this.lastPtr = now;
+          this.feed(x, y, 1, 'ptr');
+        }
+      },
+      onLeave: () => { this.rv.tr = 0; },
+      onDown: (e) => {
+        if (!this.canvas) return;
+        const r = this.canvas.getBoundingClientRect();
+        if (this.inBand(e.clientX - r.left, e.clientY - r.top) && !(e.target.closest && e.target.closest('a,button'))) this.nextTheme();
+      }
+    };
+  }
+}
+
+const comp = new Component({ name: 'NITIN WAGH', inkReveal: true, revealSize: 170 });
+const v = comp.renderVals();
+v.setHero(document.getElementById('hero'));
+v.setCanvas(document.getElementById('ink'));
+v.setSlot(document.getElementById('slot'));
+v.setPortrait(document.getElementById('portrait'));
+v.setReal(document.getElementById('real'));
+const hero = document.getElementById('hero');
+hero.addEventListener('pointermove', (e) => comp.renderVals().onMove(e));
+hero.addEventListener('pointerleave', () => comp.renderVals().onLeave());
+hero.addEventListener('pointerdown', (e) => comp.renderVals().onDown(e));
+const tap = document.getElementById('tap');
+tap.addEventListener('click', () => comp.renderVals().toggleAnime());
+comp.update = () => {
+  const r = comp.renderVals();
+  document.getElementById('real').style.opacity = r.realOpacity;
+  tap.textContent = r.tapLabel;
+  tap.setAttribute('aria-pressed', r.animePressed);
+};
+comp.componentDidMount();
+</script>
+</body>
+</html>
