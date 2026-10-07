@@ -313,16 +313,16 @@ class Component extends DCLogic {
     const top = ty - asc, bot = ty, x0 = box.x, bw = box.w;
     const g = t.createLinearGradient(0, top, 0, bot);
     th.stops.forEach((s) => g.addColorStop(s[0], s[1]));
-    t.fillStyle = g; t.strokeStyle = g; t.lineWidth = fs * 0.06;
+    t.fillStyle = g; t.strokeStyle = g; t.lineWidth = fs * 0.075;
     t.strokeText(word, cx, ty); t.fillText(word, cx, ty);
     t.globalCompositeOperation = 'source-atop';
     const rnd = this.rng(77 + this.theme * 31);
     if (th.deco === 'sheen') {
-      t.filter = 'blur(' + Math.round(fs * 0.015) + 'px)';
+      t.filter = 'blur(' + Math.round(fs * 0.02) + 'px)';
       for (let i = 0; i < 16; i++) {
         t.fillStyle = 'rgba(255,255,255,' + (0.35 + rnd() * 0.45) + ')';
         t.save(); t.translate(x0 + rnd() * bw, (top + bot) / 2); t.rotate(-0.35);
-        t.fillRect(-fs * 0.02, -fs, fs * (0.015 + rnd() * 0.05), fs * 2); t.restore();
+        t.fillRect(-fs * (0.01 + rnd() * 0.03), -fs, fs * (0.02 + rnd() * 0.06), fs * 2); t.restore();
       }
     } else if (th.deco === 'sprinkles') {
       const cols = ['#d11d4b', '#ffffff', '#a70f35', '#ff6a8e', '#f6e7ea'];
@@ -339,45 +339,45 @@ class Component extends DCLogic {
         t.fillStyle = rg; t.beginPath(); t.arc(x, y, r, 0, Math.PI * 2); t.fill();
       }
     }
-    t.filter = 'blur(' + Math.max(1, Math.round(fs * 0.02)) + 'px)';
-    t.strokeStyle = 'rgba(0,0,0,0.38)'; t.lineWidth = fs * 0.05;
-    t.strokeText(word, cx + fs * 0.01, ty + fs * 0.015);
-    t.filter = 'blur(' + Math.max(1, Math.round(fs * 0.01)) + 'px)';
-    t.strokeStyle = 'rgba(255,255,255,0.75)'; t.lineWidth = fs * 0.018;
-    t.strokeText(word, cx - fs * 0.01, ty - fs * 0.016);
+    t.filter = 'blur(' + Math.max(1, Math.round(fs * 0.025)) + 'px)';
+    t.strokeStyle = 'rgba(0,0,0,0.38)'; t.lineWidth = fs * 0.06;
+    t.strokeText(word, cx + fs * 0.012, ty + fs * 0.018);
+    t.filter = 'blur(' + Math.max(1, Math.round(fs * 0.012)) + 'px)';
+    t.strokeStyle = 'rgba(255,255,255,0.75)'; t.lineWidth = fs * 0.022;
+    t.strokeText(word, cx - fs * 0.012, ty - fs * 0.02);
     t.filter = 'none';
     t.globalCompositeOperation = 'destination-over';
-    t.strokeStyle = th.rim; t.lineWidth = fs * 0.085; t.strokeText(word, cx, ty);
+    t.strokeStyle = th.rim; t.lineWidth = fs * 0.1; t.strokeText(word, cx, ty);
     t.globalCompositeOperation = 'source-over';
   }
 
   nextTheme() { this.theme = (this.theme + 1) % this.themes().length; this.buildTexture(); }
 
   feed(x, y, k, key) {
-    const size = Math.max(0.6, Math.min(1.3, this.W / 1440));
+    const size = Math.max(0.6, Math.min(1.4, this.W / 1440));
     const lf = this.last[key];
     let steps = 1, lx = x, ly = y;
     if (lf) {
       const d = Math.hypot(x - lf.x, y - lf.y);
       if (d < 6) return;
-      if (d < 240) { steps = Math.min(6, 1 + Math.floor(d / 26)); lx = lf.x; ly = lf.y; }
+      if (d < 260) { steps = Math.min(6, 1 + Math.floor(d / 28)); lx = lf.x; ly = lf.y; }
     }
     for (let s = 1; s <= steps; s++) {
       const px = lx + (x - lx) * (s / steps), py = ly + (y - ly) * (s / steps);
-      const r = (26 + Math.random() * 48) * size * k;
-      this.blobs.push({ x: px, y: py, r, vx: (x - lx) * 0.02 + (Math.random() - 0.5), vy: (y - ly) * 0.02 + (Math.random() - 0.5), age: 0, hold: 40 + Math.random() * 70, decay: 0.965 + Math.random() * 0.02 });
-      if (Math.random() < 0.5) {
-        const a = Math.random() * Math.PI * 2, dd = r * (0.9 + Math.random() * 0.8), sp = 0.8 + Math.random() * 2;
-        this.blobs.push({ x: px + Math.cos(a) * dd, y: py + Math.sin(a) * dd, r: r * (0.18 + Math.random() * 0.3), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, age: 0, hold: 20 + Math.random() * 50, decay: 0.95 + Math.random() * 0.03 });
+      const r = (34 + Math.random() * 62) * size * k;
+      this.blobs.push({ x: px, y: py, r, vx: (x - lx) * 0.02 + (Math.random() - 0.5) * 1.2, vy: (y - ly) * 0.02 + (Math.random() - 0.5) * 1.2, age: 0, hold: 40 + Math.random() * 80, decay: 0.968 + Math.random() * 0.018 });
+      if (Math.random() < 0.55) {
+        const a = Math.random() * Math.PI * 2, dd = r * (0.9 + Math.random() * 0.8), sp = 1 + Math.random() * 2.5;
+        this.blobs.push({ x: px + Math.cos(a) * dd, y: py + Math.sin(a) * dd, r: r * (0.18 + Math.random() * 0.3), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, age: 0, hold: 20 + Math.random() * 60, decay: 0.95 + Math.random() * 0.03 });
       }
     }
-    if (this.blobs.length > 480) this.blobs.splice(0, this.blobs.length - 480);
+    if (this.blobs.length > 520) this.blobs.splice(0, this.blobs.length - 520);
     this.last[key] = { x, y };
   }
 
   inBand(x, y) {
     const b = this.box; if (!b) return false;
-    return x > b.x - 40 && x < b.x + b.w + 40 && y > b.y - 30 && y < b.y + b.h + 30;
+    return x > b.x - 120 && x < b.x + b.w + 120 && y > b.y - 100 && y < b.y + b.h + 100;
   }
 
   loop() {
@@ -388,7 +388,7 @@ class Component extends DCLogic {
     if (ink) {
       const idle = now - this.lastPtr > 2600, b = this.box;
       this.autoT += 0.01;
-      this.feed(b.x + b.w * (0.5 + 0.46 * Math.sin(this.autoT * 1.2)), b.y + b.h * (0.5 + 0.32 * Math.sin(this.autoT * 2.4 + 1)), idle ? 1 : 0.75, 'amb');
+      this.feed(b.x + b.w * (0.5 + 0.46 * Math.sin(this.autoT * 1.2)), b.y + b.h * (0.5 + 0.32 * Math.sin(this.autoT * 2.4 + 1)), idle ? 1 : 0.8, 'amb');
       if (idle && Math.floor(this.autoT / 6) !== Math.floor((this.autoT - 0.01) / 6)) this.nextTheme();
     }
     const bl = this.blobs;
@@ -422,7 +422,7 @@ class Component extends DCLogic {
     for (const q of this.blobs) { m.moveTo(q.x * s + q.r * s, q.y * s); m.arc(q.x * s, q.y * s, q.r * s, 0, Math.PI * 2); }
     m.fill();
     mb.setTransform(1, 0, 0, 1, 0, 0); mb.globalCompositeOperation = 'copy';
-    mb.filter = 'blur(10px)'; mb.drawImage(this.m, 0, 0); mb.filter = 'none';
+    mb.filter = 'blur(11px)'; mb.drawImage(this.m, 0, 0); mb.filter = 'none';
     mb.globalCompositeOperation = 'source-over';
     const img = mb.getImageData(0, 0, mw, mh), d = img.data;
     for (let i = 0; i < d.length; i += 4) { let a = (170 - d[i]) * 22; a = a < 0 ? 0 : a > 255 ? 255 : a; d[i] = d[i + 1] = d[i + 2] = 0; d[i + 3] = a; }
