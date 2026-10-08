@@ -253,7 +253,7 @@ class Component extends DCLogic {
   }
 
   componentDidMount() {
-    this.blobs = []; this.last = {}; this.lastPtr = 0; this.autoT = 0; this.theme = 0;
+    this.blobs = []; this.theme = 0; this.ptr = null; this.fol = null; this.hadInk = false;
     this.rv = { x: -600, y: -600, r: 0, tr: 0 };
     this.reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.m = document.createElement('canvas');
@@ -294,11 +294,6 @@ class Component extends DCLogic {
     this.ctx = c.getContext('2d');
     this.layer.width = this.tex.width = c.width;
     this.layer.height = this.tex.height = c.height;
-    this.ms = 0.5;
-    this.m.width = this.mb.width = Math.ceil(W * this.ms);
-    this.m.height = this.mb.height = Math.ceil(H * this.ms);
-    this.mctx = this.m.getContext('2d');
-    this.mbctx = this.mb.getContext('2d', { willReadFrequently: true });
     const t = this.ctx; this.setFont(t, 100); t.textAlign = 'center';
     const mt = t.measureText(this.word());
     const L = mt.actualBoundingBoxLeft || 0, R = mt.actualBoundingBoxRight || mt.width;
@@ -309,6 +304,17 @@ class Component extends DCLogic {
     this.fs = fs; this.asc = asc100 * fs / 100;
     this.cx = b.x + b.w / 2 + (L - R) * fs / 200;
     this.ty = b.y + b.h / 2 + this.asc / 2;
+    // tight box around the drawn letters; the ink is confined to a padded band around it
+    this.glyph = { x: this.cx - L * fs / 100, y: this.ty - this.asc, w: (L + R) * fs / 100, h: this.asc };
+    this.unit = Math.max(0.55, Math.min(1.3, this.glyph.h / 150));
+    const g = this.glyph, px = 90 * this.unit, py = 70 * this.unit;
+    const bx = Math.max(0, g.x - px), by = Math.max(0, g.y - py);
+    this.band = { x: bx, y: by, w: Math.min(W, g.x + g.w + px) - bx, h: Math.min(H, g.y + g.h + py) - by };
+    this.ms = 0.75;
+    this.m.width = this.mb.width = Math.max(1, Math.ceil(this.band.w * this.ms));
+    this.m.height = this.mb.height = Math.max(1, Math.ceil(this.band.h * this.ms));
+    this.mctx = this.m.getContext('2d');
+    this.mbctx = this.mb.getContext('2d', { willReadFrequently: true });
     this.buildTexture();
   }
 
@@ -368,31 +374,29 @@ class Component extends DCLogic {
 
   nextTheme() { this.theme = (this.theme + 1) % this.themes().length; this.buildTexture(); }
 
-  feed(x, y, k, key) {
-    const size = Math.max(0.6, Math.min(1.4, this.W / 1440));
-    const lf = this.last[key];
-    let steps = 1, lx = x, ly = y;
-    if (lf) {
-      const d = Math.hypot(x - lf.x, y - lf.y);
-      if (d < 6) return;
-      if (d < 260) { steps = Math.min(6, 1 + Math.floor(d / 28)); lx = lf.x; ly = lf.y; }
-    }
+  // Lay ink along the segment from (x0,y0) to (x1,y1); faster strokes leave a slightly fuller trail.
+  feed(x0, y0, x1, y1) {
+    const u = this.unit, d = Math.hypot(x1 - x0, y1 - y0);
+    const speed = Math.min(1, d / (36 * u));
+    const base = (40 + 18 * speed) * u, gap = base * 0.35;
+    const steps = Math.max(1, Math.ceil(d / gap));
     for (let s = 1; s <= steps; s++) {
-      const px = lx + (x - lx) * (s / steps), py = ly + (y - ly) * (s / steps);
-      const r = (34 + Math.random() * 62) * size * k;
-      this.blobs.push({ x: px, y: py, r, vx: (x - lx) * 0.02 + (Math.random() - 0.5) * 1.2, vy: (y - ly) * 0.02 + (Math.random() - 0.5) * 1.2, age: 0, hold: 40 + Math.random() * 80, decay: 0.968 + Math.random() * 0.018 });
-      if (Math.random() < 0.55) {
-        const a = Math.random() * Math.PI * 2, dd = r * (0.9 + Math.random() * 0.8), sp = 1 + Math.random() * 2.5;
-        this.blobs.push({ x: px + Math.cos(a) * dd, y: py + Math.sin(a) * dd, r: r * (0.18 + Math.random() * 0.3), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, age: 0, hold: 20 + Math.random() * 60, decay: 0.95 + Math.random() * 0.03 });
-      }
+      const k = s / steps, hold = 18 + Math.random() * 14;
+      this.blobs.push({
+        x: x0 + (x1 - x0) * k, y: y0 + (y1 - y0) * k,
+        r0: base * (0.85 + Math.random() * 0.3), r: 0,
+        vx: (x1 - x0) * 0.03 / steps, vy: (y1 - y0) * 0.03 / steps,
+        age: 0, hold, life: hold + 46 + Math.random() * 24
+      });
     }
-    if (this.blobs.length > 520) this.blobs.splice(0, this.blobs.length - 520);
-    this.last[key] = { x, y };
+    if (this.blobs.length > 400) this.blobs.splice(0, this.blobs.length - 400);
+    this.hadInk = true;
   }
 
   inBand(x, y) {
-    const b = this.box; if (!b) return false;
-    return x > b.x - 120 && x < b.x + b.w + 120 && y > b.y - 100 && y < b.y + b.h + 100;
+    const g = this.glyph; if (!g) return false;
+    const px = 70 * this.unit, py = 50 * this.unit;
+    return x > g.x - px && x < g.x + g.w + px && y > g.y - py && y < g.y + g.h + py;
   }
 
   loop() {
@@ -400,18 +404,26 @@ class Component extends DCLogic {
     if (!this.ctx) return;
     const now = performance.now();
     const ink = (this.props.inkReveal ?? true) && !this.reduced;
-    if (ink) {
-      const idle = now - this.lastPtr > 2600, b = this.box;
-      this.autoT += 0.01;
-      this.feed(b.x + b.w * (0.5 + 0.46 * Math.sin(this.autoT * 1.2)), b.y + b.h * (0.5 + 0.32 * Math.sin(this.autoT * 2.4 + 1)), idle ? 1 : 0.8, 'amb');
-      if (idle && Math.floor(this.autoT / 6) !== Math.floor((this.autoT - 0.01) / 6)) this.nextTheme();
-    }
+    // ink only flows while the cursor moves over the name; an eased follower smooths the trail
+    // and stops laying ink once it catches up with a resting cursor
+    if (ink && this.ptr && this.ptr.in) {
+      const g = this.glyph, m = 24 * this.unit;
+      const tx = Math.max(g.x - m, Math.min(g.x + g.w + m, this.ptr.x));
+      const ty = Math.max(g.y + g.h * 0.08, Math.min(g.y + g.h * 0.92, this.ptr.y));
+      if (!this.fol) this.fol = { x: tx, y: ty };
+      const f = this.fol, nx = f.x + (tx - f.x) * 0.3, ny = f.y + (ty - f.y) * 0.3;
+      if (Math.hypot(nx - f.x, ny - f.y) > 0.75) { this.feed(f.x, f.y, nx, ny); f.x = nx; f.y = ny; }
+    } else if (!this.blobs.length) this.fol = null;
     const bl = this.blobs;
     for (let i = bl.length - 1; i >= 0; i--) {
-      const q = bl[i]; q.age++; q.x += q.vx; q.y += q.vy; q.vx *= 0.94; q.vy *= 0.94;
-      if (q.age > q.hold) q.r *= q.decay;
-      if (q.r < 1.5) bl.splice(i, 1);
+      const q = bl[i]; q.age++; q.x += q.vx; q.y += q.vy; q.vx *= 0.92; q.vy *= 0.92;
+      const grow = Math.min(1, q.age / 7), gIn = 1 - (1 - grow) * (1 - grow);
+      const t = Math.max(0, Math.min(1, (q.age - q.hold) / (q.life - q.hold))), out = 1 - t * t * (3 - 2 * t);
+      q.r = q.r0 * gIn * out;
+      if (q.age >= q.life) bl.splice(i, 1);
     }
+    // once the ink has fully drained, the next stroke reveals a different texture
+    if (this.hadInk && !bl.length) { this.hadInk = false; this.nextTheme(); }
     // portrait reveal easing
     const rv = this.rv;
     if (rv.tx != null) { rv.x += (rv.tx - rv.x) * 0.18; rv.y += (rv.ty - rv.y) * 0.18; }
@@ -431,24 +443,33 @@ class Component extends DCLogic {
     this.setFont(c, fs); c.textAlign = 'center'; c.fillStyle = '#f4efe6';
     c.fillText(this.word(), cx, ty);
     if (!this.blobs.length) return;
-    const s = this.ms, m = this.mctx, mb = this.mbctx, mw = this.m.width, mh = this.m.height;
+    const s = this.ms, bd = this.band, m = this.mctx, mb = this.mbctx, mw = this.m.width, mh = this.m.height;
     m.setTransform(1, 0, 0, 1, 0, 0); m.fillStyle = '#ffffff'; m.fillRect(0, 0, mw, mh);
     m.fillStyle = '#000000'; m.beginPath();
-    for (const q of this.blobs) { m.moveTo(q.x * s + q.r * s, q.y * s); m.arc(q.x * s, q.y * s, q.r * s, 0, Math.PI * 2); }
+    for (const q of this.blobs) {
+      if (q.r < 0.5) continue;
+      const x = (q.x - bd.x) * s, y = (q.y - bd.y) * s, r = q.r * s;
+      m.moveTo(x + r, y); m.arc(x, y, r, 0, Math.PI * 2);
+    }
     m.fill();
+    // gooey metaball merge: blur, then threshold with a short ramp so the edge stays smooth, not stepped
     mb.setTransform(1, 0, 0, 1, 0, 0); mb.globalCompositeOperation = 'copy';
-    mb.filter = 'blur(11px)'; mb.drawImage(this.m, 0, 0); mb.filter = 'none';
+    mb.filter = 'blur(' + Math.round(9 * this.unit) + 'px)'; mb.drawImage(this.m, 0, 0); mb.filter = 'none';
     mb.globalCompositeOperation = 'source-over';
     const img = mb.getImageData(0, 0, mw, mh), d = img.data;
-    for (let i = 0; i < d.length; i += 4) { let a = (170 - d[i]) * 22; a = a < 0 ? 0 : a > 255 ? 255 : a; d[i] = d[i + 1] = d[i + 2] = 0; d[i + 3] = a; }
+    for (let i = 0; i < d.length; i += 4) {
+      let a = (166 - d[i]) / 24; a = a < 0 ? 0 : a > 1 ? 1 : a;
+      d[i] = d[i + 1] = d[i + 2] = 0; d[i + 3] = a * a * (3 - 2 * a) * 255;
+    }
     mb.putImageData(img, 0, 0);
     const L = this.layer.getContext('2d');
     L.setTransform(1, 0, 0, 1, 0, 0); L.globalCompositeOperation = 'source-over';
     L.clearRect(0, 0, this.layer.width, this.layer.height);
-    L.fillStyle = '#3766e6'; L.fillRect(0, 0, this.layer.width, this.layer.height);
-    L.drawImage(this.tex, 0, 0);
-    L.globalCompositeOperation = 'destination-in'; L.imageSmoothingEnabled = true;
-    L.drawImage(this.mb, 0, 0, this.layer.width, this.layer.height);
+    const rx = Math.floor(bd.x * dpr), ry = Math.floor(bd.y * dpr), rw = Math.ceil(mw / s * dpr), rh = Math.ceil(mh / s * dpr);
+    L.fillStyle = '#3766e6'; L.fillRect(rx, ry, rw, rh);
+    L.drawImage(this.tex, rx, ry, rw, rh, rx, ry, rw, rh);
+    L.globalCompositeOperation = 'destination-in'; L.imageSmoothingEnabled = true; L.imageSmoothingQuality = 'high';
+    L.drawImage(this.mb, 0, 0, mw, mh, bd.x * dpr, bd.y * dpr, mw / s * dpr, mh / s * dpr);
     L.globalCompositeOperation = 'source-over';
     c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(this.layer, 0, 0);
   }
@@ -468,7 +489,7 @@ class Component extends DCLogic {
       onMove: (e) => {
         if (!this.canvas || !this.W) return;
         const r = this.canvas.getBoundingClientRect();
-        const x = e.clientX - r.left, y = e.clientY - r.top, now = performance.now();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
         if (e.pointerType === 'mouse' && this.portrait && !this.reduced) {
           const pr = this.portrait.getBoundingClientRect();
           const inside = e.clientX >= pr.left && e.clientX <= pr.right && e.clientY >= pr.top && e.clientY <= pr.bottom;
@@ -478,13 +499,11 @@ class Component extends DCLogic {
             this.rv.tx = px; this.rv.ty = py; this.rv.tr = this.props.revealSize ?? 170;
           } else { this.rv.tr = 0; }
         }
-        if (this.inBand(x, y) && (this.props.inkReveal ?? true) && !this.reduced) {
-          if (now - this.lastPtr > 2600) this.last.ptr = null;
-          this.lastPtr = now;
-          this.feed(x, y, 1, 'ptr');
-        }
+        const nearName = this.inBand(x, y);
+        if (!nearName) this.fol = null;
+        this.ptr = { x, y, in: nearName };
       },
-      onLeave: () => { this.rv.tr = 0; },
+      onLeave: () => { this.rv.tr = 0; this.ptr = null; this.fol = null; },
       onDown: (e) => {
         if (!this.canvas) return;
         const r = this.canvas.getBoundingClientRect();
