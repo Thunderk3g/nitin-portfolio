@@ -1,0 +1,11 @@
+{
+  "name": "nitin-portfolio",
+  "private": true,
+  "scripts": {
+    "serve": "python -m http.server 4173",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  }
+}

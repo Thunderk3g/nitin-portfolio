@@ -2,65 +2,102 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Projects — Nitin Wagh</title>
+<title>Projects | Nitin Wagh</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Video editing projects by Nitin Wagh: short-form and reels, long-form videos, SaaS demos and cinematic content.">
+<meta property="og:title" content="Projects | Nitin Wagh">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#15171c">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
 <style>
-body{margin:0;background:#15171c}
-a{color:#f4efe6}a:hover{color:#ffffff}
-a:focus-visible,button:focus-visible{outline:2px solid #6f9bff;outline-offset:3px}
-.nw-nav a{position:relative;display:inline-flex;align-items:center;min-height:44px;color:#f4efe6;text-decoration:none;font-size:16px}
-.nw-nav a[aria-current="page"]::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:2px;background:#2f6bff}
-.nw-display{font-family:'Archivo',sans-serif;font-weight:800;font-stretch:75%;text-transform:uppercase;line-height:.95}
-.nw-card{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;background:#1c1f26;border:1px solid rgba(244,239,230,.08);color:#f4efe6;text-align:left;font:inherit;padding:0;cursor:pointer;transition:transform .3s ease,border-color .3s}
-.nw-card:hover{transform:translateY(-4px);border-color:rgba(47,107,255,.6)}
-.nw-thumb{position:relative;display:flex;align-items:center;justify-content:center;color:rgba(244,239,230,.55);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
-.nw-play{position:absolute;width:56px;height:56px;border-radius:50%;background:rgba(31,92,255,.92);display:flex;align-items:center;justify-content:center}
-.nw-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
-.nw-grid-portrait{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
-.nw-grid-land{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
-.nw-ghost{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid rgba(244,239,230,.3);background:transparent;color:#f4efe6;font:inherit;font-size:15px;cursor:pointer}
-.nw-ghost:hover{border-color:#2f6bff}
-.nw-pill{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;background:#1c1f26;border:1px solid rgba(244,239,230,.12);color:#f4efe6;font:inherit;font-size:14px;cursor:pointer}
-.nw-pill:hover{border-color:#2f6bff}
-@media (max-width:1000px){.nw-grid-portrait{grid-template-columns:repeat(2,minmax(0,1fr))}.nw-grid-land{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:700px){.nw-grid2,.nw-grid-land{grid-template-columns:minmax(0,1fr)}.nw-pad{padding-left:20px !important;padding-right:20px !important}.nw-navlinks{gap:20px !important}.nw-brand{display:none !important}}
-</style>
+.page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+.page-header{padding:28px var(--gutter) 0}
+#app{flex:1 0 auto}
+.intro{padding-top:88px;padding-bottom:128px}
+.gallery{padding-top:48px;padding-bottom:128px}
+.page-title{margin:0;font-size:clamp(56px,8vw,120px)}
+.gallery .page-title{margin-top:36px;font-size:clamp(48px,7vw,104px)}
+.lede{margin:18px 0 0;max-width:56ch;font-size:18px;line-height:1.6;color:var(--ink-2)}
+.intro .cats{margin-top:64px}
+.clips{display:grid;gap:40px 20px;margin-top:56px}
+.clips-portrait{grid-template-columns:repeat(4,minmax(0,1fr))}
+.clips-land{grid-template-columns:repeat(3,minmax(0,1fr))}
+.clip{display:flex;flex-direction:column;gap:6px;color:var(--ink);text-decoration:none}
+.clip:hover{color:var(--ink)}
+.clip-media{display:block;width:100%;margin-bottom:10px;border-radius:var(--r);background-size:cover;background-position:center;transition:transform .6s var(--ease)}
+.clip:hover .clip-media{transform:translateY(-4px)}
+.clip-title{font-size:17px;font-weight:600}
+.clip-meta{font-size:14px;color:var(--ink-3)}
+.play{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:999px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(244,239,230,.3);background:rgba(16,18,22,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:background-color .3s var(--ease),border-color .3s var(--ease),transform .3s var(--ease)}
+.play svg{margin-left:3px}
+.clip:hover .play,.player-poster:hover .play{background:var(--accent);border-color:var(--accent);transform:scale(1.06)}
+.clip .ph-label{align-items:flex-end;padding-bottom:18px}
+.others{margin-top:88px;border-top:1px solid var(--line);padding-top:32px}
+.others p{margin:0 0 16px;font-size:14px;font-weight:500;color:var(--ink-3)}
+.others div{display:flex;gap:10px;flex-wrap:wrap}
 
+/* Player */
+.player-backdrop{position:fixed;inset:0;z-index:var(--z-modal);display:flex;padding:24px;overflow-y:auto;background:rgba(10,11,14,.86);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.player{margin:auto;width:min(100%,1040px);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:0 40px 80px -40px rgba(5,6,9,.9)}
+.player-vertical{width:min(100%,440px)}
+.player-stage{position:relative;width:100%;margin:0 auto;background:var(--bg-deep);display:flex;align-items:center;justify-content:center}
+.player-vertical .player-stage{width:min(100%,calc(64vh * .5625))}
+.player-poster{position:absolute;inset:0;border:0;padding:0;font:inherit;cursor:pointer;outline-offset:-4px;background-size:cover;background-position:center}
+.player-poster .ph-label{align-items:flex-end;padding-bottom:22px}
+.player-stage video{width:100%;height:100%;object-fit:contain;background:var(--bg-deep)}
+.player-empty{padding:16px;text-align:center;font-size:14px;color:var(--ink-3)}
+.player-body{padding:24px 28px 28px}
+.player-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.player-head h2{margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em}
+.player-head p{margin:6px 0 0;font-size:14px;color:var(--ink-3)}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 28px;margin:24px 0 0;padding-top:20px;border-top:1px solid var(--line)}
+.player-vertical .facts{grid-template-columns:minmax(0,1fr)}
+.facts dt{font-size:13px;font-weight:500;color:var(--ink-3)}
+.facts dd{margin:6px 0 0;font-size:15.5px;line-height:1.6;color:var(--ink-2)}
+.player-foot{margin-top:24px}
+
+@media (max-width:1000px){.clips-portrait{grid-template-columns:repeat(2,minmax(0,1fr))}.clips-land{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:860px){.page-header{padding-top:16px}.intro{padding-top:56px;padding-bottom:88px}.gallery{padding-top:32px;padding-bottom:88px}}
+@media (max-width:700px){.clips-land{grid-template-columns:minmax(0,1fr)}.facts{grid-template-columns:minmax(0,1fr)}.player-backdrop{padding:12px}.player-body{padding:20px}}
+</style>
 </head>
 <body>
-<main style="min-height: 100vh; background: #15171c; color: #f4efe6; font-family: 'Manrope', 'Helvetica Neue', sans-serif">
-<header class="nw-pad" style="display: flex; align-items: center; gap: 28px; padding: 36px 64px 0">
-<a class="nw-brand" href="index.html" style="flex: 0 0 auto; color: #f4efe6; text-decoration: none; font-size: 16px; font-weight: 500; letter-spacing: 0.32em; text-transform: uppercase">Nitin Wagh</a>
-<span class="nw-brand" aria-hidden="true" style="flex: 1 1 auto; height: 1px; background: #2f6bff; opacity: 0.8"></span>
-<nav class="nw-nav nw-navlinks" aria-label="Main" style="display: flex; gap: 52px; margin-left: auto">
+<a class="skip" href="#app">Skip to content</a>
+<div class="page">
+<header class="site-header page-header">
+<a class="brand" href="index.html">Nitin Wagh</a>
+<span class="brand-rule" aria-hidden="true"></span>
+<nav class="nav" aria-label="Main">
 <a href="index.html">Home</a>
 <a href="projects.html" aria-current="page">Projects</a>
 <a href="contact.html">Contact</a>
 </nav>
 </header>
 
-<div id="app"></div>
-<footer class="nw-pad" style="border-top: 1px solid rgba(244,239,230,0.1); padding: 32px 64px; display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; font-size: 15px">
-<span style="letter-spacing: 0.32em; text-transform: uppercase">Nitin Wagh</span>
-<nav class="nw-nav" aria-label="Footer" style="display: flex; gap: 28px; flex-wrap: wrap">
-<a href="mailto:[Your Email Address]">Email Me</a>
+<main id="app"></main>
+
+<footer class="site-footer">
+<span class="brand">Nitin Wagh</span>
+<nav class="nav" aria-label="Footer">
+<a href="mailto:[Your Email Address]">Email me</a>
 <a href="[Your LinkedIn Profile URL]">LinkedIn</a>
 <a href="index.html">Home</a>
 <a href="contact.html">Contact</a>
 </nav>
 </footer>
-</main>
+</div>
 <script>
 /* Projects page: category list → category gallery → video player.
    Replace PROJECTS data with real videos (see HANDOFF.md). */
 const CATS = [
-  { slug: 'short-form', title: 'Short-form & Reels', desc: 'Vertical edits for Reels, Shorts and social feeds.', bg: 'linear-gradient(150deg, #24324f 0%, #12161f 100%)', vertical: true },
-  { slug: 'long-form', title: 'Long-form Videos', desc: 'Longer edits paced to hold attention from start to finish.', bg: 'linear-gradient(150deg, #3a2a44 0%, #15121b 100%)', vertical: false },
-  { slug: 'saas', title: 'SaaS Demos', desc: 'Product walkthroughs that make software easy to follow.', bg: 'linear-gradient(150deg, #1e3a3d 0%, #10171a 100%)', vertical: false },
-  { slug: 'cinematic', title: 'Cinematic Content', desc: 'Mood-led edits built on rhythm, sound and colour.', bg: 'linear-gradient(150deg, #43341f 0%, #18140e 100%)', vertical: false }
+  { slug: 'short-form', title: 'Short-form & Reels', desc: 'Vertical edits for Reels, Shorts and social feeds.', tone: '#262f45', vertical: true },
+  { slug: 'long-form', title: 'Long-form Videos', desc: 'Longer edits paced to hold attention from start to finish.', tone: '#352c36', vertical: false },
+  { slug: 'saas', title: 'SaaS Demos', desc: 'Product walkthroughs that make software easy to follow.', tone: '#233236', vertical: false },
+  { slug: 'cinematic', title: 'Cinematic Content', desc: 'Mood-led edits built on rhythm, sound and colour.', tone: '#3a3226', vertical: false }
 ];
 // Placeholder projects: { title, role, video (url), poster (url), brief, contribution, tools }
 const PROJECTS = Object.fromEntries(CATS.map(c => [c.slug, Array.from({ length: 6 }, (_, i) => ({
@@ -70,68 +107,73 @@ const PROJECTS = Object.fromEntries(CATS.map(c => [c.slug, Array.from({ length: 
 
 const app = document.getElementById('app');
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
-const play = '<span class="nw-play" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="#fff"><path d="M5 3.5v11l9-5.5z"/></svg></span>';
-const thumb = (c, p, ratio, label) => `<span class="nw-thumb" style="aspect-ratio:${ratio};width:100%;background:${p && p.poster ? `center/cover url('${esc(p.poster)}')` : c.bg}">${p && p.poster ? '' : label}${p ? play : ''}</span>`;
+const arrow = '<svg class="arrow" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14M12 5l5 5-5 5"/></svg>';
+const back = '<svg class="arrow arrow-back" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 10H3M8 5l-5 5 5 5"/></svg>';
+const play = '<span class="play" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 18 18" fill="#fff"><path d="M5 3.5v11l9-5.5z"/></svg></span>';
+// Poster image if provided, otherwise the category's placeholder tone.
+const media = (c, p) => p && p.poster ? `background-image:url('${esc(p.poster)}')` : `--ph:${c.tone}`;
 
 function render() {
+  document.body.style.overflow = '';
   const [slug, idx] = location.hash.replace('#', '').split('/');
   const cat = CATS.find(c => c.slug === slug);
   if (!cat) {
-    app.innerHTML = `<section class="nw-pad" style="padding:88px 64px 120px;max-width:1312px;margin:0 auto">
-      <h1 class="nw-display" style="margin:0;font-size:clamp(56px,8vw,120px)">Projects</h1>
-      <p style="margin:18px 0 0;max-width:620px;font-size:18px;font-weight:300;line-height:1.6;color:rgba(244,239,230,.78)">Pick a category to see more examples of that type of work.</p>
-      <div class="nw-grid2" style="margin-top:56px">${CATS.map(c => `
-        <a class="nw-card" href="#${c.slug}" style="text-decoration:none">${thumb(c, null, '16 / 9', '[Category thumbnail]')}
-          <span style="display:flex;flex-direction:column;gap:10px;padding:24px 26px 28px">
-            <span style="font-size:24px;font-weight:600">${c.title}</span>
-            <span style="font-size:16px;font-weight:300;line-height:1.6;color:rgba(244,239,230,.78)">${c.desc}</span>
-            <span style="margin-top:6px;color:#5b8cff;font-weight:600">View Projects →</span></span></a>`).join('')}
+    app.innerHTML = `<section class="wrap intro">
+      <h1 class="display page-title">Projects</h1>
+      <p class="lede">Pick a category to see more examples of that type of work.</p>
+      <div class="cats">${CATS.map(c => `
+        <a class="cat" href="#${c.slug}"><span class="cat-media"><span class="ph" style="--ph:${c.tone}"><span class="ph-label">[Category thumbnail]</span></span></span>
+          <span class="cat-body"><span class="cat-title">${esc(c.title)}${arrow}</span><span class="cat-desc">${esc(c.desc)}</span></span></a>`).join('')}
       </div></section>`;
     return;
   }
   const ratio = cat.vertical ? '9 / 16' : '16 / 9', fmt = cat.vertical ? 'Vertical 9:16' : 'Landscape 16:9';
   const list = PROJECTS[cat.slug];
-  app.innerHTML = `<section class="nw-pad" style="padding:56px 64px 120px;max-width:1312px;margin:0 auto">
-    <a class="nw-ghost" href="#" style="text-decoration:none">← Back to Projects</a>
-    <h1 class="nw-display" style="margin:32px 0 0;font-size:clamp(48px,7vw,104px)">${cat.title}</h1>
-    <p style="margin:16px 0 0;max-width:620px;font-size:18px;font-weight:300;line-height:1.6;color:rgba(244,239,230,.78)">${cat.desc}</p>
-    <div class="${cat.vertical ? 'nw-grid-portrait' : 'nw-grid-land'}" style="margin-top:48px">${list.map((p, i) => `
-      <a class="nw-card" href="#${cat.slug}/${i}" style="text-decoration:none" aria-label="Play ${esc(p.title)}">${thumb(cat, p, ratio, '[Poster thumbnail]')}
-        <span style="display:flex;flex-direction:column;gap:6px;padding:16px 18px 20px">
-          <span style="font-size:18px;font-weight:600">${esc(p.title)}</span>
-          <span style="font-size:14px;color:rgba(244,239,230,.7)">${fmt} · ${esc(p.role)}</span></span></a>`).join('')}
+  app.innerHTML = `<section class="wrap gallery">
+    <a class="btn-ghost btn-sm" href="#">${back}Back to projects</a>
+    <h1 class="display page-title">${esc(cat.title)}</h1>
+    <p class="lede">${esc(cat.desc)}</p>
+    <div class="clips ${cat.vertical ? 'clips-portrait' : 'clips-land'}">${list.map((p, i) => `
+      <a class="clip" href="#${cat.slug}/${i}" aria-label="Play ${esc(p.title)}">
+        <span class="clip-media ph" style="aspect-ratio:${ratio};${media(cat, p)}">${p.poster ? '' : '<span class="ph-label">[Poster thumbnail]</span>'}${play}</span>
+        <span class="clip-title">${esc(p.title)}</span>
+        <span class="clip-meta">${fmt} · ${esc(p.role)}</span></a>`).join('')}
     </div>
-    <div style="margin-top:72px;border-top:1px solid rgba(244,239,230,.12);padding-top:32px">
-      <p style="margin:0 0 16px;font-size:14px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#5b8cff">Other categories</p>
-      <div style="display:flex;gap:12px;flex-wrap:wrap">${CATS.filter(c => c !== cat).map(c => `<a class="nw-pill" href="#${c.slug}" style="text-decoration:none">${c.title}</a>`).join('')}</div>
+    <div class="others">
+      <p>Other categories</p>
+      <div>${CATS.filter(c => c !== cat).map(c => `<a class="btn-ghost btn-sm" href="#${c.slug}">${esc(c.title)}</a>`).join('')}</div>
     </div></section>`;
   const p = idx != null ? list[+idx] : null;
   if (!p) return;
   const dlg = document.createElement('div');
+  dlg.className = 'player-backdrop';
   dlg.setAttribute('role', 'dialog'); dlg.setAttribute('aria-modal', 'true'); dlg.setAttribute('aria-label', p.title);
-  dlg.style.cssText = 'position:fixed;inset:0;z-index:20;background:rgba(10,11,14,.88);display:flex;padding:24px;overflow-y:auto';
-  dlg.innerHTML = `<div style="margin:auto;width:min(100%,${cat.vertical ? '440px' : '1040px'});background:#1c1f26;border-radius:16px;overflow:hidden;border:1px solid rgba(244,239,230,.1)">
-    <div id="stage" style="position:relative;aspect-ratio:${ratio};width:${cat.vertical ? 'min(100%, calc(64vh * 0.5625))' : '100%'};margin:0 auto;background:#0d0f13;display:flex;align-items:center;justify-content:center">
-      <button id="playBtn" type="button" aria-label="Play video" style="position:absolute;inset:0;border:0;background:${p.poster ? `center/cover url('${esc(p.poster)}')` : cat.bg};color:rgba(244,239,230,.6);font:inherit;font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center">${p.poster ? '' : '[Poster thumbnail]'}${play}</button>
+  dlg.innerHTML = `<div class="player${cat.vertical ? ' player-vertical' : ''}">
+    <div class="player-stage" id="stage" style="aspect-ratio:${ratio}">
+      <button class="player-poster ph" id="playBtn" type="button" aria-label="Play video" style="${media(cat, p)}">${p.poster ? '' : '<span class="ph-label">[Poster thumbnail]</span>'}${play}</button>
     </div>
-    <div style="padding:24px 28px 28px;display:flex;flex-direction:column;gap:14px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px">
-        <div><h2 style="margin:0;font-size:24px;font-weight:600">${esc(p.title)}</h2>
-        <p style="margin:6px 0 0;font-size:14px;color:rgba(244,239,230,.7)">${cat.title} · ${fmt} · ${esc(p.role)}</p></div>
-        <a class="nw-ghost" href="#${cat.slug}" style="text-decoration:none" aria-label="Close player">Close</a>
+    <div class="player-body">
+      <div class="player-head">
+        <div><h2>${esc(p.title)}</h2><p>${fmt} · ${esc(p.role)}</p></div>
+        <a class="btn-ghost btn-sm" href="#${cat.slug}" aria-label="Close player">Close</a>
       </div>
-      <p style="margin:0;font-size:16px;font-weight:300;line-height:1.6;color:rgba(244,239,230,.85)"><strong style="font-weight:600">Brief:</strong> ${esc(p.brief)}</p>
-      <p style="margin:0;font-size:16px;font-weight:300;line-height:1.6;color:rgba(244,239,230,.85)"><strong style="font-weight:600">My contribution:</strong> ${esc(p.contribution)}</p>
-      <p style="margin:0;font-size:16px;font-weight:300;line-height:1.6;color:rgba(244,239,230,.85)"><strong style="font-weight:600">Tools:</strong> ${esc(p.tools)}</p>
-      <div><a class="nw-ghost" href="#" style="text-decoration:none">← Back to Projects</a></div>
+      <dl class="facts">
+        <div><dt>Brief</dt><dd>${esc(p.brief)}</dd></div>
+        <div><dt>My contribution</dt><dd>${esc(p.contribution)}</dd></div>
+        <div><dt>Tools</dt><dd>${esc(p.tools)}</dd></div>
+      </dl>
+      <div class="player-foot"><a class="link" href="#">Back to projects</a></div>
     </div></div>`;
   app.appendChild(dlg);
+  document.body.style.overflow = 'hidden';
+  const playBtn = dlg.querySelector('#playBtn');
+  playBtn.focus({ preventScroll: true });
   // Playback starts only on click; poster shown until then.
-  dlg.querySelector('#playBtn').addEventListener('click', () => {
+  playBtn.addEventListener('click', () => {
     const stage = dlg.querySelector('#stage');
     stage.innerHTML = p.video
-      ? `<video src="${esc(p.video)}" controls autoplay playsinline style="width:100%;height:100%;object-fit:contain;background:#000"></video>`
-      : '<span style="color:rgba(244,239,230,.6);font-size:14px;letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:16px">[Video file or link plays here]</span>';
+      ? `<video src="${esc(p.video)}" controls autoplay playsinline></video>`
+      : '<span class="player-empty">[Video file or link plays here]</span>';
   });
   dlg.addEventListener('click', e => { if (e.target === dlg) location.hash = cat.slug; });
 }

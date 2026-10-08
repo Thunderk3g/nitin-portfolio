@@ -2,227 +2,242 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Nitin Wagh — Video Editor</title>
+<title>Nitin Wagh | Video Editor</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Nitin Wagh is a video editor with 3+ years of experience across reels, long-form videos, SaaS demos and cinematic content.">
+<meta property="og:title" content="Nitin Wagh | Video Editor">
+<meta property="og:description" content="Thoughtful edits. Stories that connect.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#15171c">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
 <style>
-body{margin:0;background:#15171c}
-a{color:#f4efe6}a:hover{color:#ffffff}
-.nw-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.nw-nav a{position:relative;display:inline-flex;align-items:center;min-height:44px;color:#f4efe6;text-decoration:none;font-size:16px}
-.nw-nav a[aria-current="page"]::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:2px;background:#2f6bff}
-.nw-nav a:hover{color:#ffffff}
-a:focus-visible,button:focus-visible{outline:2px solid #6f9bff;outline-offset:3px}
-.nw-hero{position:relative;min-height:100vh;overflow:hidden;display:flex;flex-direction:column}
-.nw-portrait{position:absolute;left:0;top:0;bottom:0;width:60%;overflow:hidden}
-.nw-portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:left center;display:block}
-.nw-real{filter:grayscale(1) contrast(1.06) brightness(.82);-webkit-mask-image:radial-gradient(circle var(--r,0px) at var(--x,-600px) var(--y,-600px),transparent 0,transparent 62%,#000 100%);mask-image:radial-gradient(circle var(--r,0px) at var(--x,-600px) var(--y,-600px),transparent 0,transparent 62%,#000 100%);transition:opacity .5s ease}
-.nw-top{position:relative;z-index:2;padding:36px 64px 0;pointer-events:none}
-.nw-bottom{position:relative;z-index:2;padding:0 64px 72px;pointer-events:none;display:flex;justify-content:flex-end}
-.nw-top a,.nw-top button,.nw-bottom a,.nw-bottom button{pointer-events:auto}
-.nw-slot{margin:28px 0 0 15%;width:79%;height:clamp(120px,17vw,260px)}
-.nw-about{width:min(560px,42%);margin-top:56px}
-.nw-hint{position:absolute;left:28px;bottom:28px;z-index:3}
-.nw-tap{display:none}
-.nw-btn{display:inline-flex;align-items:center;gap:14px;min-height:52px;padding:0 30px;border-radius:999px;background:#1f5cff;color:#ffffff;font-weight:600;font-size:17px;text-decoration:none;transition:background .2s}
-.nw-btn:hover{background:#3a72ff;color:#ffffff}
-.nw-link{display:inline-flex;align-items:center;min-height:44px;color:#f4efe6;font-weight:500;font-size:17px;text-decoration:none;border-bottom:2px solid #2f6bff}
-.nw-chip{display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border-radius:999px;border:1px solid rgba(244,239,230,.22);color:rgba(244,239,230,.86);font-size:13px}
-.nw-card{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;background:#1c1f26;border:1px solid rgba(244,239,230,.08);text-decoration:none;color:#f4efe6;transition:transform .3s ease,border-color .3s}
-.nw-card:hover{transform:translateY(-4px);border-color:rgba(47,107,255,.6);color:#f4efe6}
-.nw-thumb{position:relative;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;color:rgba(244,239,230,.55);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
-.nw-display{font-family:'Archivo',sans-serif;font-weight:800;font-stretch:75%;text-transform:uppercase;line-height:.95;letter-spacing:-.005em}
-@media (max-width:860px){
-.nw-portrait{position:relative;width:100%;height:520px;order:2}
-.nw-top{order:1;padding:20px 20px 0}
-.nw-bottom{order:3;padding:0 20px 56px}
-.nw-slot{margin:20px 0 0;width:100%;height:26vw}
-.nw-about{width:100%;margin-top:32px}
-.nw-hint{display:none !important}
-.nw-tap{display:inline-flex}
-.nw-rail{display:none}
-.nw-role{justify-content:flex-start !important}
-.nw-grid{grid-template-columns:minmax(0,1fr) !important}
-.nw-navlinks{gap:20px !important}
-.nw-brand{display:none !important}
-}
-@media (hover:none){.nw-hint{display:none !important}.nw-tap{display:inline-flex}}
-.nt-display{font-weight:800;font-stretch:62.5%;text-transform:uppercase;line-height:.92;letter-spacing:-.01em}
-.nt-chip{display:inline-flex;align-items:center;min-height:22px;padding:0 8px;border-radius:4px;background:rgba(255,255,255,.14);color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;backdrop-filter:blur(6px)}
-.nt-track{animation:nt-scroll 70s linear infinite}
-.nt-track-fast{animation-duration:40s}
-.nt-marquee:hover .nt-track{animation-play-state:paused}
-@keyframes nt-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.nt-card{position:relative;flex:0 0 auto;width:340px;height:480px;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:12px;padding:28px 20px;box-sizing:border-box;color:#fff;text-decoration:none;text-align:center;transition:transform .35s ease}
-.nt-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.65) 100%);z-index:0}
-.nt-card>*{position:relative;z-index:1}
-.nt-card:hover{transform:translateY(-6px);text-decoration:none}
-.nt-card-title{font-size:30px;font-weight:800;font-stretch:62.5%;text-transform:uppercase;line-height:.95}
-.nt-feature{position:sticky;top:0;display:flex;align-items:flex-end;justify-content:center;height:640px;color:#fff;text-decoration:none;overflow:hidden}
-.nt-feature:hover{text-decoration:none}
-.nt-feature-inner{display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 24px 72px;text-align:center}
-.nt-feature-title{font-size:clamp(40px,6vw,88px)}
-.nt-logo{flex:0 0 auto;font-size:22px;font-weight:800;letter-spacing:.02em;color:rgba(255,255,255,.72);white-space:nowrap;transition:color .2s}
-.nt-logo:hover{color:#fff}
-@media (max-width:640px){.nt-card{width:260px;height:380px}.nt-feature{height:480px}}
-@media (prefers-reduced-motion:reduce){.nt-track{animation:none}}
-</style>
+/* Hero */
+.hero{position:relative;min-height:100vh;min-height:100dvh;overflow:hidden;display:flex;flex-direction:column}
+.hero-portrait{position:absolute;left:0;top:0;bottom:0;width:60%;overflow:hidden}
+.hero-portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:left center;display:block}
+.hero-real{filter:grayscale(1) contrast(1.06) brightness(.82);-webkit-mask-image:radial-gradient(circle var(--r,0px) at var(--x,-600px) var(--y,-600px),transparent 0,transparent 62%,#000 100%);mask-image:radial-gradient(circle var(--r,0px) at var(--x,-600px) var(--y,-600px),transparent 0,transparent 62%,#000 100%);transition:opacity .5s ease}
+.hero-fade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(21,23,28,0) 42%,rgba(21,23,28,.86) 82%,var(--bg) 100%),linear-gradient(0deg,rgba(21,23,28,.75) 0%,rgba(21,23,28,0) 24%)}
+.hero-ink{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.hero-hint{position:absolute;left:28px;bottom:28px;z-index:var(--z-overlay);margin:0;display:inline-flex;align-items:center;gap:10px;padding:9px 15px 9px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(16,18,22,.66);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-size:13px;color:var(--ink-2);pointer-events:none}
+.hero-tap{display:none;position:absolute;left:20px;bottom:20px;z-index:var(--z-overlay)}
+.hero-top{position:relative;z-index:var(--z-raise);padding:28px var(--gutter) 0;pointer-events:none}
+.hero-bottom{position:relative;z-index:var(--z-raise);padding:0 var(--gutter) 48px;pointer-events:none;display:flex;justify-content:flex-end}
+.hero-top a,.hero-top button,.hero-bottom a,.hero-bottom button{pointer-events:auto}
+.hero-slot{margin:28px 0 0 15%;width:79%;height:clamp(120px,17vw,260px)}
+.hero-role{display:flex;justify-content:flex-end;align-items:center;gap:24px;margin:18px 0 0;flex-wrap:wrap}
+.hero-role p{margin:0;font-size:clamp(13px,1.35vw,20px);font-weight:400;letter-spacing:.26em;text-transform:uppercase;color:var(--ink)}
+.hero-role span{width:96px;height:1px;background:var(--accent)}
+.hero-line{margin:12px 0 0;text-align:right;font-size:clamp(16px,1.3vw,19px);color:var(--ink-2)}
+.about{width:min(540px,42%);margin-top:32px}
+.about h2{margin:10px 0 0;font-size:clamp(28px,2.5vw,38px);font-weight:600;line-height:1.12;letter-spacing:-.022em}
+.about p.bio{margin:14px 0 0;max-width:60ch;font-size:16px;font-weight:400;line-height:1.7;color:var(--ink-2)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 0;padding:0;list-style:none}
+.tags li{padding:5px 10px;border-radius:var(--r-tag);background:rgba(244,239,230,.07);color:var(--ink-2);font-size:13px;font-weight:500}
+.hero-ctas{display:flex;align-items:center;gap:28px;margin-top:26px;flex-wrap:wrap}
 
+/* Selected work */
+.work{padding-top:136px;padding-bottom:72px}
+.section-title{margin:0;font-size:clamp(48px,7vw,104px)}
+.work .cats{margin-top:56px}
+
+/* All work */
+.allwork{padding:96px 0 0}
+.allwork-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:44px}
+.allwork-head h2{max-width:14ch}
+.marquee{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+.marquee-track{display:flex;width:max-content;margin:0;padding:8px 0 12px;list-style:none;animation:scroll 70s linear infinite}
+.marquee-fast{animation-duration:42s}
+.marquee:hover .marquee-track{animation-play-state:paused}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.reel{flex:0 0 auto;width:320px;height:480px;margin-right:14px;border-radius:var(--r);display:flex;flex-direction:column;justify-content:flex-end;gap:8px;padding:24px 22px;color:#fff;text-decoration:none;transition:transform .5s var(--ease)}
+.reel:hover{transform:translateY(-6px);color:#fff}
+.reel>*{position:relative}
+.reel-kind{font-size:13px;font-weight:500;color:var(--ink-2)}
+.reel-title{font-size:30px}
+.features{margin-top:112px}
+.feature{position:sticky;top:0;display:flex;align-items:flex-end;height:640px;color:#fff;text-decoration:none}
+.feature:hover{color:#fff}
+.feature-inner{position:relative;width:100%;max-width:1312px;margin:0 auto;padding:0 var(--gutter) 64px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.feature-text{display:flex;flex-direction:column;gap:14px}
+.feature-kind{font-size:14px;font-weight:500;color:var(--ink-2)}
+.feature-title{font-size:clamp(40px,6.2vw,96px)}
+.feature-go{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:999px;border:1px solid var(--line-strong);transition:background-color .3s var(--ease),border-color .3s var(--ease)}
+.feature:hover .feature-go{background:var(--accent);border-color:var(--accent)}
+
+/* Partners */
+.partners{position:relative;overflow:hidden;padding:136px 0 84px;background:radial-gradient(90% 60% at 50% 118%,rgba(55,102,230,.5),rgba(55,102,230,0) 72%),linear-gradient(180deg,var(--bg) 0%,#12151c 100%)}
+.partners h2{margin:0 auto;max-width:1100px;font-size:clamp(36px,5.4vw,80px);text-align:justify;text-align-last:left}
+.partners-label{margin:96px 0 28px;text-align:center;font-size:14px;font-weight:500;color:var(--ink-3)}
+.logo{flex:0 0 auto;margin-right:88px;font-family:var(--display);font-size:22px;font-weight:800;letter-spacing:.02em;color:rgba(244,239,230,.62);white-space:nowrap;transition:color .2s}
+.logo:hover{color:var(--ink)}
+
+/* Closing CTA */
+.cta{padding-top:112px;padding-bottom:128px}
+.cta-inner{border-top:1px solid var(--line);padding-top:72px;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap}
+.cta h2{margin:0;max-width:900px;font-size:clamp(40px,5.6vw,84px)}
+
+@media (max-width:860px){
+  .hero-portrait{position:relative;width:100%;height:520px;order:2}
+  .hero-top{order:1;padding-top:16px}
+  .hero-bottom{order:3;padding-bottom:56px}
+  .hero-slot{margin:20px 0 0;width:100%;height:26vw}
+  .hero-role{justify-content:flex-start;gap:16px}
+  .hero-line{text-align:left}
+  .about{width:100%;margin-top:32px}
+  .hero-hint{display:none !important}
+  .hero-tap{display:inline-flex}
+  .work{padding-top:88px;padding-bottom:40px}
+  .feature-inner{padding-bottom:40px}
+  .feature-go{display:none}
+  .partners{padding-top:96px}
+  .partners h2{padding:0 var(--gutter);text-align:left}
+  .partners-label{margin-top:64px}
+  .cta{padding-top:72px;padding-bottom:88px}
+  .cta-inner{padding-top:48px}
+}
+@media (hover:none){.hero-hint{display:none !important}.hero-tap{display:inline-flex}}
+@media (max-width:640px){.reel{width:260px;height:390px}.feature{height:480px}}
+@media (prefers-reduced-motion:reduce){.marquee-track{animation:none !important}}
+</style>
 </head>
 <body>
-<main style="background: #15171c; color: #f4efe6; font-family: 'Manrope', 'Helvetica Neue', sans-serif">
-<section class="nw-hero" id="hero" aria-label="Introduction">
-<div class="nw-portrait" id="portrait">
+<a class="skip" href="#main">Skip to content</a>
+<main id="main">
+<section class="hero" id="hero" aria-label="Introduction">
+<div class="hero-portrait" id="portrait">
 <img src="assets/hero-left.jpg" alt="Anime-style illustration of Nitin Wagh editing video at his desk">
-<img class="nw-real" id="real" src="assets/hero-left.jpg" alt="Portrait of Nitin Wagh">
-<div aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(21,23,28,0) 42%, rgba(21,23,28,0.85) 82%, #15171c 100%), linear-gradient(0deg, rgba(21,23,28,0.7) 0%, rgba(21,23,28,0) 22%); pointer-events: none"></div>
-<p class="nw-hint" style="margin: 0; display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; background: rgba(21,23,28,0.72); font-size: 14px; color: #f4efe6; pointer-events: none"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 2l9.5 5-4.2 1.2L6.8 12.5z"></path></svg>Move your cursor to reveal my creative side.</p>
-<button class="nw-tap" type="button" id="tap" aria-pressed="false" style="position: absolute; left: 20px; bottom: 20px; z-index: 3; align-items: center; gap: 10px; min-height: 48px; padding: 0 20px; border-radius: 999px; border: 0; background: #1f5cff; color: #ffffff; font: inherit; font-weight: 600; font-size: 15px; cursor: pointer">See my anime side</button>
+<img class="hero-real" id="real" src="assets/hero-left.jpg" alt="Portrait of Nitin Wagh">
+<div class="hero-fade" aria-hidden="true"></div>
+<p class="hero-hint"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 2l9.5 5-4.2 1.2L6.8 12.5z"></path></svg>Move your cursor to reveal my creative side.</p>
+<button class="btn btn-sm hero-tap" type="button" id="tap" aria-pressed="false">See my anime side</button>
 </div>
-<canvas id="ink" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none"></canvas>
-<div class="nw-top">
-<header style="display: flex; align-items: center; gap: 28px">
-<a class="nw-brand" href="index.html" style="flex: 0 0 auto; color: #f4efe6; text-decoration: none; font-size: 16px; font-weight: 500; letter-spacing: 0.32em; text-transform: uppercase">Nitin Wagh</a>
-<span class="nw-brand" aria-hidden="true" style="flex: 1 1 auto; height: 1px; background: #2f6bff; opacity: 0.8"></span>
-<nav class="nw-nav nw-navlinks" aria-label="Main" style="display: flex; gap: 52px; margin-left: auto">
+<canvas id="ink" class="hero-ink" aria-hidden="true"></canvas>
+<div class="hero-top">
+<header class="site-header">
+<a class="brand" href="index.html">Nitin Wagh</a>
+<span class="brand-rule" aria-hidden="true"></span>
+<nav class="nav" aria-label="Main">
 <a href="index.html" aria-current="page">Home</a>
 <a href="projects.html">Projects</a>
 <a href="contact.html">Contact</a>
 </nav>
 </header>
-<div class="nw-slot" id="slot"><h1 class="nw-sr">Nitin Wagh</h1></div>
-<div class="nw-role" style="display: flex; justify-content: flex-end; align-items: center; gap: 28px; margin-top: 18px; flex-wrap: wrap">
-<p style="margin: 0; font-size: clamp(14px, 1.6vw, 24px); font-weight: 300; letter-spacing: 0.38em; text-transform: uppercase">Video Editor | 3+ Years of Experience</p>
-<span aria-hidden="true" style="width: 120px; height: 1px; background: #2f6bff"></span>
+<div class="hero-slot" id="slot"><h1 class="sr-only">Nitin Wagh</h1></div>
+<div class="hero-role">
+<p>Video Editor | 3+ Years of Experience</p>
+<span aria-hidden="true"></span>
 </div>
-<p class="nw-role" style="margin: 14px 0 0; display: flex; justify-content: flex-end; font-size: clamp(16px, 1.4vw, 20px); color: rgba(244,239,230,0.72)">Thoughtful edits. Stories that connect.</p>
+<p class="hero-line">Thoughtful edits. Stories that connect.</p>
 </div>
-<div class="nw-bottom">
-<div class="nw-about">
-<div style="display: flex; align-items: center; gap: 16px">
-<span aria-hidden="true" style="width: 56px; height: 1px; background: #2f6bff"></span>
-<span style="font-size: 14px; font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; color: #5b8cff">About me</span>
-</div>
-<h2 style="margin: 20px 0 0; font-size: clamp(28px, 2.6vw, 40px); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em">Need an editor who can adapt to your next idea?</h2>
-<p style="margin: 20px 0 0; font-size: 17px; font-weight: 300; line-height: 1.7; color: rgba(244,239,230,0.86)">I’m Nitin Wagh, a video editor with 3+ years of experience across reels, long-form videos, SaaS demos and cinematic content. Working in different creative environments has taught me versatility. I’m happy to learn what your project needs and use AI to work faster, while making the creative calls myself.</p>
-<ul aria-label="Editing keywords" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 0; padding: 0; list-style: none">
-<li class="nw-chip">Video editing</li>
-<li class="nw-chip">Short-form content</li>
-<li class="nw-chip">Long-form content</li>
-<li class="nw-chip">Visual storytelling</li>
-<li class="nw-chip">Pacing</li>
-<li class="nw-chip">AI-assisted workflows</li>
+<div class="hero-bottom">
+<div class="about">
+<p class="eyebrow">About me</p>
+<h2>Need an editor who can adapt to your next idea?</h2>
+<p class="bio">I’m Nitin Wagh, a video editor with 3+ years of experience across reels, long-form videos, SaaS demos and cinematic content. Working in different creative environments has taught me versatility. I’m happy to learn what your project needs and use AI to work faster, while making the creative calls myself.</p>
+<ul class="tags" aria-label="Editing keywords">
+<li>Video editing</li>
+<li>Short-form content</li>
+<li>Long-form content</li>
+<li>Visual storytelling</li>
+<li>Pacing</li>
+<li>AI-assisted workflows</li>
 </ul>
-<div style="display: flex; align-items: center; gap: 36px; margin-top: 36px; flex-wrap: wrap">
-<a class="nw-btn" href="projects.html">View My Work<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></a>
-<a class="nw-link" href="contact.html">Let’s Talk</a>
+<div class="hero-ctas">
+<a class="btn" href="projects.html">View my work<svg class="arrow" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></a>
+<a class="link" href="contact.html">Let’s talk</a>
 </div>
 </div>
-</div>
-<div class="nw-rail" aria-hidden="true" style="position: absolute; right: 40px; top: 45%; bottom: 0; width: 1px; background: rgba(244,239,230,0.25); z-index: 2"><span style="position: absolute; left: -1px; top: 64px; width: 3px; height: 56px; background: #2f6bff; border-radius: 2px"></span></div>
-</section>
-
-<section aria-labelledby="work-title" style="padding: 120px 64px 40px; max-width: 1312px; margin: 0 auto">
-<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap">
-<div>
-<div style="display: flex; align-items: center; gap: 16px">
-<span aria-hidden="true" style="width: 56px; height: 1px; background: #2f6bff"></span>
-<span style="font-size: 14px; font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; color: #5b8cff">Projects</span>
-</div>
-<h2 id="work-title" class="nw-display" style="margin: 18px 0 0; font-size: clamp(48px, 7vw, 104px)">Selected work</h2>
-</div>
-<a class="nw-link" href="projects.html">See all projects</a>
-</div>
-<div class="nw-grid" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 48px">
-<a class="nw-card" href="projects.html#short-form"><span class="nw-thumb" style="background: linear-gradient(150deg, #24324f 0%, #12161f 100%)">[Category thumbnail]</span><span style="display: flex; flex-direction: column; gap: 10px; padding: 24px 26px 28px"><span style="font-size: 24px; font-weight: 600">Short-form &amp; Reels</span><span style="font-size: 16px; font-weight: 300; line-height: 1.6; color: rgba(244,239,230,0.78)">Vertical edits for Reels, Shorts and social feeds.</span><span style="margin-top: 6px; color: #5b8cff; font-weight: 600">View Projects →</span></span></a>
-<a class="nw-card" href="projects.html#long-form"><span class="nw-thumb" style="background: linear-gradient(150deg, #3a2a44 0%, #15121b 100%)">[Category thumbnail]</span><span style="display: flex; flex-direction: column; gap: 10px; padding: 24px 26px 28px"><span style="font-size: 24px; font-weight: 600">Long-form Videos</span><span style="font-size: 16px; font-weight: 300; line-height: 1.6; color: rgba(244,239,230,0.78)">Longer edits paced to hold attention from start to finish.</span><span style="margin-top: 6px; color: #5b8cff; font-weight: 600">View Projects →</span></span></a>
-<a class="nw-card" href="projects.html#saas"><span class="nw-thumb" style="background: linear-gradient(150deg, #1e3a3d 0%, #10171a 100%)">[Category thumbnail]</span><span style="display: flex; flex-direction: column; gap: 10px; padding: 24px 26px 28px"><span style="font-size: 24px; font-weight: 600">SaaS Demos</span><span style="font-size: 16px; font-weight: 300; line-height: 1.6; color: rgba(244,239,230,0.78)">Product walkthroughs that make software easy to follow.</span><span style="margin-top: 6px; color: #5b8cff; font-weight: 600">View Projects →</span></span></a>
-<a class="nw-card" href="projects.html#cinematic"><span class="nw-thumb" style="background: linear-gradient(150deg, #43341f 0%, #18140e 100%)">[Category thumbnail]</span><span style="display: flex; flex-direction: column; gap: 10px; padding: 24px 26px 28px"><span style="font-size: 24px; font-weight: 600">Cinematic Content</span><span style="font-size: 16px; font-weight: 300; line-height: 1.6; color: rgba(244,239,230,0.78)">Mood-led edits built on rhythm, sound and colour.</span><span style="margin-top: 6px; color: #5b8cff; font-weight: 600">View Projects →</span></span></a>
 </div>
 </section>
 
-<section id="all-work" aria-labelledby="allwork-title" style="background: #15171c; color: #f4efe6; padding: 72px 0 0; font-family: 'Archivo', 'Helvetica Neue', sans-serif">
-<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; padding: 0 28px; margin-bottom: 40px">
-<div style="display: flex; flex-direction: column; gap: 18px; align-items: flex-start">
-<span class="nt-chip">All work</span>
-<h2 id="allwork-title" class="nt-display" style="margin: 0; font-size: clamp(44px, 7vw, 104px)">Work that moves<br>people.</h2>
-</div>
-<a href="projects.html" style="display: inline-flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 22px; border-radius: 999px; border: 1.5px solid #ffffff; color: #ffffff; font-size: 13px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">View all projects</a>
-</div>
-<div class="nt-marquee" style="overflow: hidden; padding: 0 0 12px">
-<div class="nt-track nt-track-slow" style="display: flex; gap: 12px; width: max-content">
-<a class="nt-card" href="#" style="background: linear-gradient(165deg, #2c3a6b 0%, #10142a 70%)"><span class="nt-chip">Brand film</span><span class="nt-card-title">[Project title one]</span></a>
-<a class="nt-card" href="#" style="background: linear-gradient(165deg, #5a2f45 0%, #160b14 70%)"><span class="nt-chip">Campaign</span><span class="nt-card-title">[Project title two]</span></a>
-<a class="nt-card" href="#" style="background: linear-gradient(165deg, #3d4d3a 0%, #0e130d 70%)"><span class="nt-chip">Documentary</span><span class="nt-card-title">[Project title three]</span></a>
-<a class="nt-card" href="#" style="background: linear-gradient(165deg, #6b5a2c 0%, #1a150a 70%)"><span class="nt-chip">Live event</span><span class="nt-card-title">[Project title four]</span></a>
-<a class="nt-card" href="#" style="background: linear-gradient(165deg, #2c5a66 0%, #0a1518 70%)"><span class="nt-chip">Series</span><span class="nt-card-title">[Project title five]</span></a>
-<a class="nt-card" href="#" style="background: linear-gradient(165deg, #4b3b6e 0%, #110c1c 70%)"><span class="nt-chip">Digital</span><span class="nt-card-title">[Project title six]</span></a>
-<a class="nt-card" href="#" aria-hidden="true" tabindex="-1" style="background: linear-gradient(165deg, #2c3a6b 0%, #10142a 70%)"><span class="nt-chip">Brand film</span><span class="nt-card-title">[Project title one]</span></a>
-<a class="nt-card" href="#" aria-hidden="true" tabindex="-1" style="background: linear-gradient(165deg, #5a2f45 0%, #160b14 70%)"><span class="nt-chip">Campaign</span><span class="nt-card-title">[Project title two]</span></a>
-<a class="nt-card" href="#" aria-hidden="true" tabindex="-1" style="background: linear-gradient(165deg, #3d4d3a 0%, #0e130d 70%)"><span class="nt-chip">Documentary</span><span class="nt-card-title">[Project title three]</span></a>
-<a class="nt-card" href="#" aria-hidden="true" tabindex="-1" style="background: linear-gradient(165deg, #6b5a2c 0%, #1a150a 70%)"><span class="nt-chip">Live event</span><span class="nt-card-title">[Project title four]</span></a>
-<a class="nt-card" href="#" aria-hidden="true" tabindex="-1" style="background: linear-gradient(165deg, #2c5a66 0%, #0a1518 70%)"><span class="nt-chip">Series</span><span class="nt-card-title">[Project title five]</span></a>
-<a class="nt-card" href="#" aria-hidden="true" tabindex="-1" style="background: linear-gradient(165deg, #4b3b6e 0%, #110c1c 70%)"><span class="nt-chip">Digital</span><span class="nt-card-title">[Project title six]</span></a>
-</div>
-</div>
-<div style="margin-top: 96px">
-<a class="nt-feature" href="#" style="background: linear-gradient(180deg, #1b2a4a 0%, #0b1220 100%)"><span class="nt-feature-inner"><span class="nt-chip">Featured · Brand film</span><span class="nt-display nt-feature-title">[Featured project one]</span></span></a>
-<a class="nt-feature" href="#" style="background: linear-gradient(180deg, #3a1630 0%, #12060f 100%)"><span class="nt-feature-inner"><span class="nt-chip">Featured · Live event</span><span class="nt-display nt-feature-title">[Featured project two]</span></span></a>
-<a class="nt-feature" href="#" style="background: linear-gradient(180deg, #17352f 0%, #07120f 100%)"><span class="nt-feature-inner"><span class="nt-chip">Featured · Documentary</span><span class="nt-display nt-feature-title">[Featured project three]</span></span></a>
+<section class="work wrap" aria-labelledby="work-title">
+<h2 id="work-title" class="display section-title">Selected work</h2>
+<div class="cats">
+<a class="cat" href="projects.html#short-form"><span class="cat-media"><span class="ph" style="--ph:#262f45"><span class="ph-label">[Category thumbnail]</span></span></span><span class="cat-body"><span class="cat-title">Short-form &amp; Reels<svg class="arrow" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></span><span class="cat-desc">Vertical edits for Reels, Shorts and social feeds.</span></span></a>
+<a class="cat" href="projects.html#long-form"><span class="cat-media"><span class="ph" style="--ph:#352c36"><span class="ph-label">[Category thumbnail]</span></span></span><span class="cat-body"><span class="cat-title">Long-form Videos<svg class="arrow" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></span><span class="cat-desc">Longer edits paced to hold attention from start to finish.</span></span></a>
+<a class="cat" href="projects.html#saas"><span class="cat-media"><span class="ph" style="--ph:#233236"><span class="ph-label">[Category thumbnail]</span></span></span><span class="cat-body"><span class="cat-title">SaaS Demos<svg class="arrow" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></span><span class="cat-desc">Product walkthroughs that make software easy to follow.</span></span></a>
+<a class="cat" href="projects.html#cinematic"><span class="cat-media"><span class="ph" style="--ph:#3a3226"><span class="ph-label">[Category thumbnail]</span></span></span><span class="cat-body"><span class="cat-title">Cinematic Content<svg class="arrow" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></span><span class="cat-desc">Mood-led edits built on rhythm, sound and colour.</span></span></a>
 </div>
 </section>
-<section id="partners" aria-labelledby="partners-title" style="position: relative; overflow: hidden; background: linear-gradient(180deg, #15171c 0%, #0d0a2a 45%, #1a1f6e 78%, #2f47d6 100%); color: #ffffff; padding: 128px 0 72px; font-family: 'Archivo', 'Helvetica Neue', sans-serif">
-<div style="max-width: 1100px; margin: 0 auto; padding: 0 28px">
-<h2 id="partners-title" class="nt-display" style="margin: 0; font-size: clamp(36px, 5.4vw, 80px); text-align: justify; text-align-last: left">We team up with people who make the work braver and push every idea further.</h2>
+
+<section id="all-work" class="allwork" aria-labelledby="allwork-title">
+<div class="wrap allwork-head">
+<h2 id="allwork-title" class="display section-title">Work that moves people.</h2>
+<a class="btn-ghost" href="projects.html">View my work<svg class="arrow" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></a>
 </div>
-<div style="display: flex; justify-content: center; margin: 96px 0 36px">
-<span class="nt-chip">Our partners</span>
+<div class="marquee">
+<div class="marquee-track">
+<a class="reel ph" href="projects.html" style="--ph:#273049"><span class="reel-kind">Brand film</span><span class="display reel-title">[Project title one]</span></a>
+<a class="reel ph" href="projects.html" style="--ph:#3b2c35"><span class="reel-kind">Campaign</span><span class="display reel-title">[Project title two]</span></a>
+<a class="reel ph" href="projects.html" style="--ph:#2c3529"><span class="reel-kind">Documentary</span><span class="display reel-title">[Project title three]</span></a>
+<a class="reel ph" href="projects.html" style="--ph:#3b3424"><span class="reel-kind">Live event</span><span class="display reel-title">[Project title four]</span></a>
+<a class="reel ph" href="projects.html" style="--ph:#233539"><span class="reel-kind">Series</span><span class="display reel-title">[Project title five]</span></a>
+<a class="reel ph" href="projects.html" style="--ph:#302d3c"><span class="reel-kind">Digital</span><span class="display reel-title">[Project title six]</span></a>
+<a class="reel ph" href="projects.html" aria-hidden="true" tabindex="-1" style="--ph:#273049"><span class="reel-kind">Brand film</span><span class="display reel-title">[Project title one]</span></a>
+<a class="reel ph" href="projects.html" aria-hidden="true" tabindex="-1" style="--ph:#3b2c35"><span class="reel-kind">Campaign</span><span class="display reel-title">[Project title two]</span></a>
+<a class="reel ph" href="projects.html" aria-hidden="true" tabindex="-1" style="--ph:#2c3529"><span class="reel-kind">Documentary</span><span class="display reel-title">[Project title three]</span></a>
+<a class="reel ph" href="projects.html" aria-hidden="true" tabindex="-1" style="--ph:#3b3424"><span class="reel-kind">Live event</span><span class="display reel-title">[Project title four]</span></a>
+<a class="reel ph" href="projects.html" aria-hidden="true" tabindex="-1" style="--ph:#233539"><span class="reel-kind">Series</span><span class="display reel-title">[Project title five]</span></a>
+<a class="reel ph" href="projects.html" aria-hidden="true" tabindex="-1" style="--ph:#302d3c"><span class="reel-kind">Digital</span><span class="display reel-title">[Project title six]</span></a>
 </div>
-<div class="nt-marquee" style="overflow: hidden">
-<ul class="nt-track nt-track-fast" style="display: flex; align-items: center; gap: 96px; width: max-content; margin: 0; padding: 8px 0; list-style: none">
-<li class="nt-logo">[Partner 01]</li>
-<li class="nt-logo">[Partner 02]</li>
-<li class="nt-logo">[Partner 03]</li>
-<li class="nt-logo">[Partner 04]</li>
-<li class="nt-logo">[Partner 05]</li>
-<li class="nt-logo">[Partner 06]</li>
-<li class="nt-logo">[Partner 07]</li>
-<li class="nt-logo">[Partner 08]</li>
-<li class="nt-logo">[Partner 09]</li>
-<li class="nt-logo">[Partner 10]</li>
-<li class="nt-logo" aria-hidden="true">[Partner 01]</li>
-<li class="nt-logo" aria-hidden="true">[Partner 02]</li>
-<li class="nt-logo" aria-hidden="true">[Partner 03]</li>
-<li class="nt-logo" aria-hidden="true">[Partner 04]</li>
-<li class="nt-logo" aria-hidden="true">[Partner 05]</li>
-<li class="nt-logo" aria-hidden="true">[Partner 06]</li>
-<li class="nt-logo" aria-hidden="true">[Partner 07]</li>
-<li class="nt-logo" aria-hidden="true">[Partner 08]</li>
-<li class="nt-logo" aria-hidden="true">[Partner 09]</li>
-<li class="nt-logo" aria-hidden="true">[Partner 10]</li>
+</div>
+<div class="features">
+<a class="feature ph" href="projects.html" style="--ph:#1d2539"><span class="feature-inner"><span class="feature-text"><span class="feature-kind">Featured · Brand film</span><span class="display feature-title">[Featured project one]</span></span><span class="feature-go" aria-hidden="true"><svg class="arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></span></span></a>
+<a class="feature ph" href="projects.html" style="--ph:#2e2129"><span class="feature-inner"><span class="feature-text"><span class="feature-kind">Featured · Live event</span><span class="display feature-title">[Featured project two]</span></span><span class="feature-go" aria-hidden="true"><svg class="arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></span></span></a>
+<a class="feature ph" href="projects.html" style="--ph:#1e2b28"><span class="feature-inner"><span class="feature-text"><span class="feature-kind">Featured · Documentary</span><span class="display feature-title">[Featured project three]</span></span><span class="feature-go" aria-hidden="true"><svg class="arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></span></span></a>
+</div>
+</section>
+
+<section id="partners" class="partners" aria-labelledby="partners-title">
+<h2 id="partners-title" class="display">We team up with people who make the work braver and push every idea further.</h2>
+<p class="partners-label">Our partners</p>
+<div class="marquee">
+<ul class="marquee-track marquee-fast">
+<li class="logo">[Partner 01]</li>
+<li class="logo">[Partner 02]</li>
+<li class="logo">[Partner 03]</li>
+<li class="logo">[Partner 04]</li>
+<li class="logo">[Partner 05]</li>
+<li class="logo">[Partner 06]</li>
+<li class="logo">[Partner 07]</li>
+<li class="logo">[Partner 08]</li>
+<li class="logo">[Partner 09]</li>
+<li class="logo">[Partner 10]</li>
+<li class="logo" aria-hidden="true">[Partner 01]</li>
+<li class="logo" aria-hidden="true">[Partner 02]</li>
+<li class="logo" aria-hidden="true">[Partner 03]</li>
+<li class="logo" aria-hidden="true">[Partner 04]</li>
+<li class="logo" aria-hidden="true">[Partner 05]</li>
+<li class="logo" aria-hidden="true">[Partner 06]</li>
+<li class="logo" aria-hidden="true">[Partner 07]</li>
+<li class="logo" aria-hidden="true">[Partner 08]</li>
+<li class="logo" aria-hidden="true">[Partner 09]</li>
+<li class="logo" aria-hidden="true">[Partner 10]</li>
 </ul>
 </div>
 </section>
 
-<section aria-labelledby="cta-title" style="padding: 96px 64px 120px; max-width: 1312px; margin: 0 auto">
-<div style="border-top: 1px solid rgba(244,239,230,0.14); padding-top: 72px; display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap">
-<h2 id="cta-title" class="nw-display" style="margin: 0; max-width: 900px; font-size: clamp(40px, 5.6vw, 84px)">Have a story to tell? Let’s make it worth watching.</h2>
-<a class="nw-btn" href="contact.html">Get in touch<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></a>
+<section class="cta wrap" aria-labelledby="cta-title">
+<div class="cta-inner">
+<h2 id="cta-title" class="display">Have a story to tell? Let’s make it worth watching.</h2>
+<a class="btn" href="contact.html">Let’s talk<svg class="arrow" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14M12 5l5 5-5 5"></path></svg></a>
 </div>
 </section>
+</main>
 
-<footer style="border-top: 1px solid rgba(244,239,230,0.1); padding: 32px 64px; display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; font-size: 15px">
-<span style="letter-spacing: 0.32em; text-transform: uppercase">Nitin Wagh</span>
-<nav class="nw-nav" aria-label="Footer" style="display: flex; gap: 28px; flex-wrap: wrap">
-<a href="mailto:[Your Email Address]">Email Me</a>
+<footer class="site-footer">
+<span class="brand">Nitin Wagh</span>
+<nav class="nav" aria-label="Footer">
+<a href="mailto:[Your Email Address]">Email me</a>
 <a href="[Your LinkedIn Profile URL]">LinkedIn</a>
 <a href="projects.html">Projects</a>
 <a href="contact.html">Contact</a>
 </nav>
 </footer>
-</main>
 <script>
 /* Minimal stand-in for the design tool's runtime so the component class runs as-is. */
 class DCLogic { constructor(props) { this.props = props; this.state = {}; } setState(s) { Object.assign(this.state, s); this.update && this.update(); } }
@@ -430,7 +445,7 @@ class Component extends DCLogic {
     const L = this.layer.getContext('2d');
     L.setTransform(1, 0, 0, 1, 0, 0); L.globalCompositeOperation = 'source-over';
     L.clearRect(0, 0, this.layer.width, this.layer.height);
-    L.fillStyle = '#1f5cff'; L.fillRect(0, 0, this.layer.width, this.layer.height);
+    L.fillStyle = '#3766e6'; L.fillRect(0, 0, this.layer.width, this.layer.height);
     L.drawImage(this.tex, 0, 0);
     L.globalCompositeOperation = 'destination-in'; L.imageSmoothingEnabled = true;
     L.drawImage(this.mb, 0, 0, this.layer.width, this.layer.height);

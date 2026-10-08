@@ -14,17 +14,22 @@ assets/hero-left.jpg   hero illustration (anime-style portrait)
 > Build my portfolio site from the prototype in `nitin-landing/`. Read `HANDOFF.md` first. Recreate the three pages pixel-for-pixel in [Next.js + Tailwind / plain HTML: pick one] as reusable components, keeping both hero interactions (the ink-reveal name and the cursor portrait reveal). Keep all `[placeholder]` content, put the project data in one data file, and make sure it works at phone width and with reduced motion.
 
 ## Design tokens
+All shared tokens and components live in `assets/site.css` (`:root` variables); each page keeps only its own layout styles.
+
 | Token | Value |
 |---|---|
-| Background (charcoal) | `#15171c` |
-| Surface / cards | `#1c1f26`, border `rgba(244,239,230,.08)` |
-| Text (warm white) | `#f4efe6`; muted `rgba(244,239,230,.72–.86)` |
-| Accent blue | `#1f5cff` (buttons, ink); lines `#2f6bff`; eyebrow text `#5b8cff` |
-| Display font | Archivo 800–900, `font-stretch` 75% (condensed), uppercase |
-| Body font | Manrope 300–700 |
-| Radius | buttons 999px, cards 14px |
+| Background (charcoal) | `--bg #15171c`; surface `--surface #1b1e25`; hairlines `--line rgba(244,239,230,.12)` |
+| Text (warm white) | `--ink #f4efe6`; muted `--ink-2 .76` / `--ink-3 .56` alpha |
+| Accent blue (one accent, used everywhere incl. the ink) | `--accent #3766e6`, hover `#4c79ee`; accent text on dark `#8ea9f2` |
+| Display font | Archivo 800, `font-stretch` 75% (condensed), uppercase (`.display`) |
+| Body font | Manrope 400-600 |
+| Radius | buttons full pill, media and panels `--r 10px`, tags `--r-tag 4px` |
+| Texture | fixed film-grain overlay (`body::after`); placeholders use `.ph` with a muted `--ph` tone |
 
 Both fonts come from Google Fonts (`Archivo:wdth,wght@62..125,100..900`, `Manrope`).
+
+## Tests
+`npm install` then `npm test` runs the Playwright suite in `tests/` (desktop 1440x900 and Pixel 7) against a local `python -m http.server`.
 
 ## Home: hero interactions (the signature)
 1. **Ink-reveal name.** "NITIN WAGH" is drawn on a `<canvas>` and auto-fitted into the empty `#slot` div, so the layout controls its size. Blue liquid "ink" (metaballs) flows across the name: an ambient path always runs, and the cursor adds more ink, but only near the name. Inside the ink the letters turn into an inflated 3D texture (chrome, gold, candy, cloud), which cycles while idle; clicking the name swaps it.
