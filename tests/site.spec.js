@@ -2,9 +2,9 @@
 const { test, expect } = require('@playwright/test');
 
 const PAGES = [
-  { path: '/index.html', nav: 'Home' },
-  { path: '/projects.html', nav: 'Projects' },
-  { path: '/contact.html', nav: 'Contact' }
+  { path: '/', nav: 'Home' },
+  { path: '/projects', nav: 'Projects' },
+  { path: '/contact', nav: 'Contact' }
 ];
 
 // Fail on any script error from our own pages; ignore third-party font requests.
@@ -20,7 +20,7 @@ for (const { path, nav } of PAGES) {
     test('loads cleanly with shared styles', async ({ page }) => {
       const errors = trackErrors(page);
       await page.goto(path);
-      await expect(page.locator('link[href="assets/site.css"]')).toHaveCount(1);
+      await expect(page.locator('link[rel="stylesheet"][href*="/_next/static/css/"]').first()).toBeAttached();
       const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
       expect(bg).toBe('rgb(21, 23, 28)');
       expect(errors).toEqual([]);
@@ -56,7 +56,7 @@ for (const { path, nav } of PAGES) {
 
 test.describe('home', () => {
   test('hero shows the name, ink canvas and both CTAs above the fold', async ({ page }, info) => {
-    await page.goto('/index.html');
+    await page.goto('/');
     await expect(page.getByRole('heading', { level: 1, name: 'Nitin Wagh' })).toBeAttached();
     const canvas = page.locator('#ink');
     await expect.poll(() => canvas.evaluate(c => /** @type {HTMLCanvasElement} */ (c).width)).toBeGreaterThan(0);
@@ -66,7 +66,7 @@ test.describe('home', () => {
   });
 
   test('cursor reveal on desktop, tap toggle on touch', async ({ page }, info) => {
-    await page.goto('/index.html');
+    await page.goto('/');
     const real = page.locator('#real');
     if (info.project.name === 'mobile') {
       const tap = page.locator('#tap');
@@ -89,20 +89,20 @@ test.describe('home', () => {
   });
 
   test('category tiles link to each project category', async ({ page }) => {
-    await page.goto('/index.html');
+    await page.goto('/');
     const hrefs = await page.locator('.work .cat').evaluateAll(els => els.map(e => e.getAttribute('href')));
-    expect(hrefs).toEqual(['projects.html#short-form', 'projects.html#long-form', 'projects.html#saas', 'projects.html#cinematic']);
+    expect(hrefs).toEqual(['/projects#short-form', '/projects#long-form', '/projects#saas', '/projects#cinematic']);
   });
 
   test('marquees duplicate their items for screen readers only once', async ({ page }) => {
-    await page.goto('/index.html');
+    await page.goto('/');
     await expect(page.locator('.reel:not([aria-hidden])')).toHaveCount(6);
     await expect(page.locator('.reel[aria-hidden="true"][tabindex="-1"]')).toHaveCount(6);
     await expect(page.locator('.logo:not([aria-hidden])')).toHaveCount(10);
   });
 
   test('no dead "#" links and one label per CTA intent', async ({ page }) => {
-    await page.goto('/index.html');
+    await page.goto('/');
     await expect(page.locator('a[href="#"]')).toHaveCount(0);
     for (const label of ['See all projects', 'View all projects', 'Get in touch', 'View My Work']) {
       await expect(page.getByRole('link', { name: label, exact: true })).toHaveCount(0);
@@ -112,16 +112,21 @@ test.describe('home', () => {
   test('marquee stops under reduced motion', async ({ browser }) => {
     const ctx = await browser.newContext({ reducedMotion: 'reduce' });
     const page = await ctx.newPage();
-    await page.goto('http://127.0.0.1:4173/index.html');
+    await page.goto('http://127.0.0.1:4173/');
     await expect(page.locator('.marquee-track').first()).toHaveCSS('animation-name', 'none');
     await ctx.close();
+  });
+
+  test('old prototype URLs redirect to the new routes', async ({ page }) => {
+    await page.goto('/projects.html');
+    await expect(page).toHaveURL(/\/projects$/);
   });
 });
 
 test.describe('projects', () => {
   test('category → gallery → player → close', async ({ page }) => {
     const errors = trackErrors(page);
-    await page.goto('/projects.html');
+    await page.goto('/projects');
     await expect(page.locator('.cat')).toHaveCount(4);
     await page.getByRole('link', { name: 'SaaS Demos' }).click();
     await expect(page).toHaveURL(/#saas$/);
@@ -148,17 +153,17 @@ test.describe('projects', () => {
   });
 
   test('backdrop click and Close button both dismiss the player', async ({ page }) => {
-    await page.goto('/projects.html#cinematic/0');
+    await page.goto('/projects#cinematic/0');
     await expect(page.getByRole('dialog')).toBeVisible();
     await page.locator('.player-backdrop').click({ position: { x: 5, y: 5 } });
     await expect(page).toHaveURL(/#cinematic$/);
-    await page.goto('/projects.html#cinematic/2');
+    await page.goto('/projects#cinematic/2');
     await page.getByRole('link', { name: 'Close player' }).click();
     await expect(page.getByRole('dialog')).toHaveCount(0);
   });
 
   test('vertical category uses the portrait grid and back link returns to the index', async ({ page }) => {
-    await page.goto('/projects.html#short-form');
+    await page.goto('/projects#short-form');
     await expect(page.locator('.clips-portrait .clip')).toHaveCount(6);
     await expect(page.locator('.others a')).toHaveCount(3);
     await page.getByRole('link', { name: 'Back to projects' }).click();
@@ -168,7 +173,7 @@ test.describe('projects', () => {
 
 test.describe('contact', () => {
   test('email and LinkedIn actions are present', async ({ page }) => {
-    await page.goto('/contact.html');
+    await page.goto('/contact');
     await expect(page.getByRole('link', { name: 'Email me' }).first()).toHaveAttribute('href', 'mailto:[Your Email Address]');
     await expect(page.getByRole('link', { name: 'Connect on LinkedIn' })).toBeVisible();
   });
