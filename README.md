@@ -32,6 +32,20 @@ npm run admin:create   # create/confirm the ADMIN_EMAIL login; generates ADMIN_P
 After changing the schema in `lib/db/schema.ts`: `npm run db:generate` then `npm run db:migrate`.
 After changing `ADMIN_EMAILS`: re-run `npm run db:policies` (the storage policies embed the list).
 
+## Deploy (Vercel)
+`vercel.json` pins the Next.js framework preset (the Vercel project was created for the static
+prototype, so without it Vercel only publishes `public/` and every page 404s).
+
+Set these in Vercel → Project → Settings → Environment Variables (Production and Preview), then
+redeploy, since `NEXT_PUBLIC_*` values are baked in at build time:
+
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- `POOL_DATABASE_URL` (transaction pooler, :6543)
+- `ADMIN_EMAILS`
+
+Without them the public pages still render the built-in default content, but `/admin` fails.
+`DATABASE_URL`, `ADMIN_EMAIL` and `ADMIN_PASSWORD` are only used by local scripts and tests.
+
 ## CMS (`/admin`)
 Sign in at `/admin/login`. Only emails listed in `ADMIN_EMAILS` get in; a valid Supabase login
 alone is not enough, and an empty list lets nobody in.
