@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import CinemaMotion from "@/components/CinemaMotion";
 import "./globals.css";
 
 const SITE_URL =
@@ -28,11 +29,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* Plain <link> (not next/font) so the canvas can draw with the real "Archivo" family name. */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Manrope:wght@300;400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <CinemaMotion />
+        {children}
+      </body>
     </html>
   );
 }

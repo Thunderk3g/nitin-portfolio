@@ -7,22 +7,60 @@ import SiteHeader from "./SiteHeader";
 import { Arrow, CursorIcon } from "./icons";
 
 /* ------------------------------------------------------------------------
- * Hero interactions, ported from the prototype's Component class:
+ * Hero interactions, upgraded to Awwwards Director's Cut standard:
  * 1. Ink-reveal name: the name is drawn on a canvas auto-fitted into #slot;
  *    blue metaball "ink" follows the cursor near the letters and reveals an
- *    inflated texture inside it. A new texture comes up each time the ink
- *    drains; clicking the name swaps it.
- * 2. Portrait reveal: eases --x/--y/--r on the top portrait's radial mask so a
- *    soft circle reveals the illustration underneath.
+ *    inflated 3D shader texture inside it. A new texture comes up each time
+ *    the ink drains; clicking the name swaps it immediately.
+ * 2. Portrait reveal: eases --x/--y/--r on the top portrait's radial mask
+ *    and syncs an optical aperture ring (.hero-lens) so a soft circle
+ *    reveals the anime illustration underneath.
  * ---------------------------------------------------------------------- */
 
 type Theme = { rim: string; stops: [number, string][]; deco: "sheen" | "sprinkles" | "puffs" };
 
 const THEMES: Theme[] = [
-  { rim: "#241d18", stops: [[0, "#fbfbfb"], [0.3, "#b9b9be"], [0.48, "#ffffff"], [0.62, "#8c8c93"], [0.85, "#e4e4e8"], [1, "#a7a2a0"]], deco: "sheen" },
-  { rim: "#3a2704", stops: [[0, "#fff3c2"], [0.35, "#dcaa2a"], [0.5, "#fff6d1"], [0.72, "#9b6a0c"], [1, "#e9c65e"]], deco: "sheen" },
-  { rim: "#6d1f33", stops: [[0, "#f9c3d0"], [0.5, "#f0a0b5"], [1, "#e07f99"]], deco: "sprinkles" },
-  { rim: "#8f98a8", stops: [[0, "#ffffff"], [1, "#d9dee6"]], deco: "puffs" },
+  {
+    rim: "#1c2230",
+    stops: [
+      [0, "#ffffff"],
+      [0.26, "#c2cbe0"],
+      [0.46, "#ffffff"],
+      [0.62, "#7f8ea8"],
+      [0.84, "#eef2fa"],
+      [1, "#9aa6bd"],
+    ],
+    deco: "sheen",
+  },
+  {
+    rim: "#3a2704",
+    stops: [
+      [0, "#fff6d6"],
+      [0.34, "#e2b238"],
+      [0.5, "#fff8dc"],
+      [0.72, "#a37010"],
+      [1, "#f0ce6b"],
+    ],
+    deco: "sheen",
+  },
+  {
+    rim: "#6d1f33",
+    stops: [
+      [0, "#ffd0dc"],
+      [0.5, "#f29cb3"],
+      [1, "#df7592"],
+    ],
+    deco: "sprinkles",
+  },
+  {
+    rim: "#7e899c",
+    stops: [
+      [0, "#ffffff"],
+      [0.55, "#edf1f7"],
+      [1, "#cfd7e3"],
+    ],
+    deco: "puffs",
+  },
 ];
 
 type Box = { x: number; y: number; w: number; h: number };
@@ -33,6 +71,7 @@ type Elements = {
   slot: HTMLElement;
   portrait: HTMLElement;
   real: HTMLElement;
+  lens: HTMLElement | null;
 };
 type Options = { name: string; inkReveal: boolean; revealSize: number };
 
@@ -197,8 +236,8 @@ class InkReveal {
     const rnd = this.rng(77 + this.theme * 31);
     if (th.deco === "sheen") {
       t.filter = "blur(" + Math.round(fs * 0.02) + "px)";
-      for (let i = 0; i < 16; i++) {
-        t.fillStyle = "rgba(255,255,255," + (0.35 + rnd() * 0.45) + ")";
+      for (let i = 0; i < 18; i++) {
+        t.fillStyle = "rgba(255,255,255," + (0.38 + rnd() * 0.45) + ")";
         t.save();
         t.translate(x0 + rnd() * bw, (top + bot) / 2);
         t.rotate(-0.35);
@@ -233,12 +272,12 @@ class InkReveal {
       }
     }
     t.filter = "blur(" + Math.max(1, Math.round(fs * 0.025)) + "px)";
-    t.strokeStyle = "rgba(0,0,0,0.38)";
+    t.strokeStyle = "rgba(0,0,0,0.4)";
     t.lineWidth = fs * 0.06;
     t.strokeText(word, cx + fs * 0.012, ty + fs * 0.018);
     t.filter = "blur(" + Math.max(1, Math.round(fs * 0.012)) + "px)";
-    t.strokeStyle = "rgba(255,255,255,0.75)";
-    t.lineWidth = fs * 0.022;
+    t.strokeStyle = "rgba(255,255,255,0.82)";
+    t.lineWidth = fs * 0.024;
     t.strokeText(word, cx - fs * 0.012, ty - fs * 0.02);
     t.filter = "none";
     t.globalCompositeOperation = "destination-over";
@@ -292,8 +331,6 @@ class InkReveal {
     this.raf = requestAnimationFrame(() => this.loop());
     if (!this.ctx) return;
     const ink = this.opts.inkReveal && !this.reduced;
-    // ink only flows while the cursor moves over the name; an eased follower smooths the trail
-    // and stops laying ink once it catches up with a resting cursor
     if (ink && this.ptr && this.ptr.in && this.glyph) {
       const g = this.glyph,
         m = 24 * this.unit;
@@ -324,7 +361,6 @@ class InkReveal {
       q.r = q.r0 * gIn * out;
       if (q.age >= q.life) bl.splice(i, 1);
     }
-    // once the ink has fully drained, the next stroke reveals a different texture
     if (this.hadInk && !bl.length) {
       this.hadInk = false;
       this.nextTheme();
@@ -337,9 +373,21 @@ class InkReveal {
     }
     rv.r += (rv.tr - rv.r) * 0.12;
     const real = this.els.real;
-    real.style.setProperty("--x", rv.x.toFixed(1) + "px");
-    real.style.setProperty("--y", rv.y.toFixed(1) + "px");
-    real.style.setProperty("--r", Math.max(0, rv.r).toFixed(1) + "px");
+    const xStr = rv.x.toFixed(1) + "px";
+    const yStr = rv.y.toFixed(1) + "px";
+    const rVal = Math.max(0, rv.r);
+    const rStr = rVal.toFixed(1) + "px";
+    real.style.setProperty("--x", xStr);
+    real.style.setProperty("--y", yStr);
+    real.style.setProperty("--r", rStr);
+
+    if (this.els.lens) {
+      this.els.lens.style.setProperty("--x", xStr);
+      this.els.lens.style.setProperty("--y", yStr);
+      this.els.lens.style.setProperty("--r", rStr);
+      this.els.lens.style.opacity = rVal > 6 ? "1" : "0";
+    }
+
     this.draw();
   }
 
@@ -374,7 +422,6 @@ class InkReveal {
       m.arc(x, y, r, 0, Math.PI * 2);
     }
     m.fill();
-    // gooey metaball merge: blur, then threshold with a short ramp so the edge stays smooth, not stepped
     mb.setTransform(1, 0, 0, 1, 0, 0);
     mb.globalCompositeOperation = "copy";
     mb.filter = "blur(" + Math.round(9 * this.unit) + "px)";
@@ -398,7 +445,11 @@ class InkReveal {
       ry = Math.floor(bd.y * dpr),
       rw = Math.ceil((mw / s) * dpr),
       rh = Math.ceil((mh / s) * dpr);
-    L.fillStyle = "#3766e6";
+    const inkGrad = L.createLinearGradient(rx, ry, rx + rw, ry + rh);
+    inkGrad.addColorStop(0, "#2d5be3");
+    inkGrad.addColorStop(0.5, "#3766e6");
+    inkGrad.addColorStop(1, "#4f7df3");
+    L.fillStyle = inkGrad;
     L.fillRect(rx, ry, rw, rh);
     L.drawImage(this.tex, rx, ry, rw, rh, rx, ry, rw, rh);
     L.globalCompositeOperation = "destination-in";
@@ -458,17 +509,22 @@ export default function Hero({ site, hero }: { site: SiteSection; hero: HeroSect
   const slotRef = useRef<HTMLDivElement>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
   const realRef = useRef<HTMLImageElement>(null);
+  const lensRef = useRef<HTMLDivElement>(null);
   const [anime, setAnime] = useState(false);
   const word = (site.name || "").toUpperCase();
 
   useEffect(() => {
-    const hero = heroRef.current,
+    const heroEl = heroRef.current,
       canvas = canvasRef.current,
       slot = slotRef.current,
       portrait = portraitRef.current,
-      real = realRef.current;
-    if (!hero || !canvas || !slot || !portrait || !real) return;
-    const engine = new InkReveal({ hero, canvas, slot, portrait, real }, { name: word, inkReveal: true, revealSize: 170 });
+      real = realRef.current,
+      lens = lensRef.current;
+    if (!heroEl || !canvas || !slot || !portrait || !real) return;
+    const engine = new InkReveal(
+      { hero: heroEl, canvas, slot, portrait, real, lens },
+      { name: word, inkReveal: true, revealSize: 170 },
+    );
     engine.mount();
     return () => engine.unmount();
   }, [word]);
@@ -485,6 +541,13 @@ export default function Hero({ site, hero }: { site: SiteSection; hero: HeroSect
           alt={hero.photoAlt}
           style={{ opacity: anime ? 0 : 1 }}
         />
+        <div className="hero-lens" ref={lensRef} aria-hidden="true"></div>
+        <div className="hero-viewfinder" aria-hidden="true">
+          <span className="vf-corner vf-tl"></span>
+          <span className="vf-corner vf-tr"></span>
+          <span className="vf-corner vf-bl"></span>
+          <span className="vf-corner vf-br"></span>
+        </div>
         <div className="hero-fade" aria-hidden="true"></div>
         <p className="hero-hint">
           <CursorIcon />

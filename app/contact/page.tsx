@@ -27,22 +27,24 @@ export default async function ContactPage() {
         <SiteHeader name={site.name} current="contact" className="page-header" />
         <main id="main" className="contact">
           <div className="wrap">
-            <p className="eyebrow">{contact.eyebrow}</p>
-            <h1 className="display">{contact.title}</h1>
-            <p className="lede">{contact.lede}</p>
-            <div className="contact-actions">
-              <a className="btn" href={`mailto:${site.email}`}>
-                <MailIcon />
-                {contact.emailLabel}
-              </a>
-              <a className="btn-ghost" href={site.linkedin}>
-                <LinkedInIcon />
-                {contact.linkedinLabel}
-              </a>
+            <div className="contact-card">
+              <p className="eyebrow">{contact.eyebrow}</p>
+              <h1 className="display">{contact.title}</h1>
+              <p className="lede">{contact.lede}</p>
+              <div className="contact-actions">
+                <a className="btn" href={`mailto:${site.email}`}>
+                  <MailIcon />
+                  {contact.emailLabel}
+                </a>
+                <a className="btn-ghost" href={site.linkedin}>
+                  <LinkedInIcon />
+                  {contact.linkedinLabel}
+                </a>
+              </div>
+              <p className="contact-direct">
+                {site.email} · {site.linkedin}
+              </p>
             </div>
-            <p className="contact-direct">
-              {site.email} · {site.linkedin}
-            </p>
           </div>
         </main>
         <SiteFooter site={site} current="contact" />

@@ -7,7 +7,7 @@ import MoveButtons from "./_components/MoveButtons";
 export const dynamic = "force-dynamic";
 
 function fmt(d: Date | null) {
-  if (!d) return "—";
+  if (!d) return "-";
   return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
@@ -79,7 +79,7 @@ export default async function ProjectsListPage() {
                               <div>
                                 <Link href={`/admin/projects/${p.id}`}>{p.title}</Link>
                                 <div style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 2 }}>
-                                  {p.role || "—"}
+                                  {p.role || "-"}
                                   {p.videoUrl ? "" : " · no video yet"}
                                 </div>
                               </div>
