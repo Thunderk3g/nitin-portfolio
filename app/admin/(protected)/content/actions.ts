@@ -1,10 +1,12 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { getAdminUser } from "@/lib/supabase/server";
-import { db } from "@/lib/db";
+import { db, isConnectionError, withDbRetry } from "@/lib/db";
 import { siteContent } from "@/lib/db/schema";
+import { httpsSaveSection } from "@/lib/db/https-fallback";
 import { SECTION_SPECS } from "@/lib/admin/content-spec";
+import { PROJECTS_TAG, SITE_CONTENT_TAG } from "@/lib/content-cache";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -48,16 +50,23 @@ export async function saveSectionAction(
   }
 
   try {
-    await db
-      .insert(siteContent)
-      .values({ key, value })
-      .onConflictDoUpdate({
-        target: siteContent.key,
-        set: { value, updatedAt: new Date() },
-      });
+    try {
+      await withDbRetry(() =>
+        db
+          .insert(siteContent)
+          .values({ key, value })
+          .onConflictDoUpdate({
+            target: siteContent.key,
+            set: { value, updatedAt: new Date() },
+          }),
+      );
+    } catch (dbErr) {
+      if (!isConnectionError(dbErr)) throw dbErr;
+      await httpsSaveSection(key, value);
+    }
 
-    // Every public page renders shared content (name, footer links), so
-    // revalidate the whole tree.
+    revalidateTag(SITE_CONTENT_TAG);
+    if (key === "categories") revalidateTag(PROJECTS_TAG);
     revalidatePath("/", "layout");
     revalidatePath("/admin");
     revalidatePath("/admin/content");

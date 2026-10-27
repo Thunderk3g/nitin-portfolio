@@ -45,7 +45,6 @@ export default function ProjectForm({
           router.push(`/admin/projects/${res.data.id}`);
         } else {
           setMsg({ ok: true, text: "Saved." });
-          router.refresh();
         }
       } else {
         setMsg({ ok: false, text: res.error });

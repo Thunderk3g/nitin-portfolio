@@ -7,8 +7,8 @@ import CategoryTiles from "./CategoryTiles";
 import { BackArrow, PlayBadge } from "./icons";
 
 /**
- * Projects page: category list → category gallery (#slug) → video player
- * modal (#slug/index). Hash routing, exactly like the prototype.
+ * Projects page — Component 07 · Pick C (Darkroom Lightbox + Floating Scrub Pill)
+ * Category list → category gallery (#slug) → darkroom lightbox modal (#slug/index).
  */
 export default function ProjectsApp({
   categories,
@@ -19,8 +19,6 @@ export default function ProjectsApp({
 }) {
   const [hash, setHash] = useState("");
 
-  // Layout effect: read the hash before the first paint so deep links never
-  // show the index first, then reveal #app (hidden by the inline script).
   useLayoutEffect(() => {
     const read = () => setHash(window.location.hash.replace("#", ""));
     read();
@@ -54,6 +52,7 @@ export default function ProjectsApp({
   if (!cat) {
     return (
       <section className="wrap intro">
+        <p className="eyebrow">07 / DIRECTOR SCREENING ROOM · 4 DISCIPLINES</p>
         <h1 className="display page-title">{categories.pageTitle}</h1>
         <p className="lede">{categories.pageLede}</p>
         <CategoryTiles items={categories.items} hrefPrefix="#" />
@@ -108,6 +107,15 @@ export default function ProjectsApp({
   );
 }
 
+function formatScrubTC(pct: number): string {
+  const totalSec = Math.round((pct / 100) * 45);
+  const mins = Math.floor(totalSec / 60);
+  const secs = totalSec % 60;
+  const frames = Math.round(((pct / 100) * 45 * 24) % 24);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(mins)}:${pad(secs)}:${pad(frames)}`;
+}
+
 function Player({
   cat,
   project: p,
@@ -122,15 +130,55 @@ function Player({
   vertical: boolean;
 }) {
   const [playing, setPlaying] = useState(false);
+  const [scrubPct, setScrubPct] = useState(34);
+  const [speed, setSpeed] = useState("1.0x");
   const playRef = useRef<HTMLButtonElement>(null);
+  const scrubTrackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     playRef.current?.focus({ preventScroll: true });
   }, []);
 
+  // J / K / L NLE Shuttle keyboard shortcuts inside Darkroom Lightbox
+  useEffect(() => {
+    const onShuttle = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.key === "j" || e.key === "J") {
+        setScrubPct((prev) => Math.max(0, prev - 8));
+        setSpeed("-1.0x");
+      } else if (e.key === "k" || e.key === "K") {
+        setPlaying(false);
+        setSpeed("PAUSE");
+      } else if (e.key === "l" || e.key === "L") {
+        setPlaying(true);
+        setScrubPct((prev) => Math.min(100, prev + 8));
+        setSpeed("1.5x");
+      }
+    };
+    window.addEventListener("keydown", onShuttle);
+    return () => window.removeEventListener("keydown", onShuttle);
+  }, []);
+
+  useEffect(() => {
+    if (!playing) return;
+    const id = window.setInterval(() => {
+      setScrubPct((prev) => (prev >= 100 ? 0 : prev + 0.8));
+    }, 120);
+    return () => window.clearInterval(id);
+  }, [playing]);
+
+  const handleTrackClick = (clientX: number) => {
+    if (!scrubTrackRef.current) return;
+    const rect = scrubTrackRef.current.getBoundingClientRect();
+    if (rect.width <= 0) return;
+    const next = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+    setScrubPct(next);
+  };
+
   return (
     <div
-      className="player-backdrop"
+      className="player-backdrop player-backdrop-darkroom"
       role="dialog"
       aria-modal="true"
       aria-label={p.title}
@@ -138,7 +186,16 @@ function Player({
         if (e.target === e.currentTarget) window.location.hash = cat.slug;
       }}
     >
-      <div className={vertical ? "player player-vertical" : "player"}>
+      <div className={vertical ? "player player-pick-c player-vertical" : "player player-pick-c"}>
+        {/* Darkroom Top Telemetry Bar */}
+        <div className="darkroom-topbar" aria-hidden="true">
+          <span className="darkroom-rec">
+            <span className="darkroom-rec-dot" />
+            DARKROOM LIGHTBOX · {fmt.toUpperCase()}
+          </span>
+          <span className="darkroom-keys">KEYS: [J/K/L] SHUTTLE · [ESC] EXIT</span>
+        </div>
+
         <div className="player-stage" id="stage" style={{ aspectRatio: ratio }}>
           {playing ? (
             p.video ? (
@@ -147,7 +204,6 @@ function Player({
               <span className="player-empty">[Video file or link plays here]</span>
             )
           ) : (
-            // Playback starts only on click; poster shown until then.
             <button
               ref={playRef}
               className="player-poster ph"
@@ -162,6 +218,31 @@ function Player({
             </button>
           )}
         </div>
+
+        {/* Floating Glass Scrub Pill (Pick C) */}
+        <div className="darkroom-scrub-pill" aria-hidden="true">
+          <button
+            type="button"
+            tabIndex={-1}
+            className="darkroom-pill-play"
+            onClick={() => setPlaying((v) => !v)}
+          >
+            {playing ? "❚❚" : "▶"}
+          </button>
+          <span className="darkroom-pill-tc">
+            {formatScrubTC(scrubPct)} / 00:45:00
+          </span>
+          <div
+            className="darkroom-pill-track"
+            ref={scrubTrackRef}
+            onClick={(e) => handleTrackClick(e.clientX)}
+          >
+            <div className="darkroom-pill-fill" style={{ width: `${scrubPct}%` }} />
+            <div className="darkroom-pill-head" style={{ left: `${scrubPct}%` }} />
+          </div>
+          <span className="darkroom-pill-badge">{speed} · 24FPS</span>
+        </div>
+
         <div className="player-body">
           <div className="player-head">
             <div>

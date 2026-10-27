@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>02 · Hero & Showreel Stage · Awwwards Component Picks (Nitin Wagh)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d0f13;
+      --bg-elev: #15171c;
+      --surface: #1b1e25;
+      --ink: #f4efe6;
+      --ink-2: rgba(244, 239, 230, 0.76);
+      --ink-3: rgba(244, 239, 230, 0.5);
+      --line: rgba(244, 239, 230, 0.12);
+      --line-hi: rgba(244, 239, 230, 0.24);
+      --accent: #3766e6;
+      --accent-hi: #4c79ee;
+      --accent-soft: #8ea9f2;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
+      --font-display: "Archivo", sans-serif;
+      --font-sans: "Manrope", sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      min-height: 100dvh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 900;
+      opacity: 0.032;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* Lab Switcher Bar */
+    .lab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 800;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 24px;
+      background: rgba(13, 15, 19, 0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--line);
+    }
+    .lab-meta { display: flex; align-items: center; gap: 12px; }
+    .lab-back {
+      color: var(--ink-2);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .lab-back:hover { color: var(--ink); border-color: var(--line-hi); }
+    .lab-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-stretch: 75%;
+      text-transform: uppercase;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+    }
+    .lab-tabs {
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+    .lab-tab {
+      background: transparent;
+      border: 0;
+      color: var(--ink-2);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 7px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.25s var(--ease-fluid);
+    }
+    .lab-tab[aria-selected="true"] {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(55, 102, 230, 0.4);
+    }
+    .lab-pick-btn {
+      background: rgba(55, 102, 230, 0.14);
+      border: 1px solid rgba(142, 169, 242, 0.35);
+      color: var(--accent-soft);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s var(--ease-fluid);
+    }
+    .lab-pick-btn:hover, .lab-pick-btn.picked {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .research-strip {
+      max-width: 1380px;
+      margin: 20px auto 0;
+      padding: 0 24px;
+    }
+    .research-card {
+      background: rgba(27, 30, 37, 0.55);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+    .research-card strong {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+      color: var(--accent-soft);
+    }
+
+    .pick-stage {
+      max-width: 1380px;
+      margin: 20px auto 64px;
+      padding: 0 24px;
+      display: none;
+    }
+    .pick-stage.active { display: block; }
+
+    /* Shared Buttons */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 8px 8px 8px 20px;
+      border-radius: 999px;
+      transition: transform 0.35s var(--ease-fluid), background 0.35s var(--ease-fluid);
+    }
+    .btn-primary:hover { background: var(--accent-hi); }
+    .btn-primary-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.35s var(--ease-fluid);
+    }
+    .btn-primary:hover .btn-primary-circle {
+      transform: translate(2px, -2px) scale(1.06);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 12px 22px;
+      border-radius: 999px;
+      transition: all 0.3s var(--ease-fluid);
+    }
+    .btn-secondary:hover {
+      border-color: var(--line-hi);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* =====================================================================
+       PICK A: SIGNATURE INK-REVEAL NAME + PORTRAIT MASK + NLE MONITOR HUD
+       ===================================================================== */
+    .hero-a-shell {
+      padding: 8px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--line);
+    }
+    .hero-a-core {
+      position: relative;
+      border-radius: 22px;
+      background: #15171c;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      overflow: hidden;
+      min-height: 700px;
+      padding: 28px 36px 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .hero-a-portrait {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 62%;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+    .hero-a-portrait::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 48%, #15171c 96%),
+        linear-gradient(180deg, rgba(21,23,28,0.55) 0%, transparent 26%, transparent 72%, #15171c 100%);
+      pointer-events: none;
+    }
+    .portrait-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 22%;
+      user-select: none;
+    }
+    .portrait-real {
+      filter: grayscale(1) contrast(1.08) brightness(0.88);
+      --mx: 50%;
+      --my: 50%;
+      --mr: 0px;
+      -webkit-mask-image: radial-gradient(circle var(--mr) at var(--mx) var(--my), transparent 58%, #000 100%);
+      mask-image: radial-gradient(circle var(--mr) at var(--mx) var(--my), transparent 58%, #000 100%);
+    }
+    .hero-a-top {
+      position: relative;
+      z-index: 5;
+    }
+    .ink-stage {
+      position: relative;
+      width: 100%;
+      height: clamp(86px, 12vw, 156px);
+      cursor: pointer;
+    }
+    .ink-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .hero-a-subbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+    .hero-a-grid {
+      position: relative;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: 1fr 440px;
+      gap: 32px;
+      align-items: end;
+      margin-top: 40px;
+    }
+    .hero-a-hint-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(13, 15, 19, 0.76);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-2);
+    }
+    .about-bezel {
+      padding: 6px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(244, 239, 230, 0.14);
+      backdrop-filter: blur(24px);
+    }
+    .about-core {
+      background: rgba(21, 23, 28, 0.88);
+      border-radius: 18px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+    .eyebrow-pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent-soft);
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(55, 102, 230, 0.14);
+      border: 1px solid rgba(142, 169, 242, 0.25);
+      margin-bottom: 12px;
+    }
+    .about-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-stretch: 75%;
+      text-transform: uppercase;
+      font-size: 28px;
+      line-height: 1.02;
+      margin-bottom: 10px;
+    }
+    .about-bio {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ink-2);
+      margin-bottom: 16px;
+    }
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      list-style: none;
+      margin-bottom: 20px;
+    }
+    .skill-tags li {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line);
+      color: var(--ink-2);
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* =====================================================================
+       PICK B: FULL-BLEED CINEMA VIEWFINDER PORTAL (JASON BERGH SOTD)
+       ===================================================================== */
+    .hero-b-core {
+      position: relative;
+      border-radius: 24px;
+      background:
+        radial-gradient(900px 460px at 50% 15%, rgba(55, 102, 230, 0.2), transparent 70%),
+        #111318;
+      border: 1px solid var(--line);
+      padding: 36px;
+      min-height: 680px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 28px;
+    }
+    .hero-b-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .hero-b-h1 {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-stretch: 75%;
+      text-transform: uppercase;
+      font-size: clamp(44px, 7vw, 92px);
+      line-height: 0.9;
+      letter-spacing: -0.01em;
+    }
+    .hero-b-portal-shell {
+      padding: 8px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(244, 239, 230, 0.14);
+      transition: transform 0.6s var(--ease-fluid);
+    }
+    .hero-b-portal {
+      position: relative;
+      height: 360px;
+      border-radius: 18px;
+      overflow: hidden;
+      background:
+        linear-gradient(125deg, rgba(21,23,28,0.35), rgba(13,15,19,0.75)),
+        url("../assets/hero-left.jpg") center 28% / cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .portal-orb {
+      width: 118px;
+      height: 118px;
+      border-radius: 999px;
+      background: rgba(55, 102, 230, 0.88);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      box-shadow: 0 24px 60px rgba(55, 102, 230, 0.55);
+      transition: transform 0.35s var(--ease-fluid);
+    }
+    .hero-b-portal:hover .portal-orb {
+      transform: scale(1.08);
+    }
+    .portal-hud {
+      position: absolute;
+      inset: 16px;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(244, 239, 230, 0.82);
+    }
+    .portal-hud-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* =====================================================================
+       PICK C: ASYMMETRIC EDITORIAL SPLIT + INTERACTIVE FRAME SCRUBBER
+       ===================================================================== */
+    .hero-c-core {
+      border-radius: 24px;
+      background: #14171e;
+      border: 1px solid var(--line);
+      padding: 40px;
+      min-height: 660px;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .hero-c-h1 {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-stretch: 75%;
+      text-transform: uppercase;
+      font-size: clamp(44px, 5.8vw, 78px);
+      line-height: 0.94;
+      margin: 14px 0 18px;
+    }
+    .scrubber-shell {
+      padding: 8px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--line);
+    }
+    .scrubber-monitor {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #1d2436;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: ew-resize;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+      transition: background 0.3s;
+    }
+    .scrubber-playhead {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 35%;
+      width: 2px;
+      background: #ef4444;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.8);
+      pointer-events: none;
+    }
+    .scrubber-playhead::before {
+      content: "▼";
+      position: absolute;
+      top: -2px;
+      left: -5px;
+      color: #ef4444;
+      font-size: 11px;
+    }
+    .scrubber-tracks {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .scrubber-clip {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-2);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .scrubber-clip.active {
+      background: rgba(55, 102, 230, 0.18);
+      border-color: var(--accent-soft);
+      color: var(--ink);
+    }
+
+    @media (max-width: 960px) {
+      .hero-a-portrait { position: relative; width: 100%; height: 340px; border-radius: 16px; margin-bottom: 16px; }
+      .hero-a-grid, .hero-c-core { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="lab-bar">
+    <div class="lab-meta">
+      <a class="lab-back" href="index.html">← All Components</a>
+      <span class="lab-title">02 · Hero & Showreel Stage</span>
+    </div>
+    <div class="lab-tabs" role="tablist">
+      <button class="lab-tab" role="tab" aria-selected="true" data-pick="A">Pick A · Ink Name + Anime Mask</button>
+      <button class="lab-tab" role="tab" aria-selected="false" data-pick="B">Pick B · Viewfinder Portal</button>
+      <button class="lab-tab" role="tab" aria-selected="false" data-pick="C">Pick C · Interactive NLE Scrubber</button>
+    </div>
+    <button class="lab-pick-btn" id="selectPickBtn" type="button">Select Pick A for Portfolio</button>
+  </header>
+
+  <section class="research-strip">
+    <div class="research-card">
+      <div>
+        <strong>Pick A (Refined Signature)</strong>
+        Preserves Nitin's liquid-ink metaball canvas ("NITIN WAGH") & cursor anime-portrait reveal, upgraded with a Double-Bezel glass bio card.
+      </div>
+      <div>
+        <strong>Pick B (Showreel First SOTD)</strong>
+        Inspired by Jason Bergh & Theud SOTD: leads with an expanding widescreen showreel viewfinder and magnetic Play Reel orb.
+      </div>
+      <div>
+        <strong>Pick C (Interactive NLE Scrubber)</strong>
+        Lets creative directors scrub across 4 editing disciplines (Short-Form, Long-Form, SaaS, Cinematic) by moving their mouse across the monitor.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       PICK A: INK-REVEAL NAME + CURSOR ANIME PORTRAIT + DOUBLE-BEZEL BIO
+       =================================================================== -->
+  <section class="pick-stage active" id="stage-A">
+    <div class="hero-a-shell">
+      <div class="hero-a-core">
+        <!-- Cursor Portrait Reveal -->
+        <div class="hero-a-portrait" id="portraitStage">
+          <img class="portrait-layer" src="../assets/hero-left.jpg" alt="Anime illustration of Nitin Wagh editing video" />
+          <img class="portrait-layer portrait-real" id="portraitReal" src="../assets/hero-left.jpg" alt="Greyscale portrait layer" />
+        </div>
+
+        <div class="hero-a-top">
+          <div class="ink-stage" id="inkBox" title="Move cursor or click to cycle ink texture">
+            <canvas class="ink-canvas" id="inkCanvas"></canvas>
+          </div>
+          <div class="hero-a-subbar">
+            <span>Video Editor · 3+ Years of Experience</span>
+            <span>Thoughtful edits. Stories that connect.</span>
+          </div>
+        </div>
+
+        <div class="hero-a-grid">
+          <div>
+            <span class="hero-a-hint-pill">
+              <span style="width:7px;height:7px;border-radius:99px;background:var(--accent-soft);"></span>
+              Move cursor over portrait to reveal anime illustration · Move over name for liquid ink
+            </span>
+          </div>
+
+          <div class="about-bezel">
+            <div class="about-core">
+              <span class="eyebrow-pill">About me</span>
+              <h2 class="about-title">Need an editor who can adapt to your next idea?</h2>
+              <p class="about-bio">
+                I’m Nitin Wagh, a video editor with 3+ years of experience across reels, long-form videos, SaaS demos and cinematic content. Working in different creative environments has taught me versatility.
+              </p>
+              <ul class="skill-tags">
+                <li>Video editing</li>
+                <li>Short-form content</li>
+                <li>Long-form content</li>
+                <li>Visual storytelling</li>
+                <li>Pacing</li>
+                <li>AI-assisted workflows</li>
+              </ul>
+              <div class="hero-actions">
+                <a class="btn-primary" href="#work">
+                  <span>View my work</span>
+                  <span class="btn-primary-circle">↗</span>
+                </a>
+                <a class="btn-secondary" href="#contact">Let’s talk</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       PICK B: FULL-BLEED CINEMA VIEWFINDER PORTAL
+       =================================================================== -->
+  <section class="pick-stage" id="stage-B">
+    <div class="hero-b-core">
+      <div class="hero-b-header">
+        <div>
+          <span class="eyebrow-pill">Nitin Wagh · Video Editor & Storyteller</span>
+          <h2 class="hero-b-h1">THOUGHTFUL EDITS.<br />STORIES THAT CONNECT.</h2>
+        </div>
+        <div class="hero-actions">
+          <a class="btn-primary" href="#work">
+            <span>View my work</span>
+            <span class="btn-primary-circle">↗</span>
+          </a>
+          <a class="btn-secondary" href="#contact">Let’s talk</a>
+        </div>
+      </div>
+
+      <div class="hero-b-portal-shell">
+        <div class="hero-b-portal" id="portalStage">
+          <div class="portal-hud">
+            <div class="portal-hud-row">
+              <span>SHOWREEL · MASTER CUT</span>
+              <span>[4K · 24FPS · STEREO]</span>
+            </div>
+            <div class="portal-hud-row">
+              <span>REELS · LONG-FORM · SAAS · CINEMATIC</span>
+              <span>DURATION 01:24</span>
+            </div>
+          </div>
+          <div class="portal-orb" id="portalOrb">
+            <span style="font-size:18px;">▶</span>
+            <span>Play Reel</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; font-family:var(--font-mono); font-size:12px; color:var(--ink-3);">
+        <span>01 / SHORT-FORM & REELS</span>
+        <span>02 / LONG-FORM VIDEOS</span>
+        <span>03 / SAAS DEMOS</span>
+        <span>04 / CINEMATIC CONTENT</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       PICK C: ASYMMETRIC EDITORIAL SPLIT + INTERACTIVE FRAME SCRUBBER
+       =================================================================== -->
+  <section class="pick-stage" id="stage-C">
+    <div class="hero-c-core">
+      <div>
+        <span class="eyebrow-pill">Video Editor · 3+ Years Experience</span>
+        <h2 class="hero-c-h1">NEED AN EDITOR WHO ADAPTS TO YOUR NEXT IDEA?</h2>
+        <p class="about-bio" style="max-width:52ch; font-size:15px;">
+          Across high-retention short-form reels, narrative long-form videos, crisp SaaS product walkthroughs, and mood-led cinematic cuts, I combine AI-assisted speed with human creative judgment.
+        </p>
+        <div class="hero-actions" style="margin-top:24px;">
+          <a class="btn-primary" href="#work">
+            <span>View my work</span>
+            <span class="btn-primary-circle">↗</span>
+          </a>
+          <a class="btn-secondary" href="#contact">Let’s talk</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="scrubber-shell">
+          <div class="scrubber-monitor" id="scrubMonitor" style="background-image:linear-gradient(160deg, rgba(17,19,24,0.3), rgba(17,19,24,0.88)), url('../assets/hero-left.jpg'); background-size:cover; background-position:center;">
+            <div class="scrubber-playhead" id="scrubHead"></div>
+            <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; color:var(--ink-2); position:relative; z-index:2;">
+              <span id="scrubCategory">01 · SHORT-FORM & REELS (9:16)</span>
+              <span id="scrubTC">00:00:08:14</span>
+            </div>
+            <div style="position:relative; z-index:2;">
+              <div style="font-family:var(--font-display); font-weight:800; font-stretch:75%; font-size:28px; text-transform:uppercase;" id="scrubTitle">
+                High-Retention Vertical Cuts
+              </div>
+              <div style="font-size:13px; color:var(--ink-2); margin-top:4px;" id="scrubDesc">
+                Scrub cursor left/right across this monitor to preview Nitin's 4 editing disciplines.
+              </div>
+            </div>
+          </div>
+          <div class="scrubber-tracks" id="scrubTracks">
+            <div class="scrubber-clip active" data-idx="0">V1 · Short-Form</div>
+            <div class="scrubber-clip" data-idx="1">V2 · Long-Form</div>
+            <div class="scrubber-clip" data-idx="2">V3 · SaaS Demos</div>
+            <div class="scrubber-clip" data-idx="3">V4 · Cinematic</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // 1. Pick A: Portrait Cursor Reveal
+    const portraitStage = document.getElementById("portraitStage");
+    const portraitReal = document.getElementById("portraitReal");
+    portraitStage.addEventListener("pointermove", (e) => {
+      const r = portraitStage.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      portraitReal.style.setProperty("--mx", `${x}px`);
+      portraitReal.style.setProperty("--my", `${y}px`);
+      portraitReal.style.setProperty("--mr", `150px`);
+    });
+    portraitStage.addEventListener("pointerleave", () => {
+      portraitReal.style.setProperty("--mr", `0px`);
+    });
+
+    // 2. Pick A: Interactive Liquid Ink Canvas ("NITIN WAGH")
+    const inkCanvas = document.getElementById("inkCanvas");
+    const ctx = inkCanvas.getContext("2d");
+    const blobs = [];
+    let paletteIdx = 0;
+    const palettes = [
+      ["#3766e6", "#8ea9f2"],
+      ["#eab308", "#fde047"],
+      ["#ec4899", "#f472b6"],
+      ["#14b8a6", "#5eead4"],
+    ];
+
+    function resizeInk() {
+      const r = inkCanvas.parentElement.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      inkCanvas.width = r.width * window.devicePixelRatio;
+      inkCanvas.height = r.height * window.devicePixelRatio;
+    }
+    window.addEventListener("resize", resizeInk);
+    setTimeout(resizeInk, 50);
+
+    inkCanvas.addEventListener("pointermove", (e) => {
+      const r = inkCanvas.getBoundingClientRect();
+      blobs.push({
+        x: (e.clientX - r.left) * window.devicePixelRatio,
+        y: (e.clientY - r.top) * window.devicePixelRatio,
+        r: 42 * window.devicePixelRatio,
+        life: 1,
+      });
+    });
+    inkCanvas.addEventListener("click", () => {
+      paletteIdx = (paletteIdx + 1) % palettes.length;
+    });
+
+    function drawInk() {
+      const w = inkCanvas.width;
+      const h = inkCanvas.height;
+      if (w && h) {
+        ctx.clearRect(0, 0, w, h);
+        const fontSize = Math.floor(h * 0.84);
+        ctx.font = `900 ${fontSize}px Archivo, sans-serif`;
+        ctx.textBaseline = "middle";
+
+        // Base cream letters
+        ctx.fillStyle = "#f4efe6";
+        ctx.fillText("NITIN WAGH", 0, h * 0.54);
+
+        // Ink metaball trail clipped inside text
+        if (blobs.length > 0) {
+          ctx.save();
+          ctx.globalCompositeOperation = "source-atop";
+          const [c1, c2] = palettes[paletteIdx];
+          for (let i = blobs.length - 1; i >= 0; i--) {
+            const b = blobs[i];
+            const grad = ctx.createRadialGradient(b.x, b.y, 2, b.x, b.y, b.r * b.life);
+            grad.addColorStop(0, c2);
+            grad.addColorStop(0.55, c1);
+            grad.addColorStop(1, "rgba(55, 102, 230, 0)");
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, b.r * b.life, 0, Math.PI * 2);
+            ctx.fill();
+            b.life -= 0.025;
+            if (b.life <= 0) blobs.splice(i, 1);
+          }
+          ctx.restore();
+        }
+      }
+      requestAnimationFrame(drawInk);
+    }
+    requestAnimationFrame(drawInk);
+
+    // 3. Pick C: Interactive NLE Monitor Scrubber
+    const scrubData = [
+      {
+        cat: "01 · SHORT-FORM & REELS (9:16)",
+        title: "High-Retention Vertical Cuts",
+        desc: " Hook-engineered edits for Reels, Shorts & TikTok with kinetic captions and sound design.",
+        tc: "00:00:08:14",
+        tone: "rgba(38, 47, 69, 0.72)",
+      },
+      {
+        cat: "02 · LONG-FORM VIDEOS (16:9)",
+        title: "Narrative & Documentary Pacing",
+        desc: "Longer storytelling structured with multi-act tension to hold viewer retention end-to-end.",
+        tc: "00:04:19:02",
+        tone: "rgba(53, 44, 54, 0.72)",
+      },
+      {
+        cat: "03 · SAAS PRODUCT DEMOS (16:9)",
+        title: "Crisp Software Walkthroughs",
+        desc: "UI zoom choreography, motion callouts, and clarity-first product launches.",
+        tc: "00:01:42:19",
+        tone: "rgba(35, 50, 54, 0.72)",
+      },
+      {
+        cat: "04 · CINEMATIC CONTENT (2.39:1)",
+        title: "Mood-Led Rhythm, Sound & Grade",
+        desc: "Atmospheric brand films built on precision frame-cutting, foley, and color grading.",
+        tc: "00:02:55:23",
+        tone: "rgba(58, 50, 38, 0.72)",
+      },
+    ];
+    const scrubMonitor = document.getElementById("scrubMonitor");
+    const scrubHead = document.getElementById("scrubHead");
+    const scrubCategory = document.getElementById("scrubCategory");
+    const scrubTitle = document.getElementById("scrubTitle");
+    const scrubDesc = document.getElementById("scrubDesc");
+    const scrubTC = document.getElementById("scrubTC");
+    const scrubClips = document.querySelectorAll(".scrubber-clip");
+
+    function setScrubIdx(idx) {
+      const item = scrubData[idx];
+      if (!item) return;
+      scrubCategory.textContent = item.cat;
+      scrubTitle.textContent = item.title;
+      scrubDesc.textContent = item.desc;
+      scrubTC.textContent = item.tc;
+      scrubMonitor.style.backgroundImage = `linear-gradient(160deg, ${item.tone}, rgba(17,19,24,0.92)), url('../assets/hero-left.jpg')`;
+      scrubClips.forEach((c, i) => c.classList.toggle("active", i === idx));
+    }
+
+    scrubMonitor.addEventListener("pointermove", (e) => {
+      const r = scrubMonitor.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+      scrubHead.style.left = `${(pct * 100).toFixed(1)}%`;
+      const idx = Math.min(3, Math.floor(pct * 4));
+      setScrubIdx(idx);
+    });
+    scrubClips.forEach((clip) => {
+      clip.addEventListener("click", () => {
+        const idx = Number(clip.dataset.idx);
+        scrubHead.style.left = `${idx * 25 + 12.5}%`;
+        setScrubIdx(idx);
+      });
+    });
+
+    // 4. Component Pick Switcher & LocalStorage Persistence
+    const COMPONENT_ID = "02-hero-showreel";
+    let currentPick = localStorage.getItem(`awwwards-pick:${COMPONENT_ID}`) || "A";
+    const tabs = document.querySelectorAll(".lab-tab");
+    const stages = {
+      A: document.getElementById("stage-A"),
+      B: document.getElementById("stage-B"),
+      C: document.getElementById("stage-C"),
+    };
+    const selectBtn = document.getElementById("selectPickBtn");
+
+    function setActiveTab(pick) {
+      currentPick = pick;
+      tabs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.pick === pick)));
+      Object.entries(stages).forEach(([k, el]) => el.classList.toggle("active", k === pick));
+      if (pick === "A") setTimeout(resizeInk, 30);
+      const saved = localStorage.getItem(`awwwards-pick:${COMPONENT_ID}`);
+      if (saved === pick) {
+        selectBtn.textContent = `✓ Pick ${pick} Selected`;
+        selectBtn.classList.add("picked");
+      } else {
+        selectBtn.textContent = `Select Pick ${pick} for Portfolio`;
+        selectBtn.classList.remove("picked");
+      }
+    }
+
+    tabs.forEach((t) => t.addEventListener("click", () => setActiveTab(t.dataset.pick)));
+    selectBtn.addEventListener("click", () => {
+      localStorage.setItem(`awwwards-pick:${COMPONENT_ID}`, currentPick);
+      setActiveTab(currentPick);
+    });
+    setActiveTab(currentPick);
+  </script>
+</body>
+</html>

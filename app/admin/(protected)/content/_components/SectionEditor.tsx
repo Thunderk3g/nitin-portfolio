@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import type { Field, ItemField, SectionSpec } from "@/lib/admin/content-spec";
 import MediaField from "@/components/admin/MediaField";
 import { saveSectionAction } from "../actions";
@@ -145,7 +144,6 @@ export default function SectionEditor({
   spec: SectionSpec;
   initial: any;
 }) {
-  const router = useRouter();
   const [value, setValue] = useState<any>(initial ?? {});
   const [pending, startTransition] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -271,7 +269,6 @@ export default function SectionEditor({
       const res = await saveSectionAction(sectionKey, value);
       if (res.ok) {
         setMsg({ ok: true, text: "Saved. The live site is updated." });
-        router.refresh();
       } else {
         setMsg({ ok: false, text: res.error });
       }

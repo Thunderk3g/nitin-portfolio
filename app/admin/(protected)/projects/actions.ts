@@ -1,11 +1,18 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { asc, eq, sql } from "drizzle-orm";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { asc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getAdminUser } from "@/lib/supabase/server";
-import { db } from "@/lib/db";
+import { db, isConnectionError, withDbRetry } from "@/lib/db";
 import { projects } from "@/lib/db/schema";
+import {
+  httpsCreateProject,
+  httpsDeleteProject,
+  httpsMoveProject,
+  httpsUpdateProject,
+} from "@/lib/db/https-fallback";
+import { PROJECTS_TAG } from "@/lib/content-cache";
 
 export type ActionResult<T = undefined> =
   | { ok: true; data: T }
@@ -43,20 +50,12 @@ const projectSchema = z.object({
 export type ProjectFormInput = z.input<typeof projectSchema>;
 
 function revalidateProjects(id?: string) {
+  revalidateTag(PROJECTS_TAG);
   revalidatePath("/projects");
   revalidatePath("/");
   revalidatePath("/admin/projects");
   revalidatePath("/admin");
   if (id) revalidatePath(`/admin/projects/${id}`);
-}
-
-/** Next free position at the end of a category. */
-async function nextSortOrder(category: string): Promise<number> {
-  const [row] = await db
-    .select({ max: sql<number>`coalesce(max(${projects.sortOrder}), -1)::int` })
-    .from(projects)
-    .where(eq(projects.category, category));
-  return (row?.max ?? -1) + 1;
 }
 
 export async function createProjectAction(
@@ -72,9 +71,28 @@ export async function createProjectAction(
   const v = parsed.data;
 
   try {
-    const [row] = await db
-      .insert(projects)
-      .values({
+    let row: { id: string } | undefined;
+    try {
+      [row] = await withDbRetry(() =>
+        db
+          .insert(projects)
+          .values({
+            title: v.title,
+            category: v.category,
+            role: v.role,
+            videoUrl: v.videoUrl || null,
+            posterUrl: v.posterUrl || null,
+            brief: v.brief,
+            contribution: v.contribution,
+            tools: v.tools,
+            status: v.status,
+            sortOrder: sql<number>`coalesce((select max(p2.sort_order) + 1 from projects p2 where p2.category = ${v.category}), 0)`,
+          })
+          .returning({ id: projects.id }),
+      );
+    } catch (dbErr) {
+      if (!isConnectionError(dbErr)) throw dbErr;
+      row = await httpsCreateProject({
         title: v.title,
         category: v.category,
         role: v.role,
@@ -84,9 +102,8 @@ export async function createProjectAction(
         contribution: v.contribution,
         tools: v.tools,
         status: v.status,
-        sortOrder: await nextSortOrder(v.category),
-      })
-      .returning({ id: projects.id });
+      });
+    }
     if (!row) return { ok: false, error: "Insert returned no row — please retry." };
 
     revalidateProjects(row.id);
@@ -111,16 +128,31 @@ export async function updateProjectAction(
   const v = parsed.data;
 
   try {
-    const [existing] = await db.select().from(projects).where(eq(projects.id, id)).limit(1);
-    if (!existing) return { ok: false, error: "Project not found." };
-
-    // Moving to another category appends it to the end of that category.
-    const sortOrder =
-      existing.category === v.category ? existing.sortOrder : await nextSortOrder(v.category);
-
-    await db
-      .update(projects)
-      .set({
+    let ok = false;
+    try {
+      const [updated] = await withDbRetry(() =>
+        db
+          .update(projects)
+          .set({
+            title: v.title,
+            category: v.category,
+            role: v.role,
+            videoUrl: v.videoUrl || null,
+            posterUrl: v.posterUrl || null,
+            brief: v.brief,
+            contribution: v.contribution,
+            tools: v.tools,
+            status: v.status,
+            sortOrder: sql<number>`case when ${projects.category} = ${v.category} then ${projects.sortOrder} else coalesce((select max(p2.sort_order) + 1 from projects p2 where p2.category = ${v.category}), 0) end`,
+            updatedAt: new Date(),
+          })
+          .where(eq(projects.id, id))
+          .returning({ id: projects.id }),
+      );
+      ok = !!updated;
+    } catch (dbErr) {
+      if (!isConnectionError(dbErr)) throw dbErr;
+      ok = await httpsUpdateProject(id, {
         title: v.title,
         category: v.category,
         role: v.role,
@@ -130,10 +162,10 @@ export async function updateProjectAction(
         contribution: v.contribution,
         tools: v.tools,
         status: v.status,
-        sortOrder,
-        updatedAt: new Date(),
-      })
-      .where(eq(projects.id, id));
+      });
+    }
+
+    if (!ok) return { ok: false, error: "Project not found." };
 
     revalidateProjects(id);
     return { ok: true, data: undefined };
@@ -147,11 +179,20 @@ export async function deleteProjectAction(id: string): Promise<ActionResult> {
   if (!user) return { ok: false, error: "Not authorized." };
   if (!UUID_RE.test(id)) return { ok: false, error: "Project not found." };
   try {
-    const [row] = await db
-      .delete(projects)
-      .where(eq(projects.id, id))
-      .returning({ id: projects.id });
-    if (!row) return { ok: false, error: "Project not found." };
+    let ok = false;
+    try {
+      const [row] = await withDbRetry(() =>
+        db
+          .delete(projects)
+          .where(eq(projects.id, id))
+          .returning({ id: projects.id }),
+      );
+      ok = !!row;
+    } catch (dbErr) {
+      if (!isConnectionError(dbErr)) throw dbErr;
+      ok = await httpsDeleteProject(id);
+    }
+    if (!ok) return { ok: false, error: "Project not found." };
     revalidateProjects(id);
     return { ok: true, data: undefined };
   } catch (e) {
@@ -170,36 +211,58 @@ export async function moveProjectAction(id: string, dir: -1 | 1): Promise<Action
   if (dir !== -1 && dir !== 1) return { ok: false, error: "Invalid direction." };
 
   try {
-    const moved = await db.transaction(async (tx) => {
-      const [current] = await tx
-        .select({ category: projects.category })
-        .from(projects)
-        .where(eq(projects.id, id))
-        .limit(1);
-      if (!current) return null;
+    let moved: boolean | null = false;
+    try {
+      moved = await withDbRetry(() =>
+        db.transaction(async (tx) => {
+          const siblings = await tx
+            .select({ id: projects.id, sortOrder: projects.sortOrder })
+            .from(projects)
+            .where(
+              sql`${projects.category} = (select p2.category from projects p2 where p2.id = ${id} limit 1)`,
+            )
+            .orderBy(asc(projects.sortOrder), asc(projects.createdAt))
+            .for("update");
 
-      const siblings = await tx
-        .select({ id: projects.id, sortOrder: projects.sortOrder })
-        .from(projects)
-        .where(eq(projects.category, current.category))
-        .orderBy(asc(projects.sortOrder), asc(projects.createdAt))
-        .for("update");
+          if (!siblings.length) return null;
 
-      const order = siblings.map((s) => s.id);
-      const idx = order.indexOf(id);
-      const target = idx + dir;
-      if (target >= 0 && target < order.length) {
-        [order[idx], order[target]] = [order[target], order[idx]];
-      }
+          const order = siblings.map((s) => s.id);
+          const idx = order.indexOf(id);
+          if (idx === -1) return null;
 
-      for (const [i, sid] of order.entries()) {
-        const before = siblings.find((s) => s.id === sid)?.sortOrder;
-        if (before !== i) {
-          await tx.update(projects).set({ sortOrder: i }).where(eq(projects.id, sid));
-        }
-      }
-      return true;
-    });
+          const target = idx + dir;
+          if (target >= 0 && target < order.length) {
+            [order[idx], order[target]] = [order[target], order[idx]];
+          }
+
+          const changed: { id: string; nextOrder: number }[] = [];
+          for (const [i, sid] of order.entries()) {
+            const before = siblings.find((s) => s.id === sid)?.sortOrder;
+            if (before !== i) changed.push({ id: sid, nextOrder: i });
+          }
+
+          if (changed.length > 0) {
+            const cases = sql.join(
+              changed.map((c) => sql`when ${projects.id} = ${c.id} then ${c.nextOrder}::int`),
+              sql` `,
+            );
+            await tx
+              .update(projects)
+              .set({ sortOrder: sql`case ${cases} else ${projects.sortOrder} end` })
+              .where(
+                inArray(
+                  projects.id,
+                  changed.map((c) => c.id),
+                ),
+              );
+          }
+          return true;
+        }),
+      );
+    } catch (dbErr) {
+      if (!isConnectionError(dbErr)) throw dbErr;
+      moved = await httpsMoveProject(id, dir);
+    }
     if (!moved) return { ok: false, error: "Project not found." };
 
     revalidateProjects();

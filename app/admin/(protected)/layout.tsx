@@ -10,9 +10,8 @@ export const dynamic = "force-dynamic";
 
 export default async function ProtectedAdminLayout({ children }: { children: ReactNode }) {
   if (missingAdminEnv().length) redirect("/admin/login");
-  const user = await getSessionUser();
+  const [user, { site }] = await Promise.all([getSessionUser(), loadSiteContent()]);
   if (!user || !isAdminEmail(user.email)) redirect("/admin/login");
-  const { site } = await loadSiteContent();
   return (
     <AdminShell userEmail={user.email ?? "admin"} siteName={site.name}>
       {children}

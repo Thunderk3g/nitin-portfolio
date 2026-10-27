@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>08 · Partners, Closing CTA & Footer · Awwwards Component Picks (Nitin Wagh)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d0f13;
+      --surface: #1b1e25;
+      --ink: #f4efe6;
+      --ink-2: rgba(244, 239, 230, 0.76);
+      --ink-3: rgba(244, 239, 230, 0.5);
+      --line: rgba(244, 239, 230, 0.12);
+      --line-hi: rgba(244, 239, 230, 0.25);
+      --accent: #3766e6;
+      --accent-hi: #4c79ee;
+      --accent-soft: #8ea9f2;
+      --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
+      --font-display: "Archivo", sans-serif;
+      --font-sans: "Manrope", sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      min-height: 100dvh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 900;
+      opacity: 0.032;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .lab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 800;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 24px;
+      background: rgba(13, 15, 19, 0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--line);
+    }
+    .lab-meta { display: flex; align-items: center; gap: 12px; }
+    .lab-back {
+      color: var(--ink-2);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .lab-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-stretch: 75%;
+      text-transform: uppercase;
+      font-size: 16px;
+    }
+    .lab-tabs {
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+    .lab-tab {
+      background: transparent;
+      border: 0;
+      color: var(--ink-2);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 7px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.25s var(--ease-fluid);
+    }
+    .lab-tab[aria-selected="true"] {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(55, 102, 230, 0.4);
+    }
+    .lab-pick-btn {
+      background: rgba(55, 102, 230, 0.14);
+      border: 1px solid rgba(142, 169, 242, 0.35);
+      color: var(--accent-soft);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s var(--ease-fluid);
+    }
+    .lab-pick-btn:hover, .lab-pick-btn.picked {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .research-strip {
+      max-width: 1380px;
+      margin: 20px auto 0;
+      padding: 0 24px;
+    }
+    .research-card {
+      background: rgba(27, 30, 37, 0.55);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+    .research-card strong {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+      color: var(--accent-soft);
+    }
+
+    .pick-stage {
+      max-width: 1380px;
+      margin: 24px auto 64px;
+      padding: 0 24px;
+      display: none;
+    }
+    .pick-stage.active { display: block; }
+
+    /* =====================================================================
+       PICK A: MONOGRAM PARTNER BENTO + ANAMORPHIC CTA + GIANT WORDMARK FOOTER
+       ===================================================================== */
+    .partner-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 20px 0 36px;
+    }
+    .partner-cell {
+      height: 86px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-2);
+      transition: all 0.3s var(--ease-fluid);
+    }
+    .partner-cell:hover {
+      border-color: var(--accent-soft);
+      color: var(--ink);
+      background: rgba(55, 102, 230, 0.1);
+      transform: translateY(-2px);
+    }
+    .cta-shell {
+      padding: 8px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--line-hi);
+      margin-bottom: 36px;
+    }
+    .cta-core {
+      border-radius: 22px;
+      padding: 56px 40px;
+      background:
+        radial-gradient(700px 260px at 50% 0%, rgba(55, 102, 230, 0.32), transparent 70%),
+        #13161f;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .cta-h2 {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-stretch: 75%;
+      text-transform: uppercase;
+      font-size: clamp(34px, 5vw, 64px);
+      line-height: 0.94;
+      max-width: 16ch;
+    }
+    .btn-island-lg {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 10px 10px 10px 26px;
+      border-radius: 999px;
+      box-shadow: 0 20px 50px rgba(55, 102, 230, 0.45);
+      transition: transform 0.35s var(--ease-fluid), background 0.35s;
+    }
+    .btn-island-lg:hover { background: var(--accent-hi); }
+    .btn-island-lg-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.35s var(--ease-fluid);
+    }
+    .btn-island-lg:hover .btn-island-lg-icon {
+      transform: translate(3px, -2px) scale(1.06);
+    }
+    .giant-footer {
+      border-top: 1px solid var(--line);
+      padding-top: 24px;
+    }
+    .giant-footer-meta {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-2);
+      margin-bottom: 18px;
+    }
+    .giant-wordmark {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-stretch: 75%;
+      text-transform: uppercase;
+      font-size: clamp(56px, 13.5vw, 188px);
+      line-height: 0.84;
+      letter-spacing: -0.02em;
+      color: rgba(244, 239, 230, 0.92);
+      text-align: center;
+      user-select: none;
+    }
+
+    /* =====================================================================
+       PICK B: INTERACTIVE CLAPPERBOARD SLATE CTA + END-CREDITS
+       ===================================================================== */
+    .clapper-card {
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--line-hi);
+      background: #14171f;
+      cursor: pointer;
+    }
+    .clapper-top-slate {
+      height: 36px;
+      background: repeating-linear-gradient(
+        -45deg,
+        #f4efe6 0px,
+        #f4efe6 22px,
+        #14171f 22px,
+        #14171f 44px
+      );
+      transform-origin: left bottom;
+      transform: rotate(-4deg);
+      transition: transform 0.28s var(--ease-fluid);
+    }
+    .clapper-card:hover .clapper-top-slate, .clapper-card.snapped .clapper-top-slate {
+      transform: rotate(0deg);
+    }
+    .clapper-body {
+      padding: 44px;
+      border-top: 2px solid var(--line-hi);
+      display: grid;
+      gap: 24px;
+    }
+    .clapper-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .clapper-cell {
+      padding: 12px 16px;
+      border-right: 1px solid var(--line);
+    }
+    .clapper-cell:last-child { border-right: 0; }
+
+    /* =====================================================================
+       PICK C: PRODUCTION CALL-SHEET FOOTER & BOOKING TERMINAL
+       ===================================================================== */
+    .callsheet {
+      border: 1px solid var(--line-hi);
+      border-radius: 22px;
+      background: #12151c;
+      overflow: hidden;
+      font-family: var(--font-mono);
+    }
+    .callsheet-row {
+      display: grid;
+      grid-template-columns: 220px 1fr 220px;
+      border-bottom: 1px solid var(--line);
+    }
+    .callsheet-row > div {
+      padding: 20px 24px;
+      border-right: 1px solid var(--line);
+    }
+    .callsheet-row > div:last-child { border-right: 0; }
+
+    @media (max-width: 900px) {
+      .partner-grid { grid-template-columns: repeat(2, 1fr); }
+      .clapper-grid, .callsheet-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="lab-bar">
+    <div class="lab-meta">
+      <a class="lab-back" href="index.html">← All Components</a>
+      <span class="lab-title">08 · Partners, Closing CTA & Footer</span>
+    </div>
+    <div class="lab-tabs" role="tablist">
+      <button class="lab-tab" role="tab" aria-selected="true" data-pick="A">Pick A · Anamorphic CTA + Giant Footer</button>
+      <button class="lab-tab" role="tab" aria-selected="false" data-pick="B">Pick B · Interactive Clapperboard Slate</button>
+      <button class="lab-tab" role="tab" aria-selected="false" data-pick="C">Pick C · Production Call-Sheet</button>
+    </div>
+    <button class="lab-pick-btn" id="selectPickBtn" type="button">Select Pick A for Portfolio</button>
+  </header>
+
+  <section class="research-strip">
+    <div class="research-card">
+      <div>
+        <strong>Pick A (Monogram Grid + Giant Footer)</strong>
+        Pairs a 10-cell monochrome partner bento with a Double-Bezel anamorphic CTA and an oversized floor-to-ceiling `NITIN WAGH` signature footer.
+      </div>
+      <div>
+        <strong>Pick B (Interactive Clapperboard)</strong>
+        Hover or click the cinema clapperboard slate: the angled top bar snaps shut like a real film take!
+      </div>
+      <div>
+        <strong>Pick C (Production Call Sheet)</strong>
+        Formats the closing contact & footer section like an authentic film set Call Sheet with live local time (`IST`).
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       PICK A: PARTNER BENTO + ANAMORPHIC CTA + GIANT WORDMARK FOOTER
+       =================================================================== -->
+  <section class="pick-stage active" id="stage-A">
+    <div>
+      <span style="font-family:var(--font-mono); font-size:11px; color:var(--accent-soft); text-transform:uppercase; letter-spacing:0.15em;">
+        Our partners
+      </span>
+      <h2 style="font-family:var(--font-display); font-weight:800; font-stretch:75%; font-size:clamp(26px,3.5vw,42px); text-transform:uppercase; margin-top:6px;">
+        We team up with people who make the work braver and push every idea further.
+      </h2>
+      <div class="partner-grid" id="partnerGridA"></div>
+    </div>
+
+    <div class="cta-shell">
+      <div class="cta-core">
+        <h2 class="cta-h2">Have a story to tell? Let’s make it worth watching.</h2>
+        <a class="btn-island-lg" href="#contact">
+          <span>Let’s talk</span>
+          <span class="btn-island-lg-icon">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <footer class="giant-footer">
+      <div class="giant-footer-meta">
+        <span>● AVAILABLE FOR NEW PROJECTS</span>
+        <span id="liveClockA">LOCAL TIME · IST</span>
+        <div style="display:flex; gap:18px;">
+          <a href="mailto:[Your Email Address]" style="color:var(--ink); text-decoration:none;">Email me</a>
+          <a href="[Your LinkedIn Profile URL]" style="color:var(--ink); text-decoration:none;">LinkedIn</a>
+          <a href="#projects" style="color:var(--ink); text-decoration:none;">Projects</a>
+        </div>
+      </div>
+      <div class="giant-wordmark">NITIN WAGH</div>
+    </footer>
+  </section>
+
+  <!-- ===================================================================
+       PICK B: INTERACTIVE CLAPPERBOARD SLATE CTA
+       =================================================================== -->
+  <section class="pick-stage" id="stage-B">
+    <div class="clapper-card" id="clapperCard">
+      <div class="clapper-top-slate"></div>
+      <div class="clapper-body">
+        <div class="clapper-grid">
+          <div class="clapper-cell"><div style="color:var(--ink-3);">PROD.</div><div>NITIN WAGH</div></div>
+          <div class="clapper-cell"><div style="color:var(--ink-3);">SCENE</div><div>NEXT PROJECT</div></div>
+          <div class="clapper-cell"><div style="color:var(--ink-3);">TAKE</div><div id="takeCount">01</div></div>
+          <div class="clapper-cell"><div style="color:var(--ink-3);">FPS</div><div>24.00</div></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+          <h2 class="cta-h2">Have a story to tell? Let’s make it worth watching.</h2>
+          <a class="btn-island-lg" href="#contact">
+            <span>Let’s talk</span>
+            <span class="btn-island-lg-icon">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       PICK C: PRODUCTION CALL-SHEET FOOTER
+       =================================================================== -->
+  <section class="pick-stage" id="stage-C">
+    <div class="callsheet">
+      <div class="callsheet-row">
+        <div>
+          <div style="font-size:10px; color:var(--ink-3);">EDITOR / DIRECTOR</div>
+          <div style="font-size:15px; font-weight:700; margin-top:4px;">NITIN WAGH</div>
+        </div>
+        <div>
+          <div style="font-size:10px; color:var(--ink-3);">CALL SHEET BRIEF</div>
+          <div style="font-size:15px; margin-top:4px;">Have a story to tell? Let’s make it worth watching.</div>
+        </div>
+        <div>
+          <div style="font-size:10px; color:var(--ink-3);">STATUS</div>
+          <div style="font-size:13px; color:#22c55e; margin-top:4px;">● BOOKING OPEN</div>
+        </div>
+      </div>
+      <div class="callsheet-row" style="border-bottom:0;">
+        <div>
+          <div style="font-size:10px; color:var(--ink-3);">DIRECT EMAIL</div>
+          <div style="font-size:12px; margin-top:4px;">[Your Email Address]</div>
+        </div>
+        <div>
+          <div style="font-size:10px; color:var(--ink-3);">LINKEDIN</div>
+          <div style="font-size:12px; margin-top:4px;">[Your LinkedIn Profile URL]</div>
+        </div>
+        <div style="display:flex; align-items:center;">
+          <a class="btn-island-lg" href="#contact" style="padding:8px 8px 8px 18px; font-size:13px;">
+            <span>Let’s talk</span>
+            <span class="btn-island-lg-icon" style="width:28px; height:28px;">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // 1. Populate Partner Grid (Pick A) with SVG monograms
+    const partnerGridA = document.getElementById("partnerGridA");
+    for (let i = 1; i <= 10; i++) {
+      const num = String(i).padStart(2, "0");
+      const cell = document.createElement("div");
+      cell.className = "partner-cell";
+      cell.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="3" />
+          <path d="M10 9l5 3-5 3V9z" />
+        </svg>
+        <span>[Partner ${num}]</span>
+      `;
+      partnerGridA.appendChild(cell);
+    }
+
+    // 2. Live IST Clock
+    const liveClockA = document.getElementById("liveClockA");
+    function tickClock() {
+      const now = new Date();
+      liveClockA.textContent = `IST · ${now.toLocaleTimeString("en-GB", { hour12: false })}`;
+    }
+    tickClock();
+    setInterval(tickClock, 1000);
+
+    // 3. Pick B Clapperboard Snap
+    let takes = 1;
+    const clapperCard = document.getElementById("clapperCard");
+    const takeCount = document.getElementById("takeCount");
+    clapperCard.addEventListener("click", () => {
+      takes++;
+      takeCount.textContent = String(takes).padStart(2, "0");
+      clapperCard.classList.add("snapped");
+      setTimeout(() => clapperCard.classList.remove("snapped"), 350);
+    });
+
+    // 4. Component Pick Switcher & LocalStorage Persistence
+    const COMPONENT_ID = "08-partners-cta-footer";
+    let currentPick = localStorage.getItem(`awwwards-pick:${COMPONENT_ID}`) || "A";
+    const tabs = document.querySelectorAll(".lab-tab");
+    const stages = {
+      A: document.getElementById("stage-A"),
+      B: document.getElementById("stage-B"),
+      C: document.getElementById("stage-C"),
+    };
+    const selectBtn = document.getElementById("selectPickBtn");
+
+    function setActiveTab(pick) {
+      currentPick = pick;
+      tabs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.pick === pick)));
+      Object.entries(stages).forEach(([k, el]) => el.classList.toggle("active", k === pick));
+      const saved = localStorage.getItem(`awwwards-pick:${COMPONENT_ID}`);
+      if (saved === pick) {
+        selectBtn.textContent = `✓ Pick ${pick} Selected`;
+        selectBtn.classList.add("picked");
+      } else {
+        selectBtn.textContent = `Select Pick ${pick} for Portfolio`;
+        selectBtn.classList.remove("picked");
+      }
+    }
+
+    tabs.forEach((t) => t.addEventListener("click", () => setActiveTab(t.dataset.pick)));
+    selectBtn.addEventListener("click", () => {
+      localStorage.setItem(`awwwards-pick:${COMPONENT_ID}`, currentPick);
+      setActiveTab(currentPick);
+    });
+    setActiveTab(currentPick);
+  </script>
+</body>
+</html>

@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { formatBytes, type MediaAssetDTO } from "@/lib/media/config";
 import { uploadMediaFile } from "@/lib/media/upload-client";
 import { deleteMediaAction } from "../actions";
@@ -21,8 +20,8 @@ const STATUS_LABEL: Record<FileState["status"], string> = {
 };
 
 export default function MediaLibrary({ assets }: { assets: MediaAssetDTO[] }) {
-  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [items, setItems] = useState<MediaAssetDTO[]>(assets);
   const [files, setFiles] = useState<FileState[]>([]);
   const [busy, setBusy] = useState(false);
   const [filter, setFilter] = useState<"all" | "image" | "video">("all");
@@ -30,25 +29,27 @@ export default function MediaLibrary({ assets }: { assets: MediaAssetDTO[] }) {
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
+  useEffect(() => {
+    setItems(assets);
+  }, [assets]);
+
   async function handleFiles(list: FileList) {
     const selected = Array.from(list);
     if (!selected.length) return;
     setFiles(selected.map((f) => ({ name: f.name, status: "queued" })));
     setBusy(true);
-    let ok = 0;
     for (let i = 0; i < selected.length; i++) {
       const setStatus = (status: FileState["status"], err?: string) =>
         setFiles((prev) => prev.map((f, j) => (j === i ? { ...f, status, error: err } : f)));
       setStatus("uploading");
       const res = await uploadMediaFile(selected[i], (s) => setStatus(s));
       if (res.ok) {
-        ok++;
         setStatus("done");
+        setItems((prev) => (prev.some((x) => x.id === res.asset.id) ? prev : [res.asset, ...prev]));
       } else setStatus("error", res.error);
     }
     setBusy(false);
     if (inputRef.current) inputRef.current.value = "";
-    if (ok) router.refresh();
   }
 
   async function copy(url: string) {
@@ -67,11 +68,12 @@ export default function MediaLibrary({ assets }: { assets: MediaAssetDTO[] }) {
     setError(null);
     const res = await deleteMediaAction(a.id);
     setDeleting(null);
-    if (res.ok) router.refresh();
-    else setError(res.error);
+    if (res.ok) {
+      setItems((prev) => prev.filter((x) => x.id !== a.id));
+    } else setError(res.error);
   }
 
-  const shown = filter === "all" ? assets : assets.filter((a) => a.kind === filter);
+  const shown = filter === "all" ? items : items.filter((a) => a.kind === filter);
 
   return (
     <div>
@@ -87,7 +89,7 @@ export default function MediaLibrary({ assets }: { assets: MediaAssetDTO[] }) {
                 style={filter === k ? { borderColor: "var(--accent-text)", color: "var(--accent-text)" } : undefined}
                 onClick={() => setFilter(k)}
               >
-                {k === "all" ? `All (${assets.length})` : k === "image" ? "Images" : "Videos"}
+                {k === "all" ? `All (${items.length})` : k === "image" ? "Images" : "Videos"}
               </button>
             ))}
           </div>

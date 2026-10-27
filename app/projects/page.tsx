@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ProjectsApp from "@/components/ProjectsApp";
-import { loadSiteContent } from "@/lib/content-cache";
-import { getProjectsByCategory } from "@/lib/db/queries";
+import { loadProjectsByCategory, loadSiteContent } from "@/lib/content-cache";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +22,7 @@ const HASH_FLAG = "if(location.hash.length>1)document.documentElement.setAttribu
 
 export default async function ProjectsPage() {
   const content = await loadSiteContent();
-  const projects = await getProjectsByCategory(content.categories.items.map((c) => c.slug));
+  const projects = await loadProjectsByCategory(content.categories.items.map((c) => c.slug));
   return (
     <>
       <a className="skip" href="#app">

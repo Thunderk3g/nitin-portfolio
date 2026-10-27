@@ -7,14 +7,12 @@ import SiteHeader from "./SiteHeader";
 import { Arrow, CursorIcon } from "./icons";
 
 /* ------------------------------------------------------------------------
- * Hero interactions, upgraded to Awwwards Director's Cut standard:
- * 1. Ink-reveal name: the name is drawn on a canvas auto-fitted into #slot;
- *    blue metaball "ink" follows the cursor near the letters and reveals an
- *    inflated 3D shader texture inside it. A new texture comes up each time
- *    the ink drains; clicking the name swaps it immediately.
- * 2. Portrait reveal: eases --x/--y/--r on the top portrait's radial mask
- *    and syncs an optical aperture ring (.hero-lens) so a soft circle
- *    reveals the anime illustration underneath.
+ * Hero interactions — Component 02 · Pick C (Editorial Split + NLE Scrubber)
+ * 1. Ink-reveal name: drawn on #ink canvas auto-fitted into #slot; metaball
+ *    "ink" follows the cursor near the letters and reveals a 3D shader texture.
+ * 2. Portrait reveal + NLE Timeline Scrubber: eases --x/--y/--r on #real's
+ *    radial mask, syncs .hero-lens, and scrubs the 4-track NLE playhead
+ *    across V1 Short-Form, V2 Long-Form, V3 SaaS Demos, and V4 Cinematic.
  * ---------------------------------------------------------------------- */
 
 type Theme = { rim: string; stops: [number, string][]; deco: "sheen" | "sprinkles" | "puffs" };
@@ -63,6 +61,13 @@ const THEMES: Theme[] = [
   },
 ];
 
+const NLE_TRACKS = [
+  { id: "v1", code: "V1", label: "Short-Form", spec: "9:16 · 60FPS", href: "/projects#short-form" },
+  { id: "v2", code: "V2", label: "Long-Form", spec: "16:9 · 24FPS", href: "/projects#long-form" },
+  { id: "v3", code: "V3", label: "SaaS Demos", spec: "16:9 · 60FPS", href: "/projects#saas" },
+  { id: "v4", code: "V4", label: "Cinematic", spec: "2.39:1 · RAW", href: "/projects#cinematic" },
+] as const;
+
 type Box = { x: number; y: number; w: number; h: number };
 type Blob = { x: number; y: number; r0: number; r: number; vx: number; vy: number; age: number; hold: number; life: number };
 type Elements = {
@@ -73,7 +78,12 @@ type Elements = {
   real: HTMLElement;
   lens: HTMLElement | null;
 };
-type Options = { name: string; inkReveal: boolean; revealSize: number };
+type Options = {
+  name: string;
+  inkReveal: boolean;
+  revealSize: number;
+  onScrub?: (pct: number) => void;
+};
 
 class InkReveal {
   private blobs: Blob[] = [];
@@ -121,10 +131,17 @@ class InkReveal {
     const go = () => {
       if (this.disposed) return;
       this.resize();
-      this.loop();
+      if (!this.raf) this.loop();
     };
-    if (document.fonts && document.fonts.load) document.fonts.load("900 200px Archivo").then(go, go);
-    else go();
+    go();
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load("900 200px Archivo").then(
+        () => {
+          if (!this.disposed) this.resize();
+        },
+        () => {},
+      );
+    }
   }
 
   unmount() {
@@ -179,7 +196,6 @@ class InkReveal {
     this.asc = (asc100 * fs) / 100;
     this.cx = b.x + b.w / 2 + ((L - R) * fs) / 200;
     this.ty = b.y + b.h / 2 + this.asc / 2;
-    // tight box around the drawn letters; the ink is confined to a padded band around it
     this.glyph = { x: this.cx - (L * fs) / 100, y: this.ty - this.asc, w: ((L + R) * fs) / 100, h: this.asc };
     this.unit = Math.max(0.55, Math.min(1.3, this.glyph.h / 150));
     const g = this.glyph,
@@ -292,7 +308,6 @@ class InkReveal {
     this.buildTexture();
   }
 
-  // Lay ink along the segment from (x0,y0) to (x1,y1); faster strokes leave a slightly fuller trail.
   private feed(x0: number, y0: number, x1: number, y1: number) {
     const u = this.unit,
       d = Math.hypot(x1 - x0, y1 - y0);
@@ -365,7 +380,6 @@ class InkReveal {
       this.hadInk = false;
       this.nextTheme();
     }
-    // portrait reveal easing
     const rv = this.rv;
     if (rv.tx != null && rv.ty != null) {
       rv.x += (rv.tx - rv.x) * 0.18;
@@ -479,6 +493,10 @@ class InkReveal {
         this.rv.tx = px;
         this.rv.ty = py;
         this.rv.tr = this.opts.revealSize;
+        if (this.opts.onScrub && pr.width > 0) {
+          const pct = Math.max(0, Math.min(100, ((e.clientX - pr.left) / pr.width) * 100));
+          this.opts.onScrub(pct);
+        }
       } else {
         this.rv.tr = 0;
       }
@@ -503,6 +521,15 @@ class InkReveal {
   };
 }
 
+function formatScrubTimecode(pct: number): string {
+  const totalFrames = Math.round((pct / 100) * 24 * 60); // 60s master reel @ 24fps
+  const frames = totalFrames % 24;
+  const secs = Math.floor(totalFrames / 24) % 60;
+  const mins = Math.floor(totalFrames / (24 * 60));
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `00:${pad(mins)}:${pad(secs)}:${pad(frames)}`;
+}
+
 export default function Hero({ site, hero }: { site: SiteSection; hero: HeroSection }) {
   const heroRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -511,7 +538,11 @@ export default function Hero({ site, hero }: { site: SiteSection; hero: HeroSect
   const realRef = useRef<HTMLImageElement>(null);
   const lensRef = useRef<HTMLDivElement>(null);
   const [anime, setAnime] = useState(false);
+  const [scrubPct, setScrubPct] = useState(32);
   const word = (site.name || "").toUpperCase();
+
+  const activeTrackIdx = Math.min(3, Math.floor(scrubPct / 25));
+  const activeTrack = NLE_TRACKS[activeTrackIdx];
 
   useEffect(() => {
     const heroEl = heroRef.current,
@@ -523,14 +554,19 @@ export default function Hero({ site, hero }: { site: SiteSection; hero: HeroSect
     if (!heroEl || !canvas || !slot || !portrait || !real) return;
     const engine = new InkReveal(
       { hero: heroEl, canvas, slot, portrait, real, lens },
-      { name: word, inkReveal: true, revealSize: 170 },
+      {
+        name: word,
+        inkReveal: true,
+        revealSize: 170,
+        onScrub: (pct) => setScrubPct(pct),
+      },
     );
     engine.mount();
     return () => engine.unmount();
   }, [word]);
 
   return (
-    <section className="hero" id="hero" aria-label="Introduction" ref={heroRef}>
+    <section className="hero hero-pick-c" id="hero" aria-label="Introduction" ref={heroRef}>
       <div className="hero-portrait" id="portrait" ref={portraitRef}>
         <img src={hero.illustration} alt={hero.illustrationAlt} />
         <img
@@ -547,12 +583,46 @@ export default function Hero({ site, hero }: { site: SiteSection; hero: HeroSect
           <span className="vf-corner vf-tr"></span>
           <span className="vf-corner vf-bl"></span>
           <span className="vf-corner vf-br"></span>
+          <div className="vf-hud-top">
+            <span className="vf-rec">
+              <span className="vf-rec-dot" />
+              PROGRAM · {activeTrack.code} {activeTrack.label.toUpperCase()}
+            </span>
+            <span className="vf-spec">{activeTrack.spec}</span>
+            <span className="vf-tc">{formatScrubTimecode(scrubPct)}</span>
+          </div>
         </div>
         <div className="hero-fade" aria-hidden="true"></div>
         <p className="hero-hint">
           <CursorIcon />
           {hero.hint}
         </p>
+
+        {/* Pick C Interactive NLE Timeline Scrubber Bar */}
+        <div className="hero-nle-scrubber" aria-label="Interactive showreel timeline tracks">
+          <div className="hero-nle-ruler" aria-hidden="true">
+            <div className="hero-nle-playhead" style={{ left: `${scrubPct}%` }}>
+              <span className="hero-nle-head-cap">▼</span>
+            </div>
+          </div>
+          <div className="hero-nle-tracks">
+            {NLE_TRACKS.map((track, idx) => {
+              const isActive = idx === activeTrackIdx;
+              return (
+                <button
+                  key={track.id}
+                  type="button"
+                  className={isActive ? "hero-nle-clip is-active" : "hero-nle-clip"}
+                  onClick={() => setScrubPct(idx * 25 + 12)}
+                >
+                  <span className="hero-nle-code">{track.code}</span>
+                  <span className="hero-nle-name">{track.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <button
           className="btn btn-sm hero-tap"
           type="button"
@@ -576,7 +646,11 @@ export default function Hero({ site, hero }: { site: SiteSection; hero: HeroSect
         <p className="hero-line">{hero.tagline}</p>
       </div>
       <div className="hero-bottom">
-        <div className="about">
+        <div className="about about-pick-c">
+          <div className="about-nle-strip" aria-hidden="true">
+            <span>SEQ 01 // EDITORIAL SPLIT</span>
+            <span>{activeTrack.code} · {activeTrack.spec}</span>
+          </div>
           <p className="eyebrow">{hero.aboutEyebrow}</p>
           <h2>{hero.aboutTitle}</h2>
           <p className="bio">{hero.bio}</p>

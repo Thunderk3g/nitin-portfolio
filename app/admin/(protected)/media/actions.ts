@@ -5,8 +5,9 @@ import { revalidatePath } from "next/cache";
 import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { createSupabaseServerClient, getAdminUser } from "@/lib/supabase/server";
-import { db, withDbRetry } from "@/lib/db";
+import { db, isConnectionError, withDbRetry } from "@/lib/db";
 import { mediaAssets } from "@/lib/db/schema";
+import { httpsDeleteMedia, httpsRecordMedia } from "@/lib/db/https-fallback";
 import { listMediaAssets, toMediaDTO } from "@/lib/db/queries";
 import {
   MAX_UPLOAD_BYTES,
@@ -115,42 +116,57 @@ export async function finalizeUploadAction(input: {
   const filename = (typeof input?.filename === "string" ? input.filename.trim() : "").slice(0, 255) || path;
 
   try {
-    const [existing] = await withDbRetry(() =>
-      db.select().from(mediaAssets).where(eq(mediaAssets.path, path)).limit(1),
-    );
-    if (existing) return { ok: true, data: toMediaDTO(existing) };
+    try {
+      const [existing] = await withDbRetry(() =>
+        db.select().from(mediaAssets).where(eq(mediaAssets.path, path)).limit(1),
+      );
+      if (existing) return { ok: true, data: toMediaDTO(existing) };
 
-    const rows = await withDbRetry(() =>
-      db.execute<{ metadata: { size?: number; mimetype?: string } | null }>(
-        sql`select metadata from storage.objects where bucket_id = ${MEDIA_BUCKET} and name = ${path} limit 1`,
-      ),
-    );
-    const object = rows[0];
-    if (!object) return { ok: false, error: "The upload did not reach storage — please try again." };
+      const rows = await withDbRetry(() =>
+        db.execute<{ metadata: { size?: number; mimetype?: string } | null }>(
+          sql`select metadata from storage.objects where bucket_id = ${MEDIA_BUCKET} and name = ${path} limit 1`,
+        ),
+      );
+      const object = rows[0];
+      if (!object) return { ok: false, error: "The upload did not reach storage — please try again." };
 
-    const mime = object.metadata?.mimetype ?? "";
-    const kind: MediaKind | null = kindFromMime(mime);
-    if (!kind) return { ok: false, error: "Stored file is not an image or video." };
+      const mime = object.metadata?.mimetype ?? "";
+      const kind: MediaKind | null = kindFromMime(mime);
+      if (!kind) return { ok: false, error: "Stored file is not an image or video." };
 
-    const [row] = await db
-      .insert(mediaAssets)
-      .values({
-        path,
-        url: publicUrl(path),
-        filename,
-        mime,
-        bytes: Number(object.metadata?.size ?? 0),
-        kind,
-      })
-      .onConflictDoNothing({ target: mediaAssets.path })
-      .returning();
-    const saved =
-      row ?? (await db.select().from(mediaAssets).where(eq(mediaAssets.path, path)).limit(1))[0];
-    if (!saved) return { ok: false, error: "Could not record the upload — please retry." };
+      const [row] = await withDbRetry(() =>
+        db
+          .insert(mediaAssets)
+          .values({
+            path,
+            url: publicUrl(path),
+            filename,
+            mime,
+            bytes: Number(object.metadata?.size ?? 0),
+            kind,
+          })
+          .onConflictDoNothing({ target: mediaAssets.path })
+          .returning(),
+      );
+      const saved =
+        row ??
+        (
+          await withDbRetry(() =>
+            db.select().from(mediaAssets).where(eq(mediaAssets.path, path)).limit(1),
+          )
+        )[0];
+      if (!saved) return { ok: false, error: "Could not record the upload — please retry." };
 
-    revalidatePath("/admin/media");
-    revalidatePath("/admin");
-    return { ok: true, data: toMediaDTO(saved) };
+      revalidatePath("/admin/media");
+      revalidatePath("/admin");
+      return { ok: true, data: toMediaDTO(saved) };
+    } catch (dbErr) {
+      if (!isConnectionError(dbErr)) throw dbErr;
+      const saved = await httpsRecordMedia({ path, filename });
+      revalidatePath("/admin/media");
+      revalidatePath("/admin");
+      return { ok: true, data: toMediaDTO(saved) };
+    }
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Could not finish the upload." };
   }
@@ -180,16 +196,27 @@ export async function deleteMediaAction(id: string): Promise<ActionResult> {
   if (!UUID_RE.test(id)) return { ok: false, error: "File not found." };
 
   try {
-    const [asset] = await withDbRetry(() =>
-      db.select().from(mediaAssets).where(eq(mediaAssets.id, id)).limit(1),
-    );
-    if (!asset) return { ok: false, error: "File not found." };
+    let assetPath: string | null = null;
+    try {
+      const [asset] = await withDbRetry(() =>
+        db.select().from(mediaAssets).where(eq(mediaAssets.id, id)).limit(1),
+      );
+      if (!asset) return { ok: false, error: "File not found." };
+      assetPath = asset.path;
 
-    const supabase = await createSupabaseServerClient();
-    const { error } = await supabase.storage.from(MEDIA_BUCKET).remove([asset.path]);
-    if (error) return { ok: false, error: `Could not delete from storage: ${error.message}` };
+      const supabase = await createSupabaseServerClient();
+      const { error } = await supabase.storage.from(MEDIA_BUCKET).remove([assetPath]);
+      if (error) return { ok: false, error: `Could not delete from storage: ${error.message}` };
 
-    await db.delete(mediaAssets).where(eq(mediaAssets.id, id));
+      await withDbRetry(() => db.delete(mediaAssets).where(eq(mediaAssets.id, id)));
+    } catch (dbErr) {
+      if (!isConnectionError(dbErr)) throw dbErr;
+      const removed = await httpsDeleteMedia(id);
+      if (!removed) return { ok: false, error: "File not found." };
+      const supabase = await createSupabaseServerClient();
+      const { error } = await supabase.storage.from(MEDIA_BUCKET).remove([removed.path]);
+      if (error) return { ok: false, error: `Could not delete from storage: ${error.message}` };
+    }
     revalidatePath("/admin/media");
     revalidatePath("/admin");
     return { ok: true, data: undefined };

@@ -20,6 +20,9 @@ export const viewport: Viewport = {
   themeColor: "#15171c",
 };
 
+const GOOGLE_FONTS_URL =
+  "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     // suppressHydrationWarning: the Projects page flags deep links on <html> before hydration.
@@ -27,10 +30,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Plain <link> (not next/font) so the canvas can draw with the real "Archivo" family name. */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
+        {/* Non-blocking font load so corporate firewalls/slow CDNs never stall window.onload or /admin */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var l=document.createElement('link');l.rel='stylesheet';l.href=${JSON.stringify(
+              GOOGLE_FONTS_URL,
+            )};l.media='print';l.onload=function(){l.media='all'};document.head.appendChild(l);}catch(e){}})();`,
+          }}
         />
       </head>
       <body>

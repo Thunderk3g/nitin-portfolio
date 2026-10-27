@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>03 · Selected Work Categories · Awwwards Component Picks (Nitin Wagh)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d0f13;
+      --surface: #1b1e25;
+      --ink: #f4efe6;
+      --ink-2: rgba(244, 239, 230, 0.76);
+      --ink-3: rgba(244, 239, 230, 0.5);
+      --line: rgba(244, 239, 230, 0.12);
+      --line-hi: rgba(244, 239, 230, 0.25);
+      --accent: #3766e6;
+      --accent-hi: #4c79ee;
+      --accent-soft: #8ea9f2;
+      --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
+      --font-display: "Archivo", sans-serif;
+      --font-sans: "Manrope", sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      min-height: 100dvh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 900;
+      opacity: 0.032;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .lab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 800;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 24px;
+      background: rgba(13, 15, 19, 0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--line);
+    }
+    .lab-meta { display: flex; align-items: center; gap: 12px; }
+    .lab-back {
+      color: var(--ink-2);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .lab-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-stretch: 75%;
+      text-transform: uppercase;
+      font-size: 16px;
+    }
+    .lab-tabs {
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+    .lab-tab {
+      background: transparent;
+      border: 0;
+      color: var(--ink-2);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 7px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.25s var(--ease-fluid);
+    }
+    .lab-tab[aria-selected="true"] {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(55, 102, 230, 0.4);
+    }
+    .lab-pick-btn {
+      background: rgba(55, 102, 230, 0.14);
+      border: 1px solid rgba(142, 169, 242, 0.35);
+      color: var(--accent-soft);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s var(--ease-fluid);
+    }
+    .lab-pick-btn:hover, .lab-pick-btn.picked {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .research-strip {
+      max-width: 1380px;
+      margin: 20px auto 0;
+      padding: 0 24px;
+    }
+    .research-card {
+      background: rgba(27, 30, 37, 0.55);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+    .research-card strong {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+      color: var(--accent-soft);
+    }
+
+    .pick-stage {
+      max-width: 1380px;
+      margin: 24px auto 64px;
+      padding: 0 24px;
+      display: none;
+    }
+    .pick-stage.active { display: block; }
+
+    .sec-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 24px;
+    }
+    .sec-h2 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-stretch: 75%;
+      text-transform: uppercase;
+      font-size: clamp(32px, 4.5vw, 56px);
+      line-height: 0.96;
+    }
+    .sec-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    /* =====================================================================
+       PICK A: ASYMMETRIC DOUBLE-BEZEL MIXED-RATIO BENTO (9:16 + 16:9)
+       ===================================================================== */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 360px 1fr 1fr;
+      grid-template-rows: 290px 290px;
+      gap: 16px;
+    }
+    .bento-shell {
+      position: relative;
+      padding: 6px;
+      border-radius: 26px;
+      background:
+        radial-gradient(360px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(142, 169, 242, 0.28), transparent 60%),
+        rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--line);
+      text-decoration: none;
+      color: var(--ink);
+      display: flex;
+      transition: transform 0.45s var(--ease-fluid), border-color 0.3s;
+    }
+    .bento-shell:hover {
+      transform: translateY(-4px);
+      border-color: var(--line-hi);
+    }
+    .bento-vertical {
+      grid-row: 1 / span 2;
+    }
+    .bento-wide {
+      grid-column: 2 / span 2;
+    }
+    .bento-core {
+      flex: 1;
+      border-radius: 20px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    }
+    .bento-core::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("../assets/hero-left.jpg");
+      background-size: cover;
+      background-position: center;
+      opacity: 0.24;
+      transition: transform 0.65s var(--ease-fluid), opacity 0.45s;
+    }
+    .bento-shell:hover .bento-core::before {
+      transform: scale(1.06);
+      opacity: 0.36;
+    }
+    .bento-top, .bento-bottom {
+      position: relative;
+      z-index: 2;
+    }
+    .bento-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .ratio-pill {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(13, 15, 19, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--accent-soft);
+    }
+    .bento-arrow {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.09);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.35s var(--ease-fluid), background 0.35s;
+    }
+    .bento-shell:hover .bento-arrow {
+      background: var(--accent);
+      transform: translate(2px, -2px) scale(1.06);
+    }
+    .bento-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-stretch: 75%;
+      text-transform: uppercase;
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .bento-desc {
+      font-size: 13px;
+      color: var(--ink-2);
+      line-height: 1.5;
+    }
+
+    /* =====================================================================
+       PICK B: INTERACTIVE HOVER-EXPAND FILM STRIP ACCORDION
+       ===================================================================== */
+    .accordion-strip {
+      display: flex;
+      gap: 14px;
+      height: 520px;
+    }
+    .acc-panel {
+      flex: 1;
+      padding: 6px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--line);
+      text-decoration: none;
+      color: var(--ink);
+      display: flex;
+      transition: flex 0.65s var(--ease-fluid), border-color 0.35s;
+      overflow: hidden;
+    }
+    .acc-panel:hover, .acc-panel.active {
+      flex: 2.8;
+      border-color: var(--accent-soft);
+    }
+    .acc-core {
+      flex: 1;
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .acc-num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-soft);
+    }
+    .acc-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-stretch: 75%;
+      text-transform: uppercase;
+      font-size: clamp(24px, 3vw, 40px);
+      line-height: 0.98;
+      margin-bottom: 8px;
+    }
+    .acc-desc {
+      font-size: 14px;
+      color: var(--ink-2);
+      max-width: 38ch;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s var(--ease-fluid), transform 0.4s var(--ease-fluid);
+    }
+    .acc-panel:hover .acc-desc, .acc-panel.active .acc-desc {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =====================================================================
+       PICK C: EDITORIAL INDEX TABLE + FLOATING 3D ASPECT-MORPHING MONITOR
+       ===================================================================== */
+    .idx-table {
+      position: relative;
+      border-top: 1px solid var(--line);
+    }
+    .idx-row {
+      display: grid;
+      grid-template-columns: 90px 1.4fr 1fr 140px 60px;
+      align-items: center;
+      gap: 20px;
+      padding: 26px 16px;
+      border-bottom: 1px solid var(--line);
+      text-decoration: none;
+      color: var(--ink);
+      transition: background 0.3s, padding-left 0.35s var(--ease-fluid);
+    }
+    .idx-row:hover {
+      background: rgba(55, 102, 230, 0.08);
+      padding-left: 28px;
+    }
+    .idx-num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-soft);
+    }
+    .idx-name {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-stretch: 75%;
+      text-transform: uppercase;
+      font-size: clamp(26px, 3.6vw, 44px);
+      line-height: 1;
+    }
+    .idx-desc {
+      font-size: 14px;
+      color: var(--ink-2);
+    }
+    .idx-spec {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-3);
+      text-align: right;
+    }
+    .idx-go {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      justify-self: end;
+      transition: all 0.3s var(--ease-fluid);
+    }
+    .idx-row:hover .idx-go {
+      background: var(--accent);
+      border-color: var(--accent);
+      transform: rotate(-12deg) scale(1.08);
+    }
+
+    /* Floating Monitor that morphs between 9:16 and 16:9 */
+    .floating-monitor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      height: 170px;
+      padding: 6px;
+      border-radius: 20px;
+      background: rgba(21, 23, 28, 0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(142, 169, 242, 0.45);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.65);
+      pointer-events: none;
+      z-index: 700;
+      opacity: 0;
+      transform: translate3d(0, 0, 0) scale(0.85);
+      transition: width 0.45s var(--ease-fluid), height 0.45s var(--ease-fluid), opacity 0.25s;
+    }
+    .floating-monitor.visible {
+      opacity: 1;
+    }
+    .floating-monitor.vertical {
+      width: 190px;
+      height: 310px;
+    }
+    .floating-monitor-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink);
+    }
+
+    @media (max-width: 960px) {
+      .bento-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+      .bento-vertical, .bento-wide { grid-column: auto; grid-row: auto; min-height: 240px; }
+      .accordion-strip { flex-direction: column; height: auto; }
+      .idx-row { grid-template-columns: 50px 1fr 44px; }
+      .idx-desc, .idx-spec, .floating-monitor { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="lab-bar">
+    <div class="lab-meta">
+      <a class="lab-back" href="index.html">← All Components</a>
+      <span class="lab-title">03 · Selected Work (4 Categories)</span>
+    </div>
+    <div class="lab-tabs" role="tablist">
+      <button class="lab-tab" role="tab" aria-selected="true" data-pick="A">Pick A · Mixed-Ratio Bento (9:16 + 16:9)</button>
+      <button class="lab-tab" role="tab" aria-selected="false" data-pick="B">Pick B · Film-Strip Accordion</button>
+      <button class="lab-tab" role="tab" aria-selected="false" data-pick="C">Pick C · Editorial Index + Morph Monitor</button>
+    </div>
+    <button class="lab-pick-btn" id="selectPickBtn" type="button">Select Pick A for Portfolio</button>
+  </header>
+
+  <section class="research-strip">
+    <div class="research-card">
+      <div>
+        <strong>Pick A (True Aspect-Ratio Bento)</strong>
+        Instead of 4 identical 2x2 boxes, "Short-form & Reels" gets a true tall 9:16 hardware tray on the left while Long-form, SaaS, and Cinematic sit in 16:9 widescreen frames.
+      </div>
+      <div>
+        <strong>Pick B (Hover-Expand Film Accordion)</strong>
+        4 cinema pillars that expand smoothly on hover, keeping all 4 disciplines above the fold on desktop.
+      </div>
+      <div>
+        <strong>Pick C (Editorial Index + Morphing Monitor)</strong>
+        Hovering over each discipline row glides a floating hardware monitor that physically morphs between 9:16 vertical and 16:9 widescreen!
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       PICK A: ASYMMETRIC DOUBLE-BEZEL MIXED-RATIO BENTO
+       =================================================================== -->
+  <section class="pick-stage active" id="stage-A">
+    <div class="sec-head">
+      <h1 class="sec-h2">Selected work</h1>
+      <span class="sec-meta">04 Disciplines · True Aspect Ratios</span>
+    </div>
+
+    <div class="bento-grid" id="bentoGrid">
+      <!-- 1. Tall 9:16 Vertical Tile -->
+      <a class="bento-shell bento-vertical" href="#short-form">
+        <div class="bento-core" style="background: linear-gradient(165deg, #262f45 0%, #141824 100%);">
+          <div class="bento-top">
+            <span class="ratio-pill">9:16 VERTICAL · REELS</span>
+            <span class="bento-arrow">↗</span>
+          </div>
+          <div class="bento-bottom">
+            <div class="bento-title">Short-form & Reels</div>
+            <p class="bento-desc">Vertical edits for Reels, Shorts and social feeds engineered for hook retention.</p>
+          </div>
+        </div>
+      </a>
+
+      <!-- 2. 16:9 Landscape Tile -->
+      <a class="bento-shell" href="#long-form">
+        <div class="bento-core" style="background: linear-gradient(165deg, #352c36 0%, #19151b 100%);">
+          <div class="bento-top">
+            <span class="ratio-pill">16:9 LANDSCAPE · NARRATIVE</span>
+            <span class="bento-arrow">↗</span>
+          </div>
+          <div class="bento-bottom">
+            <div class="bento-title">Long-form Videos</div>
+            <p class="bento-desc">Longer edits paced to hold attention from start to finish.</p>
+          </div>
+        </div>
+      </a>
+
+      <!-- 3. 16:9 Landscape Tile -->
+      <a class="bento-shell" href="#saas">
+        <div class="bento-core" style="background: linear-gradient(165deg, #233236 0%, #131b1e 100%);">
+          <div class="bento-top">
+            <span class="ratio-pill">16:9 UI MOTION · PRODUCT</span>
+            <span class="bento-arrow">↗</span>
+          </div>
+          <div class="bento-bottom">
+            <div class="bento-title">SaaS Demos</div>
+            <p class="bento-desc">Product walkthroughs that make software easy to follow.</p>
+          </div>
+        </div>
+      </a>
+
+      <!-- 4. 2.39:1 Widescreen Cinema Tile -->
+      <a class="bento-shell bento-wide" href="#cinematic">
+        <div class="bento-core" style="background: linear-gradient(165deg, #3a3226 0%, #1b1712 100%);">
+          <div class="bento-top">
+            <span class="ratio-pill">2.39:1 ANAMORPHIC · COLOR & SOUND</span>
+            <span class="bento-arrow">↗</span>
+          </div>
+          <div class="bento-bottom">
+            <div class="bento-title">Cinematic Content</div>
+            <p class="bento-desc">Mood-led edits built on rhythm, sound design and colour grading.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       PICK B: INTERACTIVE HOVER-EXPAND FILM STRIP ACCORDION
+       =================================================================== -->
+  <section class="pick-stage" id="stage-B">
+    <div class="sec-head">
+      <h2 class="sec-h2">Selected work</h2>
+      <span class="sec-meta">Hover any film strip to expand</span>
+    </div>
+
+    <div class="accordion-strip">
+      <a class="acc-panel active" href="#short-form">
+        <div class="acc-core" style="background: linear-gradient(180deg, rgba(38,47,69,0.5), rgba(15,18,26,0.95)), url('../assets/hero-left.jpg') center/cover;">
+          <div class="bento-top">
+            <span class="acc-num">01 / 9:16</span>
+            <span class="bento-arrow">↗</span>
+          </div>
+          <div>
+            <div class="acc-title">Short-form & Reels</div>
+            <p class="acc-desc">Vertical edits for Reels, Shorts and social feeds with kinetic typography and punchy transitions.</p>
+          </div>
+        </div>
+      </a>
+
+      <a class="acc-panel" href="#long-form">
+        <div class="acc-core" style="background: linear-gradient(180deg, rgba(53,44,54,0.5), rgba(15,18,26,0.95)), url('../assets/hero-left.jpg') center/cover;">
+          <div class="bento-top">
+            <span class="acc-num">02 / 16:9</span>
+            <span class="bento-arrow">↗</span>
+          </div>
+          <div>
+            <div class="acc-title">Long-form Videos</div>
+            <p class="acc-desc">Longer edits paced to hold attention from start to finish across YouTube and documentaries.</p>
+          </div>
+        </div>
+      </a>
+
+      <a class="acc-panel" href="#saas">
+        <div class="acc-core" style="background: linear-gradient(180deg, rgba(35,50,54,0.5), rgba(15,18,26,0.95)), url('../assets/hero-left.jpg') center/cover;">
+          <div class="bento-top">
+            <span class="acc-num">03 / 16:9</span>
+            <span class="bento-arrow">↗</span>
+          </div>
+          <div>
+            <div class="acc-title">SaaS Demos</div>
+            <p class="acc-desc">Product walkthroughs and launch trailers that make software intuitive and exciting.</p>
+          </div>
+        </div>
+      </a>
+
+      <a class="acc-panel" href="#cinematic">
+        <div class="acc-core" style="background: linear-gradient(180deg, rgba(58,50,38,0.5), rgba(15,18,26,0.95)), url('../assets/hero-left.jpg') center/cover;">
+          <div class="bento-top">
+            <span class="acc-num">04 / 2.39:1</span>
+            <span class="bento-arrow">↗</span>
+          </div>
+          <div>
+            <div class="acc-title">Cinematic Content</div>
+            <p class="acc-desc">Mood-led edits built on rhythm, atmospheric sound design and colour grading.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       PICK C: EDITORIAL INDEX TABLE + MORPHING CURSOR MONITOR
+       =================================================================== -->
+  <section class="pick-stage" id="stage-C">
+    <div class="sec-head">
+      <h2 class="sec-h2">Selected work</h2>
+      <span class="sec-meta">Move cursor across rows · Watch monitor morph aspect ratio</span>
+    </div>
+
+    <div class="idx-table" id="idxTable">
+      <a class="idx-row" href="#short-form" data-orient="vertical" data-ratio="9:16 VERTICAL" data-tone="#262f45">
+        <span class="idx-num">01 / 04</span>
+        <span class="idx-name">Short-form & Reels</span>
+        <span class="idx-desc">Vertical edits for Reels, Shorts and social feeds.</span>
+        <span class="idx-spec">9:16 · 60FPS</span>
+        <span class="idx-go">↗</span>
+      </a>
+      <a class="idx-row" href="#long-form" data-orient="landscape" data-ratio="16:9 WIDESCREEN" data-tone="#352c36">
+        <span class="idx-num">02 / 04</span>
+        <span class="idx-name">Long-form Videos</span>
+        <span class="idx-desc">Longer edits paced to hold attention from start to finish.</span>
+        <span class="idx-spec">16:9 · 24FPS</span>
+        <span class="idx-go">↗</span>
+      </a>
+      <a class="idx-row" href="#saas" data-orient="landscape" data-ratio="16:9 PRODUCT UI" data-tone="#233236">
+        <span class="idx-num">03 / 04</span>
+        <span class="idx-name">SaaS Demos</span>
+        <span class="idx-desc">Product walkthroughs that make software easy to follow.</span>
+        <span class="idx-spec">16:9 · 4K UI</span>
+        <span class="idx-go">↗</span>
+      </a>
+      <a class="idx-row" href="#cinematic" data-orient="landscape" data-ratio="2.39:1 ANAMORPHIC" data-tone="#3a3226">
+        <span class="idx-num">04 / 04</span>
+        <span class="idx-name">Cinematic Content</span>
+        <span class="idx-desc">Mood-led edits built on rhythm, sound and colour.</span>
+        <span class="idx-spec">2.39:1 · LOG/LUT</span>
+        <span class="idx-go">↗</span>
+      </a>
+    </div>
+
+    <div class="floating-monitor" id="floatMonitor">
+      <div class="floating-monitor-screen" id="floatScreen">
+        <div style="display:flex; justify-content:space-between;">
+          <span id="floatRatio">9:16 VERTICAL</span>
+          <span style="color:#ef4444;">● PREVIEW</span>
+        </div>
+        <div style="background:rgba(13,15,19,0.75); padding:6px 10px; border-radius:8px;">
+          Click to open category reel →
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // 1. Pick A: Cursor Spotlight Refraction
+    document.querySelectorAll(".bento-shell").forEach((card) => {
+      card.addEventListener("pointermove", (e) => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty("--spot-x", `${(e.clientX - r.left).toFixed(1)}px`);
+        card.style.setProperty("--spot-y", `${(e.clientY - r.top).toFixed(1)}px`);
+      });
+    });
+
+    // 2. Pick B: Accordion active hover
+    const accPanels = document.querySelectorAll(".acc-panel");
+    accPanels.forEach((p) => {
+      p.addEventListener("pointerenter", () => {
+        accPanels.forEach((x) => x.classList.remove("active"));
+        p.classList.add("active");
+      });
+    });
+
+    // 3. Pick C: Floating Aspect-Morphing Monitor
+    const idxTable = document.getElementById("idxTable");
+    const floatMonitor = document.getElementById("floatMonitor");
+    const floatScreen = document.getElementById("floatScreen");
+    const floatRatio = document.getElementById("floatRatio");
+
+    idxTable.addEventListener("pointermove", (e) => {
+      floatMonitor.style.transform = `translate3d(${e.clientX + 24}px, ${e.clientY - 90}px, 0) scale(1)`;
+    });
+    idxTable.addEventListener("pointerenter", () => floatMonitor.classList.add("visible"));
+    idxTable.addEventListener("pointerleave", () => floatMonitor.classList.remove("visible"));
+
+    document.querySelectorAll(".idx-row").forEach((row) => {
+      row.addEventListener("pointerenter", () => {
+        const isVert = row.dataset.orient === "vertical";
+        floatMonitor.classList.toggle("vertical", isVert);
+        floatRatio.textContent = row.dataset.ratio;
+        floatScreen.style.backgroundImage = `linear-gradient(160deg, ${row.dataset.tone}aa, rgba(13,15,19,0.85)), url('../assets/hero-left.jpg')`;
+      });
+    });
+
+    // 4. Component Pick Switcher & LocalStorage Persistence
+    const COMPONENT_ID = "03-category-bento";
+    let currentPick = localStorage.getItem(`awwwards-pick:${COMPONENT_ID}`) || "A";
+    const tabs = document.querySelectorAll(".lab-tab");
+    const stages = {
+      A: document.getElementById("stage-A"),
+      B: document.getElementById("stage-B"),
+      C: document.getElementById("stage-C"),
+    };
+    const selectBtn = document.getElementById("selectPickBtn");
+
+    function setActiveTab(pick) {
+      currentPick = pick;
+      tabs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.pick === pick)));
+      Object.entries(stages).forEach(([k, el]) => el.classList.toggle("active", k === pick));
+      const saved = localStorage.getItem(`awwwards-pick:${COMPONENT_ID}`);
+      if (saved === pick) {
+        selectBtn.textContent = `✓ Pick ${pick} Selected`;
+        selectBtn.classList.add("picked");
+      } else {
+        selectBtn.textContent = `Select Pick ${pick} for Portfolio`;
+        selectBtn.classList.remove("picked");
+      }
+    }
+
+    tabs.forEach((t) => t.addEventListener("click", () => setActiveTab(t.dataset.pick)));
+    selectBtn.addEventListener("click", () => {
+      localStorage.setItem(`awwwards-pick:${COMPONENT_ID}`, currentPick);
+      setActiveTab(currentPick);
+    });
+    setActiveTab(currentPick);
+  </script>
+</body>
+</html>
