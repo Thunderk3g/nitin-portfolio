@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getDashboardCounts } from "@/lib/db/queries";
 import { SECTION_SPECS } from "@/lib/admin/content-spec";
+import SeedProductionButton from "./_components/SeedProductionButton";
 
 export const dynamic = "force-dynamic";
 
@@ -80,10 +81,11 @@ export default async function Dashboard() {
             Welcome! Pick any section below to update text, swap photos, or upload new videos. Changes go live immediately.
           </p>
         </div>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
           <Link href="/admin/projects/new" className="btn btn-sm">
             + Upload new video project
           </Link>
+          <SeedProductionButton />
           <Link href="/" target="_blank" rel="noreferrer" className="btn-ghost btn-sm">
             View live website ↗
           </Link>

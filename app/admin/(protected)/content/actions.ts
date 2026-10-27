@@ -1,11 +1,24 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
+import { eq } from "drizzle-orm";
 import { getAdminUser } from "@/lib/supabase/server";
 import { db, isConnectionError, withDbRetry } from "@/lib/db";
-import { siteContent } from "@/lib/db/schema";
-import { httpsSaveSection } from "@/lib/db/https-fallback";
+import { mediaAssets, projects, siteContent } from "@/lib/db/schema";
+import {
+  httpsCreateProject,
+  httpsDeleteProject,
+  httpsListProjects,
+  httpsRecordMedia,
+  httpsSaveSection,
+} from "@/lib/db/https-fallback";
 import { SECTION_SPECS } from "@/lib/admin/content-spec";
+import { SECTION_KEYS } from "@/lib/site-content";
+import {
+  PRODUCTION_PROJECTS,
+  PRODUCTION_SITE_CONTENT,
+  SEED_MEDIA_FILES,
+} from "@/lib/seed-data";
 import { PROJECTS_TAG, SITE_CONTENT_TAG } from "@/lib/content-cache";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
@@ -74,5 +87,102 @@ export async function saveSectionAction(
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Save failed." };
+  }
+}
+
+/** Seed all 8 site_content sections, 12 curated projects, and 18 Nano Banana media assets. */
+export async function seedProductionAction(): Promise<ActionResult> {
+  const user = await getAdminUser();
+  if (!user) return { ok: false, error: "Not authorized." };
+
+  try {
+    try {
+      await withDbRetry(async () => {
+        for (const key of SECTION_KEYS) {
+          const val = PRODUCTION_SITE_CONTENT[key];
+          await db
+            .insert(siteContent)
+            .values({ key, value: val })
+            .onConflictDoUpdate({
+              target: siteContent.key,
+              set: { value: val, updatedAt: new Date() },
+            });
+        }
+
+        const existingProjects = await db.select().from(projects);
+        for (const p of existingProjects) {
+          await db.delete(projects).where(eq(projects.id, p.id));
+        }
+        for (const item of PRODUCTION_PROJECTS) {
+          await db.insert(projects).values({
+            category: item.category,
+            title: item.title,
+            role: item.role,
+            videoUrl: item.videoUrl,
+            posterUrl: item.posterUrl,
+            brief: item.brief,
+            contribution: item.contribution,
+            tools: item.tools,
+            status: item.status,
+            sortOrder: item.sortOrder,
+          });
+        }
+
+        for (const m of SEED_MEDIA_FILES) {
+          await db
+            .insert(mediaAssets)
+            .values({
+              path: m.path,
+              url: m.url,
+              filename: m.filename,
+              mime: "image/jpeg",
+              bytes: m.bytes,
+              kind: "image",
+            })
+            .onConflictDoUpdate({
+              target: mediaAssets.path,
+              set: {
+                url: m.url,
+                filename: m.filename,
+                mime: "image/jpeg",
+                bytes: m.bytes,
+              },
+            });
+        }
+      });
+    } catch (dbErr) {
+      if (!isConnectionError(dbErr)) throw dbErr;
+      for (const key of SECTION_KEYS) {
+        await httpsSaveSection(key, PRODUCTION_SITE_CONTENT[key]);
+      }
+      const existing = await httpsListProjects();
+      for (const p of existing) {
+        await httpsDeleteProject(p.id);
+      }
+      for (const item of PRODUCTION_PROJECTS) {
+        await httpsCreateProject(item);
+      }
+      for (const m of SEED_MEDIA_FILES) {
+        await httpsRecordMedia({
+          path: m.path,
+          filename: m.filename,
+          mime: "image/jpeg",
+          bytes: m.bytes,
+        });
+      }
+    }
+
+    revalidateTag(SITE_CONTENT_TAG);
+    revalidateTag(PROJECTS_TAG);
+    revalidatePath("/", "layout");
+    revalidatePath("/projects");
+    revalidatePath("/contact");
+    revalidatePath("/admin");
+    revalidatePath("/admin/content");
+    revalidatePath("/admin/projects");
+    revalidatePath("/admin/media");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Seed failed." };
   }
 }
