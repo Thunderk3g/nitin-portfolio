@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const GRADE_SCENES = [
   {
@@ -46,12 +46,28 @@ const GRADE_SCENES = [
 
 export default function CraftGradeWipe() {
   const stageRef = useRef<HTMLDivElement>(null);
+  const pointerActiveRef = useRef(false);
   const [wipePct, setWipePct] = useState(54);
   const [sceneIdx, setSceneIdx] = useState(0);
   const scene = GRADE_SCENES[sceneIdx] || GRADE_SCENES[0];
 
+  // Scroll-linked automatic colour-grade wipe sweep as user scrolls past section
+  useEffect(() => {
+    const onScroll = () => {
+      if (pointerActiveRef.current || !stageRef.current) return;
+      const rect = stageRef.current.getBoundingClientRect();
+      const vh = window.innerHeight || 900;
+      const raw = (vh - rect.top) / (vh + rect.height);
+      const pct = Math.max(18, Math.min(82, 18 + raw * 64));
+      setWipePct(pct);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const updateWipe = (clientX: number) => {
     if (!stageRef.current) return;
+    pointerActiveRef.current = true;
     const rect = stageRef.current.getBoundingClientRect();
     if (rect.width <= 0) return;
     const pct = Math.max(4, Math.min(96, ((clientX - rect.left) / rect.width) * 100));
@@ -60,7 +76,7 @@ export default function CraftGradeWipe() {
 
   return (
     <section className="craft-grade wrap" id="craft-grade" aria-labelledby="craft-grade-title">
-      <div className="craft-grade-head">
+      <div className="craft-grade-head" data-reveal="up">
         <div>
           <p className="eyebrow">06 / EDITOR CRAFT · COLOUR & FINISHING</p>
           <h2 className="display craft-grade-title" id="craft-grade-title">
@@ -84,7 +100,7 @@ export default function CraftGradeWipe() {
       </div>
 
       {/* Double-Bezel Interactive Split-Wipe Monitor */}
-      <div className="craft-wipe-bezel">
+      <div className="craft-wipe-bezel" data-reveal="scale">
         <div className="craft-wipe-hud">
           <span>SOURCE: {scene.camera}</span>
           <span>SPLIT WIPE: {Math.round(wipePct)}%</span>
@@ -98,6 +114,9 @@ export default function CraftGradeWipe() {
             if (e.pointerType === "mouse" || e.buttons > 0) {
               updateWipe(e.clientX);
             }
+          }}
+          onPointerLeave={() => {
+            pointerActiveRef.current = false;
           }}
           onClick={(e) => updateWipe(e.clientX)}
         >

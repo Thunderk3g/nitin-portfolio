@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { ReelItem } from "@/lib/site-content";
 import { shadedMediaStyle } from "@/lib/media-style";
@@ -16,14 +16,32 @@ function formatTimelineTC(pct: number): string {
 }
 
 export default function WorkReelTimeline({ reels }: { reels: ReelItem[] }) {
+  const deckRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
+  const userInteractedRef = useRef(false);
   const [playheadPct, setPlayheadPct] = useState(14);
   const count = Math.max(1, reels.length);
   const activeIdx = Math.min(count - 1, Math.floor((playheadPct / 100) * count));
   const activeReel = reels[activeIdx] || reels[0];
 
+  // Scroll-linked timeline playhead advance when scrolling through the section
+  useEffect(() => {
+    const onScroll = () => {
+      if (userInteractedRef.current || !deckRef.current) return;
+      const rect = deckRef.current.getBoundingClientRect();
+      const vh = window.innerHeight || 900;
+      // Progress from 0 when top enters bottom of viewport to 1 when bottom leaves top
+      const raw = (vh - rect.top) / (vh + rect.height);
+      const clamped = Math.max(0.08, Math.min(0.94, raw));
+      setPlayheadPct(clamped * 100);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const handleScrub = (clientX: number) => {
     if (!timelineRef.current) return;
+    userInteractedRef.current = true;
     const rect = timelineRef.current.getBoundingClientRect();
     if (rect.width <= 0) return;
     const pct = Math.max(0, Math.min(99.9, ((clientX - rect.left) / rect.width) * 100));
@@ -33,9 +51,9 @@ export default function WorkReelTimeline({ reels }: { reels: ReelItem[] }) {
   if (!activeReel) return null;
 
   return (
-    <div className="nle-timeline-deck wrap">
+    <div className="nle-timeline-deck wrap" ref={deckRef}>
       {/* Widescreen Program Monitor */}
-      <div className="nle-program-monitor">
+      <div className="nle-program-monitor" data-reveal="scale">
         <div className="nle-monitor-topbar">
           <span className="nle-monitor-badge">
             <span className="nle-rec-dot" />
@@ -45,7 +63,10 @@ export default function WorkReelTimeline({ reels }: { reels: ReelItem[] }) {
         </div>
 
         <div className="nle-monitor-stage ph ph-img" style={shadedMediaStyle(activeReel.tone, activeReel.poster)}>
-          <div className="nle-monitor-safezone" aria-hidden="true" />
+          <div className="nle-monitor-grid" aria-hidden="true" />
+          <div className="nle-monitor-safezone" aria-hidden="true">
+            <span className="nle-center-cross">+</span>
+          </div>
           <div className="nle-monitor-overlay">
             <div className="nle-monitor-meta">
               <span className="nle-clip-tag">
@@ -69,6 +90,9 @@ export default function WorkReelTimeline({ reels }: { reels: ReelItem[] }) {
           if (e.pointerType === "mouse" || e.buttons > 0) {
             handleScrub(e.clientX);
           }
+        }}
+        onPointerLeave={() => {
+          userInteractedRef.current = false;
         }}
         onClick={(e) => handleScrub(e.clientX)}
       >
@@ -99,6 +123,7 @@ export default function WorkReelTimeline({ reels }: { reels: ReelItem[] }) {
                 style={{ "--clip-tone": r.tone } as React.CSSProperties}
                 onClick={(e) => {
                   e.stopPropagation();
+                  userInteractedRef.current = true;
                   setPlayheadPct(((i + 0.5) / count) * 100);
                 }}
               >

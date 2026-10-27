@@ -86,8 +86,10 @@ export default function SiteHeader({
               className="nav-roll-link"
               aria-current={l.id === current ? "page" : undefined}
             >
-              <span className="nav-roll-inner" data-text={l.label}>
-                {l.label}
+              <span className="nav-roll-clip">
+                <span className="nav-roll-inner" data-text={l.label}>
+                  {l.label}
+                </span>
               </span>
             </Link>
           ))}

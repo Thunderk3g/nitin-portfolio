@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -12,10 +13,10 @@ const SPOTLIGHT_SELECTOR =
 const MAGNETIC_SELECTOR = ".btn, .btn-ghost, .feature-go";
 
 /**
- * CinemaMotion: Awwwards-tier fluid scroll & haptic interaction engine.
+ * CinemaMotion: Awwwards-tier Lenis Smooth Scroll & GSAP ScrollTrigger engine.
+ * - Real Lenis smooth scroll synced to gsap.ticker + ScrollTrigger.update
  * - Top Cinema Timecode Scroll Progress Bar
- * - Fluid inertia wheel smoothing on desktop pointers (synced with ScrollTrigger)
- * - GSAP ScrollTrigger sticky-stack depth & section reveal choreography
+ * - Scroll-scrubbed parallax, optical stage expansion, and staggered section tension
  * - Zero-rerender pointer spotlight tracking (--spot-x, --spot-y)
  * - Magnetic button pull physics (--mag-x, --mag-y)
  * Automatically degrades to static under prefers-reduced-motion: reduce.
@@ -30,7 +31,6 @@ export default function CinemaMotion() {
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Update top scroll progress bar
     const updateScrollProgress = () => {
       if (!barFillRef.current) return;
       const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
@@ -46,129 +46,146 @@ export default function CinemaMotion() {
       };
     }
 
-    // 1. Fluid Wheel Smooth Scroll (Desktop Mouse Wheel Inertia)
-    let smoothTargetY = window.scrollY;
-    let smoothCurrentY = window.scrollY;
-    let smoothRaf = 0;
-    let isWheelSmoothing = false;
+    // 1. Lenis Smooth Scroll Engine synced with GSAP Ticker + ScrollTrigger
+    const lenis = new Lenis({
+      duration: 1.08,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      wheelMultiplier: 0.95,
+      touchMultiplier: 1.5,
+      prevent: (node: HTMLElement) =>
+        document.body.style.overflow === "hidden" ||
+        Boolean(node?.closest?.(".player-backdrop, .cmdk-backdrop, .adm-modal, .adm-side")),
+    });
 
-    const tickSmoothScroll = () => {
-      const diff = smoothTargetY - smoothCurrentY;
-      if (Math.abs(diff) > 0.6) {
-        smoothCurrentY += diff * 0.14;
-        window.scrollTo(0, smoothCurrentY);
-        ScrollTrigger.update();
-        smoothRaf = requestAnimationFrame(tickSmoothScroll);
-      } else {
-        smoothCurrentY = smoothTargetY;
-        window.scrollTo(0, smoothTargetY);
-        isWheelSmoothing = false;
-        smoothRaf = 0;
+    lenis.on("scroll", () => {
+      ScrollTrigger.update();
+      updateScrollProgress();
+    });
+
+    const onTick = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+    gsap.ticker.add(onTick);
+    gsap.ticker.lagSmoothing(0);
+
+    // Handle hash anchor links smoothly via Lenis
+    const onAnchorClick = (e: MouseEvent) => {
+      const target = (e.target as Element | null)?.closest?.("a[href^='#'], a[href^='/#']") as HTMLAnchorElement | null;
+      if (!target) return;
+      const href = target.getAttribute("href") || "";
+      const hashIdx = href.indexOf("#");
+      if (hashIdx === -1) return;
+      const id = href.slice(hashIdx + 1);
+      if (!id || id.includes("/")) return;
+      const el = document.getElementById(id);
+      if (el && (href.startsWith("#") || window.location.pathname === "/")) {
+        lenis.scrollTo(el, { offset: -24, duration: 1.1 });
       }
     };
-
-    const onWheel = (e: WheelEvent) => {
-      // Skip smooth wheel if modal is open, modifier keys pressed, or inside scrollable element
-      if (document.body.style.overflow === "hidden" || e.ctrlKey || e.metaKey || e.shiftKey) return;
-      const target = e.target as HTMLElement | null;
-      if (target?.closest(".player-backdrop, .cmdk-backdrop, .adm-modal, .adm-side")) return;
-      // Only apply on standard vertical wheel steps
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-
-      e.preventDefault();
-      if (!isWheelSmoothing) {
-        smoothCurrentY = window.scrollY;
-        smoothTargetY = window.scrollY;
-        isWheelSmoothing = true;
-      }
-      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-      smoothTargetY = Math.max(0, Math.min(maxScroll, smoothTargetY + e.deltaY * 0.95));
-      if (!smoothRaf) {
-        smoothRaf = requestAnimationFrame(tickSmoothScroll);
-      }
-    };
-
-    window.addEventListener("wheel", onWheel, { passive: false });
+    document.addEventListener("click", onAnchorClick);
 
     // 2. GSAP ScrollTrigger Choreography across all 8 Component Picks
     const ctx = gsap.context(() => {
-      // Sticky-stack 3D depth on Home featured panels
-      const features = gsap.utils.toArray<HTMLElement>(".features .feature");
-      features.forEach((card, i) => {
-        if (i < features.length - 1) {
-          const nextCard = features[i + 1];
-          gsap.to(card, {
-            scale: 0.935,
-            opacity: 0.48,
-            ease: "none",
-            scrollTrigger: {
-              trigger: nextCard,
-              start: "top bottom",
-              end: "top top",
-              scrub: 0.6,
-              invalidateOnRefresh: true,
-            },
-          });
-        }
-
-        const inner = card.querySelector<HTMLElement>(".feature-inner");
-        if (inner) {
+      // Hero portrait & ink canvas depth parallax
+      const heroEl = document.getElementById("hero");
+      if (heroEl) {
+        const portraitImgs = heroEl.querySelectorAll<HTMLElement>(".hero-portrait img");
+        if (portraitImgs.length) {
           gsap.fromTo(
-            inner,
-            { y: 36, opacity: 0.65 },
+            portraitImgs,
+            { yPercent: 0, scale: 1 },
             {
-              y: 0,
-              opacity: 1,
-              ease: "power2.out",
+              yPercent: 9,
+              scale: 1.045,
+              ease: "none",
               scrollTrigger: {
-                trigger: card,
-                start: "top 85%",
-                end: "top 20%",
-                scrub: 0.5,
+                trigger: heroEl,
+                start: "top top",
+                end: "bottom top",
+                scrub: true,
               },
             },
           );
         }
-      });
+      }
 
-      // Scroll-linked parallax on Pick C editorial category rows
-      const catCards = gsap.utils.toArray<HTMLElement>(".work .cat");
-      catCards.forEach((cat, i) => {
-        const ph = cat.querySelector<HTMLElement>(".cat-media");
-        if (!ph) return;
+      // Section headers scrubbed entrance
+      const headers = gsap.utils.toArray<HTMLElement>(
+        ".work-head-pick-c, .allwork-head, .theater-deck-header, .craft-grade-head, .partners-bento-head",
+      );
+      headers.forEach((head) => {
         gsap.fromTo(
-          ph,
-          { y: i % 2 === 0 ? 10 : 18 },
+          head,
+          { y: 34 },
           {
-            y: i % 2 === 0 ? -8 : -14,
-            ease: "none",
+            y: 0,
+            ease: "power2.out",
             scrollTrigger: {
-              trigger: cat,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 0.8,
+              trigger: head,
+              start: "top 95%",
+              end: "top 55%",
+              scrub: 0.4,
             },
           },
         );
       });
 
-      // Cinema stages subtle scale-in tension on scroll
+      // Editorial Category Rows (03 · Pick C) staggered scroll glide
+      const catRows = gsap.utils.toArray<HTMLElement>(".work .cat.cat-row");
+      catRows.forEach((row) => {
+        gsap.fromTo(
+          row,
+          { y: 28 },
+          {
+            y: 0,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: row,
+              start: "top 94%",
+              end: "top 60%",
+              scrub: 0.4,
+            },
+          },
+        );
+      });
+
+      // Widescreen Cinema Stages optical zoom-in on scroll
       const stages = gsap.utils.toArray<HTMLElement>(
         ".nle-program-monitor, .theater-scope-bezel, .craft-wipe-bezel, .cta-inner",
       );
       stages.forEach((stage) => {
         gsap.fromTo(
           stage,
-          { y: 28, scale: 0.985 },
+          { y: 40, scale: 0.965 },
           {
             y: 0,
             scale: 1,
             ease: "power2.out",
             scrollTrigger: {
               trigger: stage,
-              start: "top 92%",
-              end: "top 45%",
-              scrub: 0.65,
+              start: "top 94%",
+              end: "top 48%",
+              scrub: 0.5,
+            },
+          },
+        );
+      });
+
+      // Partner Monogram Bento Tiles cascade
+      const bentoTiles = gsap.utils.toArray<HTMLElement>(".partner-bento-tile");
+      bentoTiles.forEach((tile, i) => {
+        gsap.fromTo(
+          tile,
+          { y: 24 + (i % 4) * 8 },
+          {
+            y: 0,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: tile,
+              start: "top 95%",
+              end: "top 62%",
+              scrub: 0.4,
             },
           },
         );
@@ -179,7 +196,7 @@ export default function CinemaMotion() {
       if (giantWord) {
         gsap.fromTo(
           giantWord,
-          { yPercent: 18 },
+          { yPercent: 24 },
           {
             yPercent: 0,
             ease: "power2.out",
@@ -187,7 +204,7 @@ export default function CinemaMotion() {
               trigger: ".site-footer-wrap",
               start: "top bottom",
               end: "bottom bottom",
-              scrub: 0.6,
+              scrub: 0.4,
             },
           },
         );
@@ -219,7 +236,6 @@ export default function CinemaMotion() {
       const target = e.target as Element | null;
       if (!target || !target.closest) return;
 
-      // Spotlight surface coordinates
       const spotEl = target.closest<HTMLElement>(SPOTLIGHT_SELECTOR);
       if (spotEl) {
         const rect = spotEl.getBoundingClientRect();
@@ -227,7 +243,6 @@ export default function CinemaMotion() {
         spotEl.style.setProperty("--spot-y", `${(e.clientY - rect.top).toFixed(1)}px`);
       }
 
-      // Magnetic button pull
       const magEl = target.closest<HTMLElement>(MAGNETIC_SELECTOR);
       if (magEl) {
         if (activeMag && activeMag !== magEl) {
@@ -258,9 +273,10 @@ export default function CinemaMotion() {
 
     return () => {
       window.removeEventListener("scroll", updateScrollProgress);
-      window.removeEventListener("wheel", onWheel);
+      document.removeEventListener("click", onAnchorClick);
       window.removeEventListener("pointermove", onPointerMove);
-      if (smoothRaf) cancelAnimationFrame(smoothRaf);
+      gsap.ticker.remove(onTick);
+      lenis.destroy();
       if (rafId) cancelAnimationFrame(rafId);
       if (activeMag) {
         activeMag.style.setProperty("--mag-x", "0px");

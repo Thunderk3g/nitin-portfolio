@@ -7,9 +7,24 @@ import { shadedMediaStyle } from "@/lib/media-style";
 import { Arrow } from "./icons";
 
 const LUT_PROFILES = [
-  { name: "KODAK 2383 PRINT", swatches: ["#0d1322", "#3766e6", "#d99b52", "#f4efe6"] },
-  { name: "ANAMORPHIC TEAL", swatches: ["#091a24", "#1f7a8c", "#e07a5f", "#f4efe6"] },
-  { name: "SILVER HALIDE", swatches: ["#12141a", "#5c677d", "#9aa6bd", "#ffffff"] },
+  {
+    name: "KODAK 2383 PRINT",
+    swatches: ["#0d1322", "#3766e6", "#d99b52", "#f4efe6"],
+    flare:
+      "radial-gradient(80% 60% at 75% 28%, rgba(217, 155, 82, 0.34), transparent 60%), radial-gradient(75% 65% at 22% 72%, rgba(55, 102, 230, 0.42), transparent 62%)",
+  },
+  {
+    name: "ANAMORPHIC TEAL",
+    swatches: ["#091a24", "#1f7a8c", "#e07a5f", "#f4efe6"],
+    flare:
+      "radial-gradient(80% 60% at 28% 30%, rgba(31, 122, 140, 0.45), transparent 60%), radial-gradient(75% 65% at 78% 72%, rgba(224, 122, 95, 0.36), transparent 62%)",
+  },
+  {
+    name: "SILVER HALIDE",
+    swatches: ["#12141a", "#5c677d", "#9aa6bd", "#ffffff"],
+    flare:
+      "radial-gradient(75% 55% at 50% 35%, rgba(154, 166, 189, 0.36), transparent 62%), radial-gradient(85% 70% at 80% 80%, rgba(55, 102, 230, 0.3), transparent 65%)",
+  },
 ];
 
 export default function AnamorphicTheaterDeck({ featured }: { featured: ReelItem[] }) {
@@ -19,11 +34,15 @@ export default function AnamorphicTheaterDeck({ featured }: { featured: ReelItem
 
   if (!current) return null;
 
+  const baseStyle = shadedMediaStyle(current.tone, current.poster);
+  const combinedBg = current.poster
+    ? baseStyle.backgroundImage
+    : `${lut.flare}, linear-gradient(180deg, rgba(10,12,18,0.2) 0%, rgba(8,10,15,0.88) 100%)`;
+
   return (
     <div className="features features-pick-c" aria-label="Featured projects">
-      {/* 2.39:1 Anamorphic CinemaScope Theater Stage (Pick C) */}
       <div className="wrap theater-deck-wrap">
-        <div className="theater-deck-header">
+        <div className="theater-deck-header" data-reveal="up">
           <div>
             <p className="eyebrow">05 / ANAMORPHIC THEATER DECK · 2.39:1 SCOPE</p>
             <h3 className="display theater-deck-heading">Featured Director Cuts</h3>
@@ -38,25 +57,35 @@ export default function AnamorphicTheaterDeck({ featured }: { featured: ReelItem
           </div>
         </div>
 
-        {/* 2.39:1 Widescreen Bezel Frame */}
-        <div className="theater-scope-bezel">
+        {/* 2.39:1 Widescreen CinemaScope Bezel Frame */}
+        <div className="theater-scope-bezel" data-reveal="scale">
           <div className="theater-scope-topbar" aria-hidden="true">
             <span>ASPECT 2.39:1 ANAMORPHIC</span>
-            <span>CHAPTER 0{activeIdx + 1} / 0{featured.length}</span>
+            <span>
+              CHAPTER 0{activeIdx + 1} / 0{featured.length}
+            </span>
             <span>24.000 FPS · REC.709</span>
           </div>
 
           <Link
             href={current.href}
             className="theater-scope-screen ph ph-img"
-            style={shadedMediaStyle(current.tone, current.poster)}
+            style={{
+              ...baseStyle,
+              backgroundImage: combinedBg,
+            }}
           >
-            {!current.poster && <span className="ph-label">[Featured video {activeIdx + 1}]</span>}
+            {/* Optical Anamorphic Streak & Scope Crosshair */}
+            <div className="theater-anamorphic-streak" aria-hidden="true" />
+            <div className="theater-scope-guides" aria-hidden="true">
+              <span className="scope-crosshair" />
+            </div>
             <div className="theater-scope-vignette" aria-hidden="true" />
+
             <div className="theater-scope-content">
               <div className="theater-scope-text">
                 <span className="feature-kind">
-                  0{activeIdx + 1} · {current.kind}
+                  CHAPTER 0{activeIdx + 1} · {current.kind}
                 </span>
                 <span className="feature-title display">{current.title}</span>
               </div>
@@ -66,7 +95,7 @@ export default function AnamorphicTheaterDeck({ featured }: { featured: ReelItem
             </div>
           </Link>
 
-          {/* Chapter Switcher Tabs */}
+          {/* Interactive Chapter Switcher Tabs */}
           <div className="theater-chapter-tabs" role="tablist" aria-label="Featured case study chapters">
             {featured.map((f, idx) => {
               const isSelected = idx === activeIdx;
@@ -77,6 +106,7 @@ export default function AnamorphicTheaterDeck({ featured }: { featured: ReelItem
                   role="tab"
                   aria-selected={isSelected}
                   className={isSelected ? "theater-chapter-tab is-active" : "theater-chapter-tab"}
+                  onMouseEnter={() => setActiveIdx(idx)}
                   onClick={() => setActiveIdx(idx)}
                 >
                   <span className="theater-tab-num">CH 0{idx + 1}</span>
@@ -87,29 +117,6 @@ export default function AnamorphicTheaterDeck({ featured }: { featured: ReelItem
             })}
           </div>
         </div>
-      </div>
-
-      {/* Sticky-Stack Anamorphic Cards Below for Scroll Continuity */}
-      <div className="theater-sticky-stack">
-        {featured.map((f, i) => (
-          <Link
-            key={`${f.title}-${i}`}
-            className="feature ph ph-img"
-            style={shadedMediaStyle(f.tone, f.poster)}
-            href={f.href}
-          >
-            {!f.poster && <span className="ph-label">[Featured video {i + 1}]</span>}
-            <div className="feature-inner">
-              <div className="feature-text">
-                <span className="feature-kind">{f.kind}</span>
-                <span className="feature-title display">{f.title}</span>
-              </div>
-              <span className="feature-go" aria-hidden="true">
-                <Arrow size={22} />
-              </span>
-            </div>
-          </Link>
-        ))}
       </div>
     </div>
   );
