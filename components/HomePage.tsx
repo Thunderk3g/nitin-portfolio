@@ -19,7 +19,7 @@ function getMonogram(name: string, index: number): string {
 }
 
 export default function HomePage({ content }: { content: SiteContent }) {
-  const { site, hero, categories, allwork, partners, cta } = content;
+  const { site, hero, categories, allwork, craft, partners, cta } = content;
 
   return (
     <>
@@ -85,11 +85,11 @@ export default function HomePage({ content }: { content: SiteContent }) {
           </div>
 
           {/* Component 05 · Pick C: 2.39:1 Anamorphic Theater Deck */}
-          <AnamorphicTheaterDeck featured={allwork.featured} />
+          <AnamorphicTheaterDeck featured={allwork.featured} title={allwork.featuredTitle} />
         </section>
 
         {/* Component 06 · Pick A: RAW LOG vs. Final Grade Wipe */}
-        <CraftGradeWipe />
+        <CraftGradeWipe craft={craft} />
 
         {/* Component 08 · Pick A: Monogram Partner Bento Grid + Continuous Marquee */}
         <section className="partners partners-pick-a" aria-labelledby="partners-title">

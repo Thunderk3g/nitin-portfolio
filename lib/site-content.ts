@@ -64,8 +64,27 @@ export type ReelItem = {
 export type AllWorkSection = {
   title: string;
   ctaLabel: string;
+  featuredTitle?: string;
   reels: ReelItem[];
   featured: ReelItem[];
+};
+
+export type CraftScene = {
+  code: string;
+  title: string;
+  camera: string;
+  lut: string;
+  beforeImage: string;
+  afterImage: string;
+  lift: string;
+  gamma: string;
+  gain: string;
+};
+
+export type CraftSection = {
+  eyebrow: string;
+  title: string;
+  scenes: CraftScene[];
 };
 
 export type Partner = { name: string; logo: string };
@@ -91,6 +110,7 @@ export type SiteContent = {
   hero: HeroSection;
   categories: CategoriesSection;
   allwork: AllWorkSection;
+  craft: CraftSection;
   partners: PartnersSection;
   cta: CtaSection;
   contact: ContactSection;
@@ -103,6 +123,7 @@ export const SECTION_KEYS: SectionKey[] = [
   "hero",
   "categories",
   "allwork",
+  "craft",
   "partners",
   "cta",
   "contact",
@@ -193,6 +214,7 @@ export const defaultContent: SiteContent = {
   allwork: {
     title: "Work that moves people.",
     ctaLabel: "View my work",
+    featuredTitle: "Featured Director Cuts",
     reels: [
       { kind: "Brand film", title: "[Project title one]", tone: "#273049", poster: "", href: "/projects" },
       { kind: "Campaign", title: "[Project title two]", tone: "#3b2c35", poster: "", href: "/projects" },
@@ -205,6 +227,45 @@ export const defaultContent: SiteContent = {
       { kind: "Brand film", title: "[Featured project one]", tone: "#1d2539", poster: "", href: "/projects" },
       { kind: "Live event", title: "[Featured project two]", tone: "#2e2129", poster: "", href: "/projects" },
       { kind: "Documentary", title: "[Featured project three]", tone: "#1e2b28", poster: "", href: "/projects" },
+    ],
+  },
+  craft: {
+    eyebrow: "06 / EDITOR CRAFT · COLOUR & FINISHING",
+    title: "From Raw Log to Final Cut",
+    scenes: [
+      {
+        code: "SCENE 01",
+        title: "Midnight Commercial · Anamorphic Grade",
+        camera: "ARRI ALEXA MINI LF · LOG-C3",
+        lut: "KODAK 2383 + HALATION 18%",
+        beforeImage: "",
+        afterImage: "",
+        lift: "-0.04 EV",
+        gamma: "+0.12 EV",
+        gain: "5600K · TEAL/AMBER",
+      },
+      {
+        code: "SCENE 02",
+        title: "SaaS Flagship Launch · High-Contrast Studio",
+        camera: "RED V-RAPTOR 8K VV · R3D RAW",
+        lut: "OPTICAL COBALT + DEEP BLACKS",
+        beforeImage: "",
+        afterImage: "",
+        lift: "-0.08 EV",
+        gamma: "+0.06 EV",
+        gain: "6200K · STUDIO CLEAN",
+      },
+      {
+        code: "SCENE 03",
+        title: "Founder Documentary · Warm Tungsten Film",
+        camera: "SONY FX6 · S-LOG3 / S-GAMUT3.CINE",
+        lut: "16MM KODAK VISION3 500T",
+        beforeImage: "",
+        afterImage: "",
+        lift: "-0.03 EV",
+        gamma: "+0.15 EV",
+        gain: "3200K · TUNGSTEN",
+      },
     ],
   },
   partners: {

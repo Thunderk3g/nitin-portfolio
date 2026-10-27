@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import type { Field, ItemField, SectionSpec } from "@/lib/admin/content-spec";
 import MediaField from "@/components/admin/MediaField";
 import { saveSectionAction } from "../actions";
@@ -26,6 +27,94 @@ function setByPath(obj: any, path: string, v: any): any {
 
 const HEX = /^#[0-9a-f]{6}$/i;
 
+const QUICK_LINKS = [
+  { label: "Short-Form", href: "/projects#short-form" },
+  { label: "Long-Form", href: "/projects#long-form" },
+  { label: "SaaS & Tech", href: "/projects#saas" },
+  { label: "Cinematic", href: "/projects#cinematic" },
+  { label: "All Projects", href: "/projects" },
+  { label: "Contact Page", href: "/contact" },
+];
+
+function StringListControl({
+  id,
+  value,
+  onChange,
+}: {
+  id: string;
+  value: string[];
+  onChange: (v: string[]) => void;
+}) {
+  const arr = Array.isArray(value) ? value : [];
+  const [raw, setRaw] = useState(() => arr.join(", "));
+
+  const commit = (text: string) => {
+    setRaw(text);
+    onChange(
+      text
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    );
+  };
+
+  const removeTag = (idx: number) => {
+    const next = arr.filter((_, i) => i !== idx);
+    setRaw(next.join(", "));
+    onChange(next);
+  };
+
+  return (
+    <div>
+      <input
+        id={id}
+        className="field-input"
+        value={raw}
+        placeholder="e.g. Commercials, SaaS Launches, Short-form, Colour & Sound"
+        onChange={(e) => commit(e.target.value)}
+      />
+      {arr.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+          {arr.map((tag, idx) => (
+            <span
+              key={`${tag}-${idx}`}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "4px 10px",
+                borderRadius: 999,
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid var(--line)",
+                fontSize: 12,
+                color: "var(--ink)",
+              }}
+            >
+              {tag}
+              <button
+                type="button"
+                aria-label={`Remove ${tag}`}
+                onClick={() => removeTag(idx)}
+                style={{
+                  background: "none",
+                  border: 0,
+                  color: "var(--ink-3)",
+                  cursor: "pointer",
+                  padding: 0,
+                  fontSize: 13,
+                  lineHeight: 1,
+                }}
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** One labelled input of any supported type. */
 function FieldInput({
   id,
@@ -46,6 +135,7 @@ function FieldInput({
   placeholder?: string;
   field?: ItemField;
 }) {
+  const isHrefField = field?.key === "href";
   let control: React.ReactNode;
   if (type === "textarea") {
     control = (
@@ -53,29 +143,14 @@ function FieldInput({
         id={id}
         className="field-input"
         value={value ?? ""}
-        placeholder={placeholder}
+        placeholder={placeholder ?? field?.placeholder}
         onChange={(e) => onChange(e.target.value)}
       />
     );
   } else if (type === "stringlist") {
     const arr: string[] = Array.isArray(value) ? value : [];
-    control = (
-      <input
-        id={id}
-        className="field-input"
-        value={arr.join(", ")}
-        placeholder="Comma-separated"
-        onChange={(e) =>
-          onChange(
-            e.target.value
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean),
-          )
-        }
-      />
-    );
-    hint = hint ?? "Separate with commas.";
+    control = <StringListControl id={id} value={arr} onChange={onChange} />;
+    hint = hint ?? "Separate items with commas.";
   } else if (type === "media") {
     control = (
       <MediaField id={id} value={value ?? ""} onChange={onChange} accept={field?.accept ?? "image"} />
@@ -90,7 +165,13 @@ function FieldInput({
           value={HEX.test(v) ? v : "#262a33"}
           onChange={(e) => onChange(e.target.value)}
         />
-        <input id={id} className="field-input" value={v} placeholder="#262a33" onChange={(e) => onChange(e.target.value)} />
+        <input
+          id={id}
+          className="field-input"
+          value={v}
+          placeholder="#262a33"
+          onChange={(e) => onChange(e.target.value)}
+        />
       </div>
     );
   } else if (type === "select") {
@@ -105,13 +186,39 @@ function FieldInput({
     );
   } else {
     control = (
-      <input
-        id={id}
-        className="field-input"
-        value={value ?? ""}
-        placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value)}
-      />
+      <div>
+        <input
+          id={id}
+          className="field-input"
+          value={value ?? ""}
+          placeholder={placeholder ?? field?.placeholder}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        {isHrefField && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8, alignItems: "center" }}>
+            <span style={{ fontSize: 11, color: "var(--ink-3)", marginRight: 2 }}>Quick pick:</span>
+            {QUICK_LINKS.map((q) => {
+              const active = value === q.href;
+              return (
+                <button
+                  key={q.href}
+                  type="button"
+                  onClick={() => onChange(q.href)}
+                  className="btn-ghost btn-xs"
+                  style={{
+                    padding: "4px 9px",
+                    fontSize: 11,
+                    borderColor: active ? "var(--accent)" : undefined,
+                    color: active ? "var(--ink)" : undefined,
+                  }}
+                >
+                  {q.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
     );
   }
 
@@ -130,7 +237,13 @@ function blankItem(fields: ItemField[]) {
   const blank: any = {};
   fields.forEach((f) => {
     blank[f.key] =
-      f.type === "stringlist" ? [] : f.type === "select" ? f.options?.[0]?.value ?? "" : f.type === "color" ? "#262a33" : "";
+      f.type === "stringlist"
+        ? []
+        : f.type === "select"
+          ? f.options?.[0]?.value ?? ""
+          : f.type === "color"
+            ? "#262a33"
+            : "";
   });
   return blank;
 }
@@ -177,46 +290,67 @@ export default function SectionEditor({
           return next;
         });
       return (
-        <div key={i} style={{ marginTop: 8, marginBottom: 22 }}>
-          <div className="adm-label" style={{ fontSize: 13, marginBottom: 12 }}>
-            {field.label}
+        <div key={i} style={{ marginTop: 12, marginBottom: 24 }}>
+          <div className="adm-label" style={{ fontSize: 14, marginBottom: 12, color: "var(--ink)" }}>
+            {field.label} ({list.length})
           </div>
           <div className="adm-stack" style={{ gap: 14 }}>
-            {list.map((item, idx) => (
-              <div key={idx} className="adm-item">
-                <div className="adm-item-head">
-                  <span>
-                    {field.itemLabel} {idx + 1}
-                  </span>
-                  <div className="adm-actions">
-                    <button type="button" className="btn-ghost btn-xs" aria-label="Move up" onClick={() => move(idx, -1)}>
-                      ↑
-                    </button>
-                    <button type="button" className="btn-ghost btn-xs" aria-label="Move down" onClick={() => move(idx, 1)}>
-                      ↓
-                    </button>
-                    <button type="button" className="btn-ghost btn-xs btn-danger" onClick={() => removeItem(idx)}>
-                      Remove
-                    </button>
+            {list.map((item, idx) => {
+              const summary = item?.title || item?.name || item?.code || "";
+              return (
+                <div key={idx} className="adm-item">
+                  <div className="adm-item-head">
+                    <span>
+                      {field.itemLabel} #{idx + 1}
+                      {summary ? ` · ${summary}` : ""}
+                    </span>
+                    <div className="adm-actions">
+                      <button
+                        type="button"
+                        className="btn-ghost btn-xs"
+                        aria-label="Move up"
+                        disabled={idx === 0}
+                        onClick={() => move(idx, -1)}
+                      >
+                        ↑ Move up
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-ghost btn-xs"
+                        aria-label="Move down"
+                        disabled={idx === list.length - 1}
+                        onClick={() => move(idx, 1)}
+                      >
+                        ↓ Move down
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-ghost btn-xs btn-danger"
+                        onClick={() => removeItem(idx)}
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
+                  {field.itemFields.map((f) => (
+                    <FieldInput
+                      key={f.key}
+                      id={`${id}-${idx}-${f.key}`}
+                      label={f.label}
+                      type={f.type}
+                      hint={f.hint}
+                      placeholder={f.placeholder}
+                      field={f}
+                      value={item?.[f.key]}
+                      onChange={(v) => updateItem(idx, f.key, v)}
+                    />
+                  ))}
                 </div>
-                {field.itemFields.map((f) => (
-                  <FieldInput
-                    key={f.key}
-                    id={`${id}-${idx}-${f.key}`}
-                    label={f.label}
-                    type={f.type}
-                    hint={f.hint}
-                    field={f}
-                    value={item?.[f.key]}
-                    onChange={(v) => updateItem(idx, f.key, v)}
-                  />
-                ))}
-              </div>
-            ))}
+              );
+            })}
           </div>
           <button type="button" className="btn-ghost btn-xs" style={{ marginTop: 12 }} onClick={addItem}>
-            + Add {field.itemLabel.toLowerCase()}
+            + Add another {field.itemLabel.toLowerCase()}
           </button>
         </div>
       );
@@ -229,6 +363,7 @@ export default function SectionEditor({
           id={id}
           label={field.label}
           type="stringlist"
+          hint={field.hint}
           value={getByPath(value, field.path) ?? []}
           onChange={(v) => update(field.path, v)}
         />
@@ -277,6 +412,29 @@ export default function SectionEditor({
 
   return (
     <div>
+      <div
+        className="adm-card"
+        style={{
+          marginBottom: 14,
+          padding: "12px 16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          flexWrap: "wrap",
+          background: "rgba(255,255,255,0.02)",
+        }}
+      >
+        <span style={{ fontSize: 13, color: "var(--ink-2)" }}>
+          Tip: Edit any text or image below, then click <strong>Save changes</strong> at the bottom. Your website updates immediately.
+        </span>
+        {spec.liveUrl && (
+          <Link href={spec.liveUrl} target="_blank" rel="noreferrer" className="btn-ghost btn-xs">
+            Preview on live site ↗
+          </Link>
+        )}
+      </div>
+
       <div className="adm-card">{spec.fields.map((f, i) => renderField(f, i))}</div>
       <div className="adm-savebar">
         <button className="btn btn-sm" onClick={save} disabled={pending}>

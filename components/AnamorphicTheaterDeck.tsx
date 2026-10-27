@@ -27,7 +27,13 @@ const LUT_PROFILES = [
   },
 ];
 
-export default function AnamorphicTheaterDeck({ featured }: { featured: ReelItem[] }) {
+export default function AnamorphicTheaterDeck({
+  featured,
+  title,
+}: {
+  featured: ReelItem[];
+  title?: string;
+}) {
   const [activeIdx, setActiveIdx] = useState(0);
   const current = featured[activeIdx] || featured[0];
   const lut = LUT_PROFILES[activeIdx % LUT_PROFILES.length];
@@ -45,7 +51,7 @@ export default function AnamorphicTheaterDeck({ featured }: { featured: ReelItem
         <div className="theater-deck-header" data-reveal="up">
           <div>
             <p className="eyebrow">05 / ANAMORPHIC THEATER DECK · 2.39:1 SCOPE</p>
-            <h3 className="display theater-deck-heading">Featured Director Cuts</h3>
+            <h3 className="display theater-deck-heading">{title || "Featured Director Cuts"}</h3>
           </div>
           <div className="theater-lut-badge" aria-label="Active colour grade LUT">
             <span className="theater-lut-label">GRADE: {lut.name}</span>
