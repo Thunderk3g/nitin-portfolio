@@ -7,10 +7,10 @@
 export const MEDIA_BUCKET = "media";
 
 /**
- * Per-file cap. 50 MB is the Supabase free-plan global upload limit; raise it
- * here (and on the bucket via `npm run db:policies`) after upgrading the plan.
+ * Per-file cap (150 MB). Applied in both client/server validation and on the
+ * Supabase `storage.buckets` row (`npm run db:policies` / `createUploadAction`).
  */
-export const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+export const MAX_UPLOAD_BYTES = 150 * 1024 * 1024;
 
 export type MediaKind = "image" | "video";
 

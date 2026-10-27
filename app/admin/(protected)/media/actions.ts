@@ -86,6 +86,13 @@ export async function createUploadAction(input: {
 
   const path = `${kind}s/${crypto.randomUUID()}.${extFor(filename, mime)}`;
   try {
+    // Ensure the bucket's per-file limit in Postgres matches MAX_UPLOAD_BYTES (150 MB).
+    await withDbRetry(() =>
+      db.execute(
+        sql`update storage.buckets set file_size_limit = ${MAX_UPLOAD_BYTES} where id = ${MEDIA_BUCKET} and (file_size_limit is null or file_size_limit < ${MAX_UPLOAD_BYTES})`,
+      ),
+    ).catch(() => {});
+
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase.storage
       .from(MEDIA_BUCKET)
