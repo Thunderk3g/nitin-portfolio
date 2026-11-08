@@ -40,7 +40,10 @@ export default function HomePage({ content }: { content: SiteContent }) {
               </h2>
             </div>
             <p className="work-sub-pick-c">
-              Hover any row to engage the hardware aspect-ratio monitor (9:16 vertical vs. 16:9 widescreen).
+              <span className="when-hover">
+                Hover any row to engage the hardware aspect-ratio monitor (9:16 vertical vs. 16:9 widescreen).
+              </span>
+              <span className="when-touch">Tap a format to see the projects in it.</span>
             </p>
           </div>
           <CategoryTiles items={categories.items} hrefPrefix="/projects#" />

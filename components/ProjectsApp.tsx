@@ -188,12 +188,19 @@ function Player({
     >
       <div className={vertical ? "player player-pick-c player-vertical" : "player player-pick-c"}>
         {/* Darkroom Top Telemetry Bar */}
-        <div className="darkroom-topbar" aria-hidden="true">
-          <span className="darkroom-rec">
+        <div className="darkroom-topbar">
+          <span className="darkroom-rec" aria-hidden="true">
             <span className="darkroom-rec-dot" />
             DARKROOM LIGHTBOX · {fmt.toUpperCase()}
           </span>
-          <span className="darkroom-keys">KEYS: [J/K/L] SHUTTLE · [ESC] EXIT</span>
+          <span className="darkroom-keys" aria-hidden="true">
+            KEYS: [J/K/L] SHUTTLE · [ESC] EXIT
+          </span>
+          {/* Visual shortcut at the top of the player for touch; the accessible
+              "Close player" control (and Esc) live in the player body. */}
+          <a className="darkroom-close" href={`#${cat.slug}`} aria-hidden="true" tabIndex={-1}>
+            ✕
+          </a>
         </div>
 
         <div className="player-stage" id="stage" style={{ aspectRatio: ratio }}>

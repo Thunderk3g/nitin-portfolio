@@ -100,13 +100,18 @@ export default function CraftGradeWipe({ craft }: { craft?: CraftSection }) {
         <div
           className="craft-wipe-stage"
           ref={stageRef}
+          onPointerDown={(e) => {
+            // Keep following a finger/pen drag even when it slides off the stage.
+            if (e.pointerType !== "mouse") e.currentTarget.setPointerCapture?.(e.pointerId);
+          }}
           onPointerMove={(e) => {
             if (e.pointerType === "mouse" || e.buttons > 0) {
               updateWipe(e.clientX);
             }
           }}
-          onPointerLeave={() => {
-            pointerActiveRef.current = false;
+          onPointerLeave={(e) => {
+            // On touch, pointerleave fires after every tap; keep the user's position.
+            if (e.pointerType === "mouse") pointerActiveRef.current = false;
           }}
           onClick={(e) => updateWipe(e.clientX)}
         >
@@ -126,7 +131,9 @@ export default function CraftGradeWipe({ craft }: { craft?: CraftSection }) {
                 <div className="craft-subject-flare" />
               </div>
             )}
-            <span className="craft-corner-tag craft-tag-after">AFTER · FINAL DI GRADE</span>
+            <span className="craft-corner-tag craft-tag-after">
+              AFTER<span className="craft-tag-long"> · FINAL DI GRADE</span>
+            </span>
           </div>
 
           {/* Clipped Top Layer: BEFORE (Flat Un-graded RAW LOG) */}
@@ -146,7 +153,9 @@ export default function CraftGradeWipe({ craft }: { craft?: CraftSection }) {
                 <div className="craft-subject-ring" />
               </div>
             )}
-            <span className="craft-corner-tag craft-tag-before">BEFORE · FLAT RAW LOG</span>
+            <span className="craft-corner-tag craft-tag-before">
+              BEFORE<span className="craft-tag-long"> · FLAT RAW LOG</span>
+            </span>
           </div>
 
           {/* Interactive Optical Divider Handle */}

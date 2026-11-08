@@ -62,6 +62,16 @@ export default function SiteHeader({
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // Lock page scroll behind the quick reel jumper (matters most on phones).
+  useEffect(() => {
+    if (!cmdOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [cmdOpen]);
+
   return (
     <>
       <header className={`site-header site-header-pick-c ${className}`.trim()}>
@@ -101,7 +111,22 @@ export default function SiteHeader({
           onClick={() => setCmdOpen(true)}
           aria-label="Open quick reel jumper"
         >
-          <span>REELS</span>
+          <svg
+            className="cmdk-icon"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4" />
+          </svg>
+          <span className="cmdk-label">REELS</span>
           <span className="cmdk-key" aria-hidden="true">
             ⌘K
           </span>
@@ -125,8 +150,12 @@ export default function SiteHeader({
                 type="button"
                 className="cmdk-close"
                 onClick={() => setCmdOpen(false)}
+                aria-label="Close quick reel jumper"
               >
-                ESC
+                <span className="cmdk-close-key">ESC</span>
+                <span className="cmdk-close-x" aria-hidden="true">
+                  ✕
+                </span>
               </button>
             </div>
             <div className="cmdk-list">

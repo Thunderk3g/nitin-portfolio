@@ -4124,13 +4124,519 @@ select.field-input {
 }
 
 @media (max-width: 600px) {
-  .partners-bento-grid,
-  .craft-telemetry-bar,
-  .nle-track-row {
+  .craft-telemetry-bar {
     grid-template-columns: minmax(0, 1fr);
   }
   .darkroom-keys,
   .darkroom-pill-badge {
     display: none;
+  }
+}
+
+/* ==========================================================================
+   MOBILE & TOUCH
+   Everything below only adapts layouts for phones/tablets and touch input;
+   desktop (fine pointer, > 960px) rendering is unchanged.
+   ========================================================================== */
+
+/* Hover-only copy vs. touch copy (the floating monitor is hidden <= 960px) */
+.when-touch {
+  display: none;
+}
+
+@media (max-width: 960px), (hover: none) {
+  .when-hover {
+    display: none;
+  }
+  .when-touch {
+    display: inline;
+  }
+}
+
+/* Quick reel jumper button: icon is shown only when the label is hidden */
+.cmdk-icon {
+  display: none;
+  flex: 0 0 auto;
+}
+
+.cmdk-close-x {
+  display: none;
+}
+
+.darkroom-close {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 239, 230, 0.18);
+  background: rgba(244, 239, 230, 0.05);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1;
+  text-decoration: none;
+  transition:
+    border-color 0.2s var(--ease),
+    background-color 0.2s var(--ease);
+}
+
+.darkroom-close:hover {
+  border-color: var(--accent-text);
+  background: rgba(55, 102, 230, 0.22);
+  color: #fff;
+}
+
+/* Scrub surfaces: horizontal drags scrub, vertical swipes still scroll the page */
+.nle-scrubber-surface,
+.craft-wipe-stage {
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* --- Touch devices: no sticky hover lifts, comfortable 44px targets ------ */
+@media (hover: none) {
+  .cat.cat-row:hover,
+  .reel:hover,
+  .partner-bento-tile:hover,
+  .nle-track-clip:hover,
+  .cat:hover .cat-media .ph {
+    transform: none;
+  }
+  .nle-track-clip.is-active {
+    transform: none;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: running;
+  }
+  .header-cmdk-btn .cmdk-key {
+    display: none;
+  }
+  .cmdk-close-key {
+    display: none;
+  }
+  .cmdk-close-x {
+    display: inline;
+  }
+}
+
+@media (pointer: coarse) {
+  .nav a {
+    min-height: 44px;
+  }
+  .header-cmdk-btn {
+    height: 44px;
+  }
+  .btn-sm {
+    min-height: 44px;
+  }
+  .craft-scene-btn {
+    height: 44px;
+  }
+  .cmdk-close {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 15px;
+  }
+  .cmdk-item {
+    min-height: 56px;
+  }
+  .darkroom-close {
+    width: 44px;
+    height: 44px;
+  }
+  .site-footer .brand {
+    min-height: 44px;
+  }
+}
+
+/* --- Phones ---------------------------------------------------------------- */
+@media (max-width: 640px) {
+  /* Header: nav pill + compact icon-only reel jumper fit on one row */
+  .site-header {
+    gap: 8px;
+  }
+  .site-header .nav {
+    margin-left: 0;
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  .header-rail-mid {
+    display: none;
+  }
+  .header-cmdk-btn {
+    flex: 0 0 auto;
+    justify-content: center;
+    width: 44px;
+    padding: 0;
+    margin-left: auto;
+  }
+  .header-cmdk-btn .cmdk-label,
+  .header-cmdk-btn .cmdk-key {
+    display: none;
+  }
+  .header-cmdk-btn .cmdk-icon {
+    display: block;
+  }
+
+  .cmdk-backdrop {
+    padding: 72px 12px 12px;
+  }
+  .cmdk-modal {
+    max-height: calc(100dvh - 84px);
+    display: flex;
+    flex-direction: column;
+  }
+  .cmdk-head {
+    gap: 12px;
+    padding: 10px 10px 10px 16px;
+  }
+  .cmdk-list {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* Hero HUD chip: keep it to one line */
+  .vf-hud-top {
+    left: 0;
+    max-width: calc(100% - 12px);
+    gap: 10px;
+  }
+  .vf-spec {
+    display: none;
+  }
+
+  /* 03 · Category index rows: compact thumbnail + text rows */
+  .cats.cats-pick-c {
+    margin-top: 32px;
+    gap: 12px;
+  }
+  .cat.cat-row {
+    grid-template-columns: 112px minmax(0, 1fr);
+    grid-template-areas:
+      "media body"
+      "specs specs";
+    align-items: center;
+    gap: 14px 16px;
+    padding: 14px;
+  }
+  .cat-row-index {
+    display: none;
+  }
+  .cat.cat-row .cat-media {
+    grid-area: media;
+    border-radius: 12px;
+    padding: 4px;
+  }
+  .cat.cat-row .cat-media .ph {
+    inset: 4px;
+    border-radius: 9px;
+  }
+  .cat.cat-row .cat-media .ph-label {
+    display: none;
+  }
+  .cat.cat-row .cat-body {
+    grid-area: body;
+    gap: 4px;
+    padding: 0;
+  }
+  .cat.cat-row .cat-title {
+    font-size: 18px;
+    line-height: 1.25;
+  }
+  .cat.cat-row .cat-desc {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .cat-row-specs {
+    grid-area: specs;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+  }
+
+  /* 04 · NLE timeline */
+  .nle-timeline-deck {
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .nle-program-monitor {
+    padding: 6px;
+  }
+  .nle-monitor-topbar {
+    gap: 12px;
+    padding: 6px 8px 10px;
+    font-size: 11px;
+  }
+  .nle-badge-long {
+    display: none;
+  }
+  .nle-monitor-tc {
+    white-space: nowrap;
+  }
+  .nle-monitor-stage {
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+    padding: 18px;
+  }
+  .nle-monitor-safezone {
+    inset: 10px;
+  }
+  .nle-monitor-overlay {
+    gap: 14px;
+  }
+  .nle-monitor-meta {
+    min-width: 0;
+  }
+  .nle-clip-title {
+    font-size: clamp(24px, 7.4vw, 34px);
+    overflow-wrap: anywhere;
+  }
+  .nle-scrubber-surface {
+    padding: 12px;
+  }
+  .nle-time-ruler span:nth-child(2),
+  .nle-time-ruler span:nth-child(4) {
+    display: none;
+  }
+  .nle-track-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .nle-track-clip {
+    min-width: 0;
+    min-height: 64px;
+    padding: 10px;
+  }
+  .nle-audio-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Reel strip: shorter cards so the strip doesn't dominate the screen */
+  .allwork-pick-b .reel {
+    width: 240px;
+    height: 140px;
+    padding: 14px 16px;
+  }
+  .allwork-pick-b .reel-title {
+    font-size: 19px;
+  }
+
+  /* 05 · Anamorphic theater deck */
+  .theater-deck-wrap {
+    margin-bottom: 40px;
+  }
+  .theater-deck-header {
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .theater-lut-badge {
+    max-width: 100%;
+  }
+  .theater-scope-bezel {
+    padding: 6px;
+  }
+  .theater-scope-topbar {
+    gap: 10px;
+    padding: 6px 8px 10px;
+    font-size: 10.5px;
+  }
+  .theater-scope-topbar span:last-child {
+    display: none;
+  }
+  .theater-scope-screen {
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+  }
+  .theater-scope-guides {
+    inset: 10px;
+  }
+  .theater-scope-content {
+    padding: 18px;
+  }
+  .theater-scope-text {
+    min-width: 0;
+    gap: 6px;
+  }
+  .theater-scope-text .feature-kind {
+    font-size: 11px;
+  }
+  .theater-scope-text .feature-title {
+    font-size: clamp(26px, 8vw, 38px);
+    overflow-wrap: anywhere;
+  }
+  .theater-chapter-tab {
+    padding: 12px 14px;
+  }
+
+  /* 06 · RAW LOG vs final grade wipe */
+  .craft-grade {
+    padding-top: 88px;
+    padding-bottom: 24px;
+  }
+  .craft-grade-head {
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .craft-wipe-bezel {
+    padding: 6px;
+  }
+  .craft-wipe-hud {
+    gap: 4px 12px;
+    padding: 6px 8px 10px;
+    font-size: 10.5px;
+  }
+  .craft-wipe-stage {
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+  }
+  .craft-focal-subject {
+    width: 120px;
+    height: 120px;
+  }
+  .craft-corner-tag {
+    bottom: 12px;
+    padding: 5px 10px;
+  }
+  .craft-tag-before {
+    left: 12px;
+  }
+  .craft-tag-after {
+    right: 12px;
+  }
+  .craft-tag-long {
+    display: none;
+  }
+  .craft-telemetry-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .craft-telemetry-cell {
+    min-width: 0;
+    padding: 10px 12px;
+  }
+  .craft-tel-val {
+    overflow-wrap: anywhere;
+  }
+
+  /* 08 · Partners: two-up compact tiles instead of one long column */
+  .partners-bento-head {
+    margin-bottom: 28px;
+  }
+  .partners-bento-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .partner-bento-tile {
+    min-width: 0;
+    padding: 14px;
+    gap: 10px;
+  }
+  .partner-bento-mono {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+  .partner-bento-name {
+    font-size: 15px;
+    overflow-wrap: anywhere;
+  }
+  .partner-bento-img {
+    max-width: 100%;
+  }
+  .partner-bento-role {
+    font-size: 9.5px;
+  }
+
+  /* CTA + footer */
+  .cta-inner {
+    padding: 28px 20px;
+  }
+  .cta-action-block .btn {
+    width: 100%;
+  }
+  .site-footer {
+    padding-top: 28px;
+    padding-bottom: 28px;
+  }
+
+  /* Projects player: near full-screen sheet, close button pinned at the top */
+  .player-backdrop {
+    padding: 8px;
+  }
+  .player {
+    width: 100%;
+    /* clip (not hidden) so the sticky top bar follows the backdrop's scroll */
+    overflow: clip;
+  }
+  .player-vertical {
+    width: 100%;
+  }
+  .darkroom-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    padding: 6px 8px 6px 16px;
+  }
+  .darkroom-rec {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .darkroom-scrub-pill {
+    display: none;
+  }
+  .player-head {
+    flex-wrap: wrap;
+  }
+  .player-head h2 {
+    overflow-wrap: anywhere;
+  }
+
+  /* Contact: full-width stacked actions */
+  .contact-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .contact-direct {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* --- Small phones (iPhone SE / 360px Android) ------------------------------ */
+@media (max-width: 380px) {
+  .site-header .nav {
+    gap: 2px;
+    padding: 4px;
+  }
+  .site-header .nav a {
+    padding: 0 10px;
+    font-size: 13.5px;
+  }
+  .cat.cat-row {
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+  .nle-track-name {
+    font-size: 12px;
+  }
+}
+
+/* --- Admin (CMS) on phones ------------------------------------------------- */
+.adm-card code {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .adm-login {
+    padding: 16px;
+  }
+  .adm-login > .adm-card {
+    width: 100%;
   }
 }

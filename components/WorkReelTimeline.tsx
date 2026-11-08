@@ -57,7 +57,7 @@ export default function WorkReelTimeline({ reels }: { reels: ReelItem[] }) {
         <div className="nle-monitor-topbar">
           <span className="nle-monitor-badge">
             <span className="nle-rec-dot" />
-            SEQUENCE 04 · TIMELINE PLAYHEAD SCRUBBER
+            SEQUENCE 04<span className="nle-badge-long"> · TIMELINE PLAYHEAD SCRUBBER</span>
           </span>
           <span className="nle-monitor-tc">{formatTimelineTC(playheadPct)}</span>
         </div>
@@ -91,8 +91,10 @@ export default function WorkReelTimeline({ reels }: { reels: ReelItem[] }) {
             handleScrub(e.clientX);
           }
         }}
-        onPointerLeave={() => {
-          userInteractedRef.current = false;
+        onPointerLeave={(e) => {
+          // Only a mouse "leaves"; on touch, pointerleave fires after every tap and
+          // would hand the playhead back to the scroll-linked sweep.
+          if (e.pointerType === "mouse") userInteractedRef.current = false;
         }}
         onClick={(e) => handleScrub(e.clientX)}
       >
