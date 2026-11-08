@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { ReelItem } from "@/lib/site-content";
 import { shadedMediaStyle } from "@/lib/media-style";
@@ -35,8 +35,47 @@ export default function AnamorphicTheaterDeck({
   title?: string;
 }) {
   const [activeIdx, setActiveIdx] = useState(0);
+  const railRef = useRef<HTMLDivElement>(null);
   const current = featured[activeIdx] || featured[0];
   const lut = LUT_PROFILES[activeIdx % LUT_PROFILES.length];
+
+  // Phone swipe deck: the card whose centre is nearest the rail's centre is the active chapter.
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    let frame = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        if (rail.offsetParent === null) return;
+        const mid = rail.scrollLeft + rail.clientWidth / 2;
+        let best = 0;
+        let bestDist = Infinity;
+        Array.from(rail.children).forEach((node, i) => {
+          const c = node as HTMLElement;
+          const dist = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid);
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = i;
+          }
+        });
+        setActiveIdx(best);
+      });
+    };
+    rail.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      rail.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  const goTo = (idx: number) => {
+    const rail = railRef.current;
+    const card = rail?.children[idx] as HTMLElement | undefined;
+    if (!rail || !card) return;
+    const padLeft = parseFloat(getComputedStyle(rail).paddingLeft) || 0;
+    rail.scrollTo({ left: card.offsetLeft - padLeft, behavior: "smooth" });
+  };
 
   if (!current) return null;
 
@@ -58,6 +97,59 @@ export default function AnamorphicTheaterDeck({
             <div className="theater-lut-swatches" aria-hidden="true">
               {lut.swatches.map((hex, i) => (
                 <span key={i} className="theater-lut-dot" style={{ backgroundColor: hex }} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Phone swipe deck: one letterboxed card per featured cut */}
+        <div className="theater-swipe">
+          <div className="theater-swipe-rail" ref={railRef} aria-label="Featured cuts, swipe for more">
+            {featured.map((f, idx) => {
+              const fLut = LUT_PROFILES[idx % LUT_PROFILES.length];
+              const fStyle = shadedMediaStyle(f.tone, f.poster);
+              const bg = f.poster
+                ? fStyle.backgroundImage
+                : `${fLut.flare}, linear-gradient(180deg, rgba(10,12,18,0.2) 0%, rgba(8,10,15,0.88) 100%)`;
+              return (
+                <Link
+                  key={`swipe-${f.title}-${idx}`}
+                  href={f.href}
+                  className="theater-swipe-card ph ph-img"
+                  style={{ ...fStyle, backgroundImage: bg }}
+                  aria-label={`Chapter ${idx + 1}: ${f.title}`}
+                >
+                  <span className="theater-swipe-bars" aria-hidden="true" />
+                  <span className="theater-swipe-top" aria-hidden="true">
+                    <span>CH 0{idx + 1}</span>
+                    <span>2.39:1</span>
+                  </span>
+                  <span className="theater-swipe-text">
+                    <span className="feature-kind">{f.kind}</span>
+                    <span className="theater-swipe-title display">{f.title}</span>
+                    <span className="theater-swipe-cta">
+                      Watch
+                      <Arrow />
+                    </span>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+          <div className="theater-swipe-foot">
+            <span className="theater-swipe-count" aria-hidden="true">
+              CH 0{activeIdx + 1} / 0{featured.length}
+            </span>
+            <div className="theater-swipe-dots">
+              {featured.map((f, idx) => (
+                <button
+                  key={`dot-${idx}`}
+                  type="button"
+                  aria-label={`Show chapter ${idx + 1}: ${f.title}`}
+                  aria-current={idx === activeIdx ? "true" : undefined}
+                  className={idx === activeIdx ? "is-active" : undefined}
+                  onClick={() => goTo(idx)}
+                />
               ))}
             </div>
           </div>

@@ -57,6 +57,31 @@ export default function CraftGradeWipe({ craft }: { craft?: CraftSection }) {
     setWipePct(pct);
   };
 
+  // Manual control (range slider / Before·Split·After buttons) stops the scroll-linked sweep.
+  const setWipeManual = (pct: number) => {
+    pointerActiveRef.current = true;
+    setWipePct(Math.max(0, Math.min(100, pct)));
+  };
+  const wipeRounded = Math.round(wipePct);
+  const presets = [
+    { label: "Before", value: 100 },
+    { label: "Split", value: 50 },
+    { label: "After", value: 0 },
+  ];
+
+  // Only show the HUD/telemetry entries the CMS actually filled in.
+  const hud = [
+    scene.camera ? `SOURCE: ${scene.camera}` : "",
+    `SPLIT WIPE: ${wipeRounded}%`,
+    scene.lut ? `OUTPUT: ${scene.lut}` : "",
+  ].filter(Boolean);
+  const telemetry = [
+    { label: "SEQUENCE", value: scene.title },
+    { label: "LIFT / SHADOWS", value: scene.lift },
+    { label: "GAMMA / MIDTONES", value: scene.gamma },
+    { label: "COLOR BALANCE", value: scene.gain },
+  ].filter((t) => t.value && t.value.trim());
+
   const afterBg = scene.afterImage ? cssUrl(scene.afterImage) : fallback.graded;
   const beforeBg = scene.beforeImage
     ? cssUrl(scene.beforeImage)
@@ -92,9 +117,9 @@ export default function CraftGradeWipe({ craft }: { craft?: CraftSection }) {
       {/* Double-Bezel Interactive Split-Wipe Monitor */}
       <div className="craft-wipe-bezel" data-reveal="scale">
         <div className="craft-wipe-hud">
-          <span>SOURCE: {scene.camera}</span>
-          <span>SPLIT WIPE: {Math.round(wipePct)}%</span>
-          <span>OUTPUT: {scene.lut}</span>
+          {hud.map((h) => (
+            <span key={h}>{h}</span>
+          ))}
         </div>
 
         <div
@@ -167,25 +192,50 @@ export default function CraftGradeWipe({ craft }: { craft?: CraftSection }) {
           </div>
         </div>
 
-        {/* Colourist Telemetry Bar */}
-        <div className="craft-telemetry-bar">
-          <div className="craft-telemetry-cell">
-            <span className="craft-tel-label">SEQUENCE</span>
-            <strong className="craft-tel-val">{scene.title}</strong>
+        {/* Phone controls: thumb-sized slider + quick Before / Split / After */}
+        <div className="craft-touch-controls">
+          <div className="craft-range-row">
+            <span aria-hidden="true">AFTER</span>
+            <input
+              type="range"
+              className="craft-range"
+              min={0}
+              max={100}
+              step={1}
+              value={wipeRounded}
+              aria-label="Wipe position: slide right to show more of the raw footage"
+              aria-valuetext={`${wipeRounded}% raw log, ${100 - wipeRounded}% final grade`}
+              onChange={(e) => setWipeManual(Number(e.target.value))}
+              style={{ "--range-pct": `${wipeRounded}%` } as React.CSSProperties}
+            />
+            <span aria-hidden="true">BEFORE</span>
           </div>
-          <div className="craft-telemetry-cell">
-            <span className="craft-tel-label">LIFT / SHADOWS</span>
-            <strong className="craft-tel-val">{scene.lift}</strong>
-          </div>
-          <div className="craft-telemetry-cell">
-            <span className="craft-tel-label">GAMMA / MIDTONES</span>
-            <strong className="craft-tel-val">{scene.gamma}</strong>
-          </div>
-          <div className="craft-telemetry-cell">
-            <span className="craft-tel-label">COLOR BALANCE</span>
-            <strong className="craft-tel-val">{scene.gain}</strong>
+          <div className="craft-presets" role="group" aria-label="Compare">
+            {presets.map((p) => (
+              <button
+                key={p.label}
+                type="button"
+                aria-pressed={wipeRounded === p.value}
+                className={wipeRounded === p.value ? "is-active" : undefined}
+                onClick={() => setWipeManual(p.value)}
+              >
+                {p.label}
+              </button>
+            ))}
           </div>
         </div>
+
+        {/* Colourist Telemetry Bar */}
+        {telemetry.length > 0 && (
+          <div className="craft-telemetry-bar">
+            {telemetry.map((t) => (
+              <div className="craft-telemetry-cell" key={t.label}>
+                <span className="craft-tel-label">{t.label}</span>
+                <strong className="craft-tel-val">{t.value}</strong>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
